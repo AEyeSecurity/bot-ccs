@@ -1,0 +1,56 @@
+# Funcionalidades Implementadas
+
+## Atención Al Paciente
+
+- Saludo natural para mensajes indefinidos.
+- Respuesta directa con agradecimiento corto cuando el primer mensaje ya identifica la necesidad.
+- Turnos médicos por especialidad, profesión, subespecialidad o profesional específico.
+- Respuesta completa para una especialidad y bloque individual para un profesional.
+- Aclaración determinística ante nombres ambiguos, incluida la separación de Cardoso/Cardozo por cirugía general o maxilofacial.
+- Reconocimiento de variantes de profesión, títulos `Dr`, `Dra`, `Doc`, mayúsculas, acentos omitidos y errores declarados.
+- Estudios de imágenes con derivación directa al contacto correspondiente y cierre de la gestión sin solicitar documentación adicional.
+- Servicios directos: laboratorio, recetas, informes, internación, ubicaciones, guardia, telemedicina y búsqueda laboral.
+- Obras sociales: listado vigente, respuestas de aceptación o rechazo contextual y consulta durante un caso sin perder el paso pendiente.
+- Servicio no disponible para solicitudes explícitas fuera del catálogo.
+- Derivación a operador con redacción formal y conservación del caso.
+- vCards existentes para los contactos operativos.
+
+## Datos Y DNI
+
+- Captura de nombre completo, DNI, cobertura y disponibilidad para turnos médicos.
+- Validación estructurada de frente y dorso del DNI.
+- Extracción y comparación de nombre, apellido y número entre ambas caras.
+- Aceptación de imágenes recibidas en el mismo lote o en mensajes separados.
+- Control de imágenes inválidas, cara faltante, datos incompletos, documento inconsistente y concurrencia.
+- Los adjuntos no se persisten como archivos ni se muestran en el CRM.
+
+## Panel De Conversaciones
+
+- Búsqueda y filtros por estado.
+- Lectura de mensajes y estado del caso.
+- Toma de control, respuesta humana, liberación y cierre manual.
+- El bot no responde mientras existe control humano.
+- El control humano vence según `HUMAN_TAKEOVER_TIMEOUT_MINUTES` después del último mensaje del operador.
+- Si se libera sin respuesta humana, la conversación cierra al cumplirse 24 horas desde el último inbound.
+- Un nuevo mensaje del paciente o una respuesta humana cancela el cierre pendiente.
+
+## Banco Administrable
+
+- Acceso exclusivo para administradores.
+- Edición de textos, disponibilidad, teléfonos contenidos en el texto, profesionales, estudios, coberturas y mensajes generales.
+- Vista previa exacta de WhatsApp.
+- Especialidades separadas en texto general y bloques profesionales reales.
+- Un bloque editado desde Especialidades o Profesionales modifica el mismo registro, sin duplicación.
+- Teléfonos detectados y mostrados junto al bloque propietario.
+- Estados claros: cambios sin guardar, borrador guardado, pendiente de revisión y publicado.
+- Revisión persistida inmediatamente cuando el borrador está guardado.
+- Historial y restauración de versiones.
+- Publicación sin build ni reinicio.
+
+## Límites Actuales
+
+- No agenda turnos reales.
+- No consulta historia clínica ni facturación.
+- No descarga estudios.
+- No ofrece visualización segura de adjuntos.
+- No incluye analítica gerencial avanzada ni asignación por equipos.

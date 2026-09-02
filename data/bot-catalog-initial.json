@@ -1,0 +1,2239 @@
+{
+  "schemaVersion": 1,
+  "messages": {
+    "greetingQuestion": {
+      "body": "Gracias por comunicarse con Clínica Cruz del Sur. ¿En qué podemos ayudarle?",
+      "reviewStatus": "reviewed"
+    },
+    "greetingThanks": {
+      "body": "Gracias por comunicarse con Clínica Cruz del Sur.",
+      "reviewStatus": "reviewed"
+    },
+    "unavailableService": {
+      "body": "Gracias por comunicarse con Clínica Cruz del Sur, por el momento no contamos con el servicio solicitado. Sepa disculpar ¿Podemos ayudarle en algo más?",
+      "reviewStatus": "reviewed"
+    },
+    "medicalAppointmentIntro": {
+      "body": "Para ayudarle con el turno médico, voy a solicitarle algunos datos.",
+      "reviewStatus": "reviewed"
+    },
+    "medicalAppointmentHandoff": {
+      "body": "Gracias. Ya registramos su solicitud y la derivaremos al equipo correspondiente. Nos comunicaremos con usted a la brevedad con novedades.",
+      "reviewStatus": "reviewed"
+    },
+    "imagingAppointmentIntro": {
+      "body": "Para ayudarle con el turno de imágenes médicas, voy a solicitarle algunos datos.",
+      "reviewStatus": "reviewed"
+    },
+    "imagingAppointmentHandoff": {
+      "body": "Gracias. Ya registramos la solicitud para imágenes médicas y la derivaremos al equipo correspondiente. Nos comunicaremos con usted a la brevedad.",
+      "reviewStatus": "reviewed"
+    },
+    "reportsHandoff": {
+      "body": "Gracias. Ya registramos su solicitud de informes e imágenes médicas y la derivaremos al equipo correspondiente. Nos comunicaremos con usted a la brevedad.",
+      "reviewStatus": "reviewed"
+    },
+    "insuranceHandoff": {
+      "body": "Gracias. Derivaremos su consulta al sector correspondiente. Nos comunicaremos a la brevedad con novedades.",
+      "reviewStatus": "reviewed"
+    },
+    "otherConsultIntro": {
+      "body": "Voy a ayudarle a derivar la consulta con el sector indicado.",
+      "reviewStatus": "reviewed"
+    },
+    "otherConsultHandoff": {
+      "body": "Gracias. Derivaremos su consulta al sector correspondiente. Nos comunicaremos a la brevedad con novedades.",
+      "reviewStatus": "reviewed"
+    },
+    "outOfScope": {
+      "body": "Este canal no puede brindarle indicaciones médicas ni interpretar síntomas, diagnósticos, medicación o estudios. Si se trata de una urgencia o necesita evaluación clínica, le recomendamos asistir a la guardia o comunicarse con un profesional de salud.",
+      "reviewStatus": "reviewed"
+    },
+    "turnServicePrompt": {
+      "body": "Indíqueme, por favor, el profesional o servicio que necesita.",
+      "reviewStatus": "reviewed"
+    },
+    "patientIdentityPrompt": {
+      "body": "Ahora necesito el nombre completo del paciente y una foto clara del DNI, frente y dorso.",
+      "reviewStatus": "reviewed"
+    },
+    "insurancePrompt": {
+      "body": "También necesito el número de afiliado de la obra social o una foto clara de la credencial.",
+      "reviewStatus": "reviewed"
+    },
+    "availabilityPrompt": {
+      "body": "Por último, indíqueme la disponibilidad para asistir: días y horarios.",
+      "reviewStatus": "reviewed"
+    },
+    "imagingStudyPrompt": {
+      "body": "Indíqueme, por favor, qué estudio de imágenes necesita.",
+      "reviewStatus": "reviewed"
+    },
+    "reportsPatientPrompt": {
+      "body": "Indíqueme, por favor, el nombre completo del paciente.",
+      "reviewStatus": "reviewed"
+    },
+    "reportsDniPrompt": {
+      "body": "Ahora envíeme una foto clara del DNI, frente y dorso.",
+      "reviewStatus": "reviewed"
+    },
+    "reportsStudyDatePrompt": {
+      "body": "Por último, indíqueme el estudio y la fecha estimada de realización.",
+      "reviewStatus": "reviewed"
+    },
+    "insuranceReasonPrompt": {
+      "body": "Para derivarla correctamente, indíqueme brevemente en qué podemos ayudarle con su obra social.",
+      "reviewStatus": "reviewed"
+    },
+    "otherConsultPrompt": {
+      "body": "Cuénteme brevemente en qué podemos ayudarle para derivar su consulta con el equipo correspondiente.",
+      "reviewStatus": "reviewed"
+    },
+    "telemedicineIntro": {
+      "body": "Para orientarlo con la opción de telemedicina, necesito confirmar desde qué localidad nos escribe.",
+      "reviewStatus": "reviewed"
+    },
+    "telemedicineCityPrompt": {
+      "body": "Para orientarlo mejor, indíqueme desde qué localidad nos escribe. La telemedicina de la Dra. Estrada está pensada para pacientes que residen fuera de Caleta Olivia.",
+      "reviewStatus": "reviewed"
+    },
+    "surgerySelector": {
+      "body": "Muy bien, indíquenos si desea una consulta con cirugía general, maxilofacial o estética y plástica.",
+      "reviewStatus": "reviewed"
+    },
+    "cardosoSelector": {
+      "body": "Muy bien, para corroborar la información enviada puede indicarnos si desea una consulta con cirugía general o maxilofacial",
+      "reviewStatus": "reviewed"
+    },
+    "unknownServicePrompt": {
+      "body": "No pude identificar el profesional o servicio. Indíqueme, por favor, el nombre del profesional, la especialidad o el estudio que necesita.",
+      "reviewStatus": "reviewed"
+    }
+  },
+  "direct": {
+    "laboratory": {
+      "body": "Las extracciones se realizan de lunes a viernes (por orden de llegada) de 07 a 09 hs. Debe concurrir en ayunas con orden médica, DNI y credencial de su obra social. Si es requerido también se debe entregar la primera orina del día en un descartable estéril.\n\nPara más información y entrega de informes, comuníquese por WhatsApp al siguiente número:\n+5492974356928.",
+      "phones": [
+        "+5492974356928"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "reportsImages": {
+      "body": "Las imágenes se envían por WhatsApp y se puede acceder a ellas al finalizar el estudio desde el link recibido. El informe estará disponible dentro de 48 a 72 horas hábiles desde ese mismo día. Si tiene alguna duda o consulta puede enviar un mensaje a +5492976211361.",
+      "phones": [
+        "+5492976211361"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "reportsPathology": {
+      "body": "Respecto a biopsias y estudios de patología, comuníquese por Whatsapp al siguiente número:\n\n+5492974082603\n\nNuestro equipo le indicará los pasos a seguir a la brevedad.",
+      "phones": [
+        "+5492974082603"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "reportsLaboratory": {
+      "body": "Para obtener los resultados de sus análisis, comuníquese por Whatsapp al siguiente número:\n\n+5492974356928\n\nNuestro equipo le indicará los pasos a seguir a la brevedad.",
+      "phones": [
+        "+5492974356928"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "prescriptions": {
+      "body": "Para solicitar una receta médica, comuníquese por WhatsApp al siguiente número:\n +5492974214000\nNuestro equipo le indicará los pasos a seguir a la brevedad.",
+      "phones": [
+        "+5492974214000"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "buildings": {
+      "body": "Clínica Cruz del Sur se encuentra en Caleta Olivia, Santa Cruz. Sus principales sectores están distribuidos en dos ubicaciones:\n\nPasaje Dra. Elena Ibarra de Zilberberg\n\nSector A: Guardia\nSector B: Imágenes Médicas\nSector C: Consultorios Externos\nSector D: Mamografía y Densitometría\n\n\nAv. 9 de Julio\n\nSector E: Cardiología\nSector F: Centro Materno Infantil\nCámara Gamma SPECT\n\nLa Dra. Estrada brinda atención por telemedicina, una modalidad especialmente recomendada para pacientes que residen en otras localidades. Para solicitar un turno o realizar consultas, puede enviar un mensaje de WhatsApp al +5492974935087.",
+      "phones": [
+        "+5492974935087"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "hospitalization": {
+      "body": "Para recibir información sobre los procesos de admisión e internación, puede comunicarse por WhatsApp a los siguientes números:\n+5492976215682\n+5492975451495\nEl horario de visita para pacientes en sala es a partir de las 16 hs, para terapia intensiva es de 12 a 13:30 hs.",
+      "phones": [
+        "+5492976215682",
+        "+5492975451495"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "guard": {
+      "body": "Ante una urgencia, recomendamos asistir a nuestra guardia, ubicada en Pasaje Tamarisco 735, donde contamos con atención médica las 24 horas, todos los días del año.\n\nEn nuestro perfil de Instagram se encuentran para su consulta los profesionales disponibles.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "employment": {
+      "body": "Te invitamos a enviarnos tu CV a gestiondepersonal@clinicacruzdelsur.com.ar\no a rrhh@clinicacruzdelsur.com.ar para poder conocer tu perfil y tenerlo en cuenta para futuras oportunidades.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "clinicalMedicine": {
+      "body": "La atención de médicos clínicos se realiza por orden de llegada, de lunes a viernes, a partir de las 09 hs por la mañana y a partir de las 15 hs por la tarde, en los Edificios B y C.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "telemedicine": {
+      "body": "La Dra. Estrada brinda atención por telemedicina, una modalidad especialmente recomendada para pacientes que residen en otras localidades. Para solicitar un turno o realizar consultas, puede enviar un mensaje de WhatsApp al +5492974935087.",
+      "phones": [
+        "+5492974935087"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "socialInsurance": {
+      "body": "A continuación encontrará el listado de las obras sociales con convenio vigente en Clínica Cruz del Sur.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    }
+  },
+  "medicalServices": [
+    {
+      "intent": "ATENCION_MEDICA_CARDIOLOGIA",
+      "title": "Cardiología",
+      "matchers": [
+        "Cardiología",
+        "cardiólogo",
+        "cardióloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_CIRUGIA",
+      "title": "Cirugía",
+      "matchers": [
+        "Cirugía",
+        "cirujano",
+        "cirujana"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_CLINICA_MEDICA",
+      "title": "Clínica Médica",
+      "matchers": [
+        "Clínica Médica",
+        "médico generalista",
+        "médica generalista",
+        "generalista"
+      ],
+      "generalBody": "La atención de médicos clínicos se realiza por orden de llegada, de lunes a viernes, a partir de las 09 hs por la mañana y a partir de las 15 hs por la tarde, en los Edificios B y C.",
+      "phones": [],
+      "sourceCell": "A8",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_DERMATOLOGIA",
+      "title": "Dermatología",
+      "matchers": [
+        "Dermatología",
+        "dermatólogo",
+        "dermatóloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A9",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_DIABETOLOGIA",
+      "title": "Diabetología",
+      "matchers": [
+        "Diabetología",
+        "diabetólogo",
+        "diabetóloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A10",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_GASTROENTEROLOGIA",
+      "title": "Gastroenterología",
+      "matchers": [
+        "Gastroenterología",
+        "gastroenterólogo",
+        "gastroenteróloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A11",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_GINECOLOGIA_Y_OBSTETRICIA",
+      "title": "Ginecología y Obstetricia",
+      "matchers": [
+        "Ginecología y Obstetricia",
+        "ginecologia",
+        "obstetricia",
+        "ginecólogo",
+        "ginecóloga",
+        "obstetra"
+      ],
+      "generalBody": "Puede comunicarse con el Centro Materno Infantil para turnos enviando un mensaje por WhatsApp al +5492974290998.",
+      "phones": [
+        "+5492974290998"
+      ],
+      "sourceCell": "A12",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_NEFROLOGIA",
+      "title": "Nefrología",
+      "matchers": [
+        "Nefrología",
+        "nefrólogo",
+        "nefróloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A13",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_NEUROLOGIA",
+      "title": "Neurología",
+      "matchers": [
+        "Neurología",
+        "neurólogo",
+        "neuróloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A14",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_NUTRICION",
+      "title": "Nutrición",
+      "matchers": [
+        "Nutrición",
+        "nutricionista"
+      ],
+      "generalBody": "Nuestro equipo de nutricionistas maneja sus agendas de forma personal. Para consultas y agendar turnos, debe comunicarse directamente con los profesionales:",
+      "phones": [],
+      "sourceCell": "A15",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_ONCOLOGIA",
+      "title": "Oncología",
+      "matchers": [
+        "Oncología",
+        "oncólogo",
+        "oncóloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A16",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_PEDIATRIA",
+      "title": "Pediatría",
+      "matchers": [
+        "Pediatría",
+        "pediatra"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_PSICOLOGIA",
+      "title": "Psicología",
+      "matchers": [
+        "Psicología",
+        "psicólogo",
+        "psicóloga"
+      ],
+      "generalBody": "Nuestro equipo de psicólogos maneja sus agendas de forma personal. Para consultas y agendar turnos, debe comunicarse directamente con los profesionales:",
+      "phones": [],
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_PSIQUIATRIA",
+      "title": "Psiquiatría",
+      "matchers": [
+        "Psiquiatría",
+        "psiquiatra"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A19",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_REUMATOLOGIA",
+      "title": "Reumatología",
+      "matchers": [
+        "Reumatología",
+        "reumatólogo",
+        "reumatóloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A20",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+      "title": "Traumatología",
+      "matchers": [
+        "Traumatología",
+        "traumatólogo",
+        "traumatóloga"
+      ],
+      "generalBody": "Nuestro equipo de traumatología y ortopedía atiende con turnos previos, en los sectores B y C. Puede solicitar una consulta de manera presencial o enviando un mensaje por WhatsApp al +5492974017474.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_UROLOGIA",
+      "title": "Urología",
+      "matchers": [
+        "Urología",
+        "urólogo",
+        "uróloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A22",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "ATENCION_MEDICA_INFECTOLOGIA",
+      "title": "Infectología",
+      "matchers": [
+        "Infectología",
+        "infectólogo",
+        "infectóloga"
+      ],
+      "generalBody": "",
+      "phones": [],
+      "sourceCell": "A23",
+      "available": true,
+      "reviewStatus": "reviewed"
+    }
+  ],
+  "imagingStudies": [
+    {
+      "intent": "IMAGENES_ARTERIOGRAFIA",
+      "title": "Arteriografía",
+      "body": "Para agendar un turno debe enviar una fotografía del pedido médico por WhatsApp al +5492975451495. También puede asistir presencialmente al sector de admisión ubicado en Pje. Dra. Elena Ibarra de Zilberberg 735.",
+      "phones": [
+        "+5492975451495"
+      ],
+      "sourceCell": "B6",
+      "matchers": [
+        "Arteriografía"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_BIOPSIAS",
+      "title": "Biopsias",
+      "body": "Para consultas sobre biopsias, puede comunicarse con el servicio de Patología enviando un mensaje por WhatsApp al +5492974082603.",
+      "phones": [
+        "+5492974082603"
+      ],
+      "sourceCell": "B7",
+      "matchers": [
+        "Biopsias"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_DENSITOMETRIA_OSEA",
+      "title": "Densitometría ósea",
+      "body": "Para agendar un turno debe enviar una fotografía del pedido médico por WhatsApp al +5492975413055 de 08 a 19hs. Nuestro equipo se contactará a la brevedad.",
+      "phones": [
+        "+5492975413055"
+      ],
+      "sourceCell": "B8",
+      "matchers": [
+        "Densitometría ósea"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ECOCARDIOGRAMA",
+      "title": "Ecocardiograma",
+      "body": "El estudio se realiza por orden de llegada (sin turno previo) de lunes a viernes de 8 a 20 hs. Por favor, dirigirse al sector de cardiología con DNI, pedido médico y credencial de su obra social. Recomendamos consultar la disponibilidad de los técnicos enviando un mensaje por WhatsApp al +5492974192007.",
+      "phones": [
+        "+5492974192007"
+      ],
+      "sourceCell": "B9",
+      "matchers": [
+        "Ecocardiograma"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ECOGRAFIA_ABDOMINAL",
+      "title": "Ecografía abdominal",
+      "body": "El estudio se realiza por orden de llegada (sin turno previo) de lunes a jueves de 08 a 11hs y de 15 a 18 hs. Viernes únicamente por la tarde. Por favor, asistir al sector C con DNI, pedido médico y credencial de su obra social.\nSe requieren de 4 a 6 horas de ayuno y se recomienda enviar un mensaje por WhatsApp al +5492974017474 por cualquier duda o consulta sobre las indicaciones.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "sourceCell": "B10",
+      "matchers": [
+        "Ecografía abdominal"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ECOGRAFIA_DOPPLER",
+      "title": "Ecografía Doppler",
+      "body": "El estudio se realiza por orden de llegada (sin turno previo) de lunes a jueves de 08 a 11hs y de 15 a 18 hs. Viernes únicamente por la tarde. Por favor, asistir al sector C con DNI, pedido médico y credencial de su obra social.",
+      "phones": [],
+      "sourceCell": "B11",
+      "matchers": [
+        "Ecografía Doppler",
+        "ecodoppler",
+        "ecodopler"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ECOGRAFIA_DOPPLER_CARDIACA",
+      "title": "Ecografía Doppler Cardíaca",
+      "body": "El estudio se realiza por orden de llegada (sin turno previo) de 08 a 20 hrs. Por favor, asistir en ayunas al sector E (9 de Julio 680) con DNI, pedido médico y credencial de su obra social. Recomendamos no utilizar cremas, talco o desodorante en las axilas. \nSi tiene alguna duda o consulta recomendamos contactar al sector enviando un mensaje por WhatsApp al +5492974192007.",
+      "phones": [
+        "+5492974192007"
+      ],
+      "sourceCell": "B12",
+      "matchers": [
+        "Ecografía Doppler Cardíaca"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ECOGRAFIA_GINECOLOGICA_OBSTETRICA_Y_MAMARIA",
+      "title": "Ecografía ginecológica, obstétrica y Mamaría",
+      "body": "Para agendar un turno, puede comunicarse con el Centro Materno Infantil enviando un mensaje de WhatsApp al +5492974290998. Recomendamos adjuntar una fotografía del pedido médico.",
+      "phones": [
+        "+5492974290998"
+      ],
+      "sourceCell": "B13",
+      "matchers": [
+        "Ecografía ginecológica, obstétrica y Mamaría"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ECOGRAFIA_RENAL",
+      "title": "Ecografía renal",
+      "body": "Para agendar un turno, puede enviar un mensaje por WhatsApp al +5492974017474. Recomendamos adjuntar una fotografía del pedido médico.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "sourceCell": "B14",
+      "matchers": [
+        "Ecografía renal"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ELECTROCARDIOGRAMA_ECG",
+      "title": "Electrocardiograma (ECG)",
+      "body": "El estudio se realiza por orden de llegada (sin turno previo) de lunes a viernes de 8 a 15 hs. Por favor, dirigirse al sector de cardiología con DNI, pedido médico y credencial de su obra social. Recomendamos consultar la disponibilidad de los técnicos enviando un mensaje por WhatsApp al +5492974192007.",
+      "phones": [
+        "+5492974192007"
+      ],
+      "sourceCell": "B15",
+      "matchers": [
+        "Electrocardiograma (ECG)",
+        "electrocardiograma",
+        "ecg"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ENDOSCOPIA_ALTA_Y_BAJA_COLONOSCOPIA",
+      "title": "Endoscopia alta y baja (colonoscopia)",
+      "body": "Para agendar un turno, debe asistir presencialmente al sector de admisión (Pje. Dra. Elena Ibarra de Zilberberg 735) o enviar una fotografía del pedido médico por WhatsApp al +5492976215682.",
+      "phones": [
+        "+5492976215682"
+      ],
+      "sourceCell": "B16",
+      "matchers": [
+        "Endoscopia alta y baja (colonoscopia)"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ERGOMETRIA",
+      "title": "Ergometría",
+      "body": "Para solicitar un turno puede enviar un mensaje de WhatsApp al +5492974192007. El estudio se realiza de lunes a viernes, de 9 a 12 hs o los días lunes, miércoles y viernes, de 15 a 17 hs.",
+      "phones": [
+        "+5492974192007"
+      ],
+      "sourceCell": "B17",
+      "matchers": [
+        "Ergometría"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_ESPINOGRAMA",
+      "title": "Espinograma",
+      "body": "El estudio se realiza por orden de llegada (sin turno previo) en pacientes de hasta 50 kg de peso. Puede dirigirse al sector A ubicado en Pasaje Tamarisco 735 de lunes a viernes de 08 a 20 hs  o los días sábados de 08 a 12 hs. Por favor asistir con DNI, pedido médico y credencial de su obra social.",
+      "phones": [],
+      "sourceCell": "B18",
+      "matchers": [
+        "Espinograma"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_HEMODINAMIA",
+      "title": "Hemodinamia",
+      "body": "Para agendar un turno, puede enviar un mensaje por WhatsApp al +5492974145952. Recomendamos adjuntar una fotografía del pedido médico.",
+      "phones": [
+        "+5492974145952"
+      ],
+      "sourceCell": "B19",
+      "matchers": [
+        "Hemodinamia"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_HOLTER",
+      "title": "Holter",
+      "body": "Para agendar un turno, puede enviar un mensaje por WhatsApp al +5492974192007. Recomendamos adjuntar una fotografía del pedido médico.",
+      "phones": [
+        "+5492974192007"
+      ],
+      "sourceCell": "B20",
+      "matchers": [
+        "Holter"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_MAMOGRAFIA",
+      "title": "Mamografía",
+      "body": "Para agendar un turno debe enviar una fotografía del pedido médico por WhatsApp al +5492975413055 de 08 a 19hs. Nuestro equipo se contactará a la brevedad.",
+      "phones": [
+        "+5492975413055"
+      ],
+      "sourceCell": "B21",
+      "matchers": [
+        "Mamografía"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_RADIOGRAFIA",
+      "title": "Radiografía",
+      "body": "El estudio se realiza por orden de llegada (sin turno previo) de lunes a viernes a partir de 08 hasta las 20 hs, también los Sábados de 08 a 12 hs. Por favor, asistir al sector A ubicado en Pasaje Tamarisco 735 con DNI, pedido médico y credencial de su obra social.",
+      "phones": [],
+      "sourceCell": "B22",
+      "matchers": [
+        "Radiografía",
+        "radiografia",
+        "rx",
+        "rayos x"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_RESONANCIA_MAGNETICA",
+      "title": "Resonancia Magnética",
+      "body": "Si tu médico indicó una resonancia magnética, envíanos por WhatsApp al +5492976211361 fotografías de la orden médica, DNI (frente y dorso) del paciente y la credencial de la obra social. \n\nNuestro equipo se contactará de lunes a viernes de 07 a 20 hs para agendar tu turno.\n\nTambién es necesario el envío de la siguiente información:\nPeso aproximado:\nAltura aproximada:\nEdad:\n¿Es claustrofóbico/a? (Sí / No)\n¿Posee stent, marcapasos, válvulas cardíacas, brackets, prótesis u otro implante?\n(Si es así, indicar cuál).\n¿Le realizaron alguna cirugía?\n(Si la respuesta es sí, indicar cuál y cuándo).",
+      "phones": [
+        "+5492976211361"
+      ],
+      "sourceCell": "B23",
+      "matchers": [
+        "Resonancia Magnética",
+        "resonancia"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "intent": "IMAGENES_TOMOGRAFIA_COMPUTADA",
+      "title": "Tomografía computada",
+      "body": "El estudio se realiza por orden de llegada (sin turno previo) de lunes a viernes de 8 a 20 hs y sábados por la mañana de 08 a 12 hs. Puede dirigirse al sector de cardiología ubicado en 9 de Julio 680, por favor, asistir con DNI, pedido médico y credencial de su obra social.\n\nLos estudios con contraste requieren preparación previa por lo que recomendamos enviar el pedido médico por WhatsApp al +5492976258402 para recibir las indicaciones correspondientes y en caso de ser necesario, un turno.",
+      "phones": [
+        "+5492976258402"
+      ],
+      "sourceCell": "B24",
+      "matchers": [
+        "Tomografía computada",
+        "tomografia",
+        "tac"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    }
+  ],
+  "professionalResponseGroups": [
+    {
+      "id": "cardiologia_segovia",
+      "specialty": "Cardiología",
+      "subservices": [],
+      "body": "El Dr. Segovia Néstor atiende por orden de llegada (sin turno previo) de lunes a jueves desde las 8 hasta las 16 hs. Puede dirigirse al sector E, sobre calle 9 de Julio.",
+      "phones": [],
+      "order": 1,
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cardiologia_kurta",
+      "specialty": "Cardiología",
+      "subservices": [],
+      "body": "El Dr. Kurta Leonardo atiende por orden de llegada (sin turno previo) los días lunes, miércoles y viernes de 9 a 12 hs y por la tarde de 15 a 17 hs. Los días martes y jueves únicamente atiende por la mañana. Puede dirigirse al sector E, sobre calle 9 de Julio.",
+      "phones": [],
+      "order": 2,
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cardiologia_bossio",
+      "specialty": "Cardiología",
+      "subservices": [],
+      "body": "Para realizar una consulta con el Dr. Bossio Ariel es necesario agendar previamente un turno. Puede solicitar el suyo presencialmente a partir de las 08 hs en el sector E, sobre calle 9 de julio o puede comunicarse por WhatsApp al +5492974192007. El Dr. se encuentra disponible de martes a viernes de 10 a 13 hs y de 14 a 18 hs.",
+      "phones": [
+        "+5492974192007"
+      ],
+      "order": 3,
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cardiologia_moguilner",
+      "specialty": "Cardiología",
+      "subservices": [
+        "Cardiología intervencionista"
+      ],
+      "body": "El Dr. Alejandro Moguilner es nuestro cardiólogo intervencionista, puede comunicarse por WhatsApp al +5492974192007 para solicitar un turno para el estudio solicitado.",
+      "phones": [
+        "+5492974192007"
+      ],
+      "order": 4,
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cirugia_del_carpio",
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía general"
+      ],
+      "body": "Dr. del Carpio Ysmael atiende por orden de llegada, en el sector C ubicado en Pje. Dra. Elena Ibarra de Zilberberg. Se encuentra de lunes a jueves de 08 a 11hs y de 15 a 18 hs. Los días viernes únicamente por la tarde. Para consultar por la disponibilidad de atención puede enviar un mensaje por WhatsApp al +5492974017474.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "order": 1,
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cirugia_cardoso_atilio",
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía general"
+      ],
+      "body": "El Dr. Cardoso Atilio atiende los días martes, miércoles y jueves con turno previo. Puede comunicarse por WhatsApp al +5492974352470 para solicitar una consulta.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 2,
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cirugia_heredia",
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía general"
+      ],
+      "body": "Para turnos con el Dr. Luciano Heredia puede comunicarse por WhatsApp al +5492974352470.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 3,
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cirugia_del_bueno",
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía general"
+      ],
+      "body": "Para solicitar una consulta con la Dra. Luján del Bueno especialista en hígado, páncreas y vías biliares puede comunicarse por WhatsApp al +5492974017474.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "order": 4,
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cirugia_cardoso_martin",
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía maxilofacial"
+      ],
+      "body": "Dr. Cardoso Martin especialista en cirugía y traumatología bucomaxilofacial atiende con turno previo todos los miércoles desde las 9 hs, para agendar el mismo puede comunicarse por WhatsApp al +5492974352470.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 5,
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cirugia_francalancia",
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía maxilofacial"
+      ],
+      "body": "Dr. Francalancia Gustavo especialista en cirugía maxilofacial atiende con turno previo, para agendar el mismo puede comunicarse por WhatsApp al +5492974290998.",
+      "phones": [
+        "+5492974290998"
+      ],
+      "order": 6,
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cirugia_soulergues",
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugías estéticas y plásticas",
+        "Cirugía vascular"
+      ],
+      "body": "El Dr. Soulergues Federico, especialista en cirugía vascular, nos visita próximamente. Para solicitar una consulta puede enviar un mensaje por WhatsApp al número +5492974017474.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "order": 7,
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "cirugia_goldenberg",
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugías estéticas y plásticas"
+      ],
+      "body": "Para solicitar una consulta con el Dr. Goldenberg Gustavo, especialista en cirugía plástica puede comunicarse por WhatsApp al +5492974352470.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 8,
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "dermatologia_romero",
+      "specialty": "Dermatología",
+      "subservices": [],
+      "body": "El Dr. Romero atiende por orden de llegada los días miércoles, jueves y viernes de 15 a 17hs. La consulta se realizará de manera particular, ya que por el momento no atiende con ninguna obra social. Debe dirigirse a consultorios externos.",
+      "phones": [],
+      "order": 1,
+      "sourceCell": "A9",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "diabetologia_sedan",
+      "specialty": "Diabetología",
+      "subservices": [],
+      "body": "La Dra. Sedán atiende en el Sector C de lunes a viernes por la mañana de 10 a 12hs y por la tarde de 15 a 18hs. El orden de atención se empieza a anotar 1h antes de comenzar cada jornada, no es necesario agendar un turno. Recomendamos consultar la disponibilidad de la doctora por WhatsApp al número +5492974017474.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "order": 1,
+      "sourceCell": "A10",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "diabetologia_carrizo",
+      "specialty": "Diabetología",
+      "subservices": [],
+      "body": "La Dra. Carrizo atiende en el Sector B, de lunes a viernes (con excepción de los días Martes) a partir de las 08 hs hasta las 15hs aproximadamente. No es necesario agendar un turno, sin embargo, recomendamos consultar la disponibilidad de la doctora por WhatsApp al número +5492974352470.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 2,
+      "sourceCell": "A10",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "gastroenterologia_orbuj",
+      "specialty": "Gastroenterología",
+      "subservices": [],
+      "body": "A comienzo de cada mes se puede agendar turnos con la Dra. Orbuj Florencia de forma presencial en Admisión, sector A.\nPróximamente se incorporará seguimiento virtual para quienes ya cuenten con un diagnóstico, facilitando el control de su tratamiento sin necesidad de trasladarse en cada consulta.",
+      "phones": [],
+      "order": 1,
+      "sourceCell": "A11",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "ginecologia_jotale",
+      "specialty": "Ginecología y Obstetricia",
+      "subservices": [],
+      "body": "Si se encuentra afiliada a la obra social de la provincia, Caja de Servicios Sociales, es necesario solicitar un turno con el Dr. Jotale José.",
+      "phones": [],
+      "order": 1,
+      "sourceCell": "A12",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "ginecologia_obregon",
+      "specialty": "Ginecología y Obstetricia",
+      "subservices": [],
+      "body": "La Dra. Obregón Verónica no realiza consultorio en Clínica Cruz del Sur, solo realiza intervenciones. Puede agendar su estudio o procedimiento enviando el pedido médico por WhatsApp.",
+      "phones": [],
+      "order": 2,
+      "sourceCell": "A12",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "ginecologia_espeche",
+      "specialty": "Ginecología y Obstetricia",
+      "subservices": [
+        "Mastología"
+      ],
+      "body": "El Dr. Espeche Matías es mastólogo, médico especialista en el cuidado de la salud de las mamas, por lo que recomendamos solicitar un turno por cualquier inquietud al respecto.",
+      "phones": [],
+      "order": 3,
+      "sourceCell": "A12",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "nefrologia_grbavac",
+      "specialty": "Nefrología",
+      "subservices": [],
+      "body": "El Dr. Drago Grbavac atiende con turno previo los días lunes y miércoles, a partir de las 14 hs en el Sector B. Para solicitar una consulta puede enviar un mensaje por WhatsApp al +5492974352470.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 1,
+      "sourceCell": "A13",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "neurologia_paolini",
+      "specialty": "Neurología",
+      "subservices": [],
+      "body": "Para agendar un turno con el Dr. Paolini es necesario enviar un mensaje por WhatsApp al +5492974352470.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 1,
+      "sourceCell": "A14",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "neurologia_albino",
+      "specialty": "Neurología",
+      "subservices": [
+        "Neurología infantil",
+        "Epilepsia"
+      ],
+      "body": "Dr. Edgar Albiño especialista en neurología infantil y epilepsia atiende en el Centro Materno Infantil ubicado en 9 de Julio 468. Para solicitar un turno con el profesional puede comunicarse por mensaje de WhatsApp al +5492974290998.",
+      "phones": [
+        "+5492974290998"
+      ],
+      "order": 2,
+      "sourceCell": "A14",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "neurologia_alvarez",
+      "specialty": "Neurología",
+      "subservices": [
+        "Neurocirugía"
+      ],
+      "body": "Para realizar una consulta con el Dr. Álvarez Czernik neurocirujano, es necesario agendar previamente un turno, presencialmente en el sector B o enviando un mensaje por WhatsApp al +5492974352470.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 3,
+      "sourceCell": "A14",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "nutricion_jara",
+      "specialty": "Nutrición",
+      "subservices": [],
+      "body": "Lic. Jara Cristina +5492975929319",
+      "phones": [
+        "+5492975929319"
+      ],
+      "order": 1,
+      "sourceCell": "A15",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "nutricion_santana",
+      "specialty": "Nutrición",
+      "subservices": [],
+      "body": "Lic. Santana Agostina +5492975144429",
+      "phones": [
+        "+5492975144429"
+      ],
+      "order": 2,
+      "sourceCell": "A15",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "oncologia_bosso",
+      "specialty": "Oncología",
+      "subservices": [],
+      "body": "Para comunicarse con la Dra. Bosso Griselda por favor enviar un mensaje al +5492974017474. Lo antes posible nuestro equipo le indicará los pasos a seguir para agendar un turno.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "order": 1,
+      "sourceCell": "A16",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "pediatria_jaime",
+      "specialty": "Pediatría",
+      "subservices": [],
+      "body": "Contamos con atención por orden de llegada, el Dr. Jaime Silvio se encuentra de lunes a viernes a partir de las 15 y hasta las 18 hs en el Centro Materno Infantil (9 de Julio 468).",
+      "phones": [],
+      "order": 1,
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "pediatria_persani",
+      "specialty": "Pediatría",
+      "subservices": [
+        "Cirugía pediátrica"
+      ],
+      "body": "Para solicitar un turno con la Dra. Persani Betina, especialista en cirugía pediátrica, puede hacerlo enviando un mensaje por WhatsApp al +5492974290998.",
+      "phones": [
+        "+5492974290998"
+      ],
+      "order": 2,
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "pediatria_serrano",
+      "specialty": "Pediatría",
+      "subservices": [],
+      "body": "Para solicitar un turno con el Dr. Serrano, puede hacerlo enviando un mensaje por WhatsApp al +5492974290998.",
+      "phones": [
+        "+5492974290998"
+      ],
+      "order": 3,
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "pediatria_ceballos",
+      "specialty": "Pediatría",
+      "subservices": [],
+      "body": "Para solicitar un turno con la Dra. Ceballos, puede hacerlo enviando un mensaje por WhatsApp al +5492974290998.",
+      "phones": [
+        "+5492974290998"
+      ],
+      "order": 4,
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "psicologia_aguilera",
+      "specialty": "Psicología",
+      "subservices": [],
+      "body": "Lic. Aguilera +5492974351912",
+      "phones": [
+        "+5492974351912"
+      ],
+      "order": 1,
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "psicologia_lacraouts",
+      "specialty": "Psicología",
+      "subservices": [],
+      "body": "Lic. Lacraouts +5492974016021",
+      "phones": [
+        "+5492974016021"
+      ],
+      "order": 2,
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "psicologia_mercado",
+      "specialty": "Psicología",
+      "subservices": [],
+      "body": "Lic. Mercado +5492974320909",
+      "phones": [
+        "+5492974320909"
+      ],
+      "order": 3,
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "psicologia_poyato",
+      "specialty": "Psicología",
+      "subservices": [],
+      "body": "Lic. Poyato +5492975442719",
+      "phones": [
+        "+5492975442719"
+      ],
+      "order": 4,
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "psicologia_rodriguez",
+      "specialty": "Psicología",
+      "subservices": [],
+      "body": "Lic. Rodriguez +5492975816386",
+      "phones": [
+        "+5492975816386"
+      ],
+      "order": 5,
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "psiquiatria_monzon",
+      "specialty": "Psiquiatría",
+      "subservices": [],
+      "body": "Nuestro psiquiatra es el Dr. Monzón y atiende únicamente de forma particular. Para consultas sobre turnos y condiciones de pago comunicarse por WhatsApp al +5492974290998.",
+      "phones": [
+        "+5492974290998"
+      ],
+      "order": 1,
+      "sourceCell": "A19",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "reumatologia_herrera",
+      "specialty": "Reumatología",
+      "subservices": [],
+      "body": "La Dra. Laura Herrera realiza consultas con turnos previos en el sector C. Para agendar la atención recomendamos enviar un mensaje por WhatsApp al +5492974017474.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "order": 1,
+      "sourceCell": "A20",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "traumatologia_longo",
+      "specialty": "Traumatología",
+      "subservices": [],
+      "body": "Dr. Longo José - Sector C",
+      "phones": [],
+      "order": 1,
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": true
+    },
+    {
+      "id": "traumatologia_castro",
+      "specialty": "Traumatología",
+      "subservices": [],
+      "body": "Dr. Castro Germán - Sector C",
+      "phones": [],
+      "order": 2,
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": true
+    },
+    {
+      "id": "traumatologia_vargas",
+      "specialty": "Traumatología",
+      "subservices": [],
+      "body": "Dr. Vargas Mario - Sector B",
+      "phones": [],
+      "order": 3,
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": true
+    },
+    {
+      "id": "traumatologia_nunes",
+      "specialty": "Traumatología",
+      "subservices": [],
+      "body": "Dr. Núñes Gaspar - Sector B",
+      "phones": [],
+      "order": 4,
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": true
+    },
+    {
+      "id": "traumatologia_juarez",
+      "specialty": "Traumatología",
+      "subservices": [],
+      "body": "Dr. Juárez Marcelo - Sector B",
+      "phones": [],
+      "order": 5,
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": true
+    },
+    {
+      "id": "traumatologia_catullo",
+      "specialty": "Traumatología",
+      "subservices": [],
+      "body": "Les recordamos que el Dr. Catullo Marcelo no realiza consultorio en Clínica Cruz del Sur, solo realiza intervenciones. Puede agendar su estudio o procedimiento enviando el pedido médico por WhatsApp al +5492974352470.",
+      "phones": [
+        "+5492974352470"
+      ],
+      "order": 2,
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "urologia_dennes",
+      "specialty": "Urología",
+      "subservices": [],
+      "body": "El Dr. Dennes Enrique nos visita una vez al mes, para agendar una consulta puede enviar un mensaje por WhatsApp al +5492974017474.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "order": 1,
+      "sourceCell": "A22",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    },
+    {
+      "id": "infectologia_wekselman",
+      "specialty": "Infectología",
+      "subservices": [],
+      "body": "La Dra. Wekselman realiza consultas los días viernes con turnos previos. Para solicitar un turno puede enviar un mensaje por WhatsApp al +5492974017474.",
+      "phones": [
+        "+5492974017474"
+      ],
+      "order": 1,
+      "sourceCell": "A23",
+      "available": true,
+      "reviewStatus": "reviewed",
+      "includeServiceGeneral": false
+    }
+  ],
+  "professionals": [
+    {
+      "name": "Segovia Néstor",
+      "aliases": [
+        "Segovia Néstor",
+        "Néstor Segovia",
+        "Segovia"
+      ],
+      "specialty": "Cardiología",
+      "subservices": [],
+      "responseGroupId": "cardiologia_segovia",
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Kurta Leonardo",
+      "aliases": [
+        "Kurta Leonardo",
+        "Leonardo Kurta",
+        "Kurta"
+      ],
+      "specialty": "Cardiología",
+      "subservices": [],
+      "responseGroupId": "cardiologia_kurta",
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Bossio Ariel",
+      "aliases": [
+        "Bossio Ariel",
+        "Ariel Bossio",
+        "Bossio"
+      ],
+      "specialty": "Cardiología",
+      "subservices": [],
+      "responseGroupId": "cardiologia_bossio",
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Moguilner Alejandro",
+      "aliases": [
+        "Moguilner Alejandro",
+        "Alejandro Moguilner",
+        "Moguilner"
+      ],
+      "specialty": "Cardiología",
+      "subservices": [
+        "Cardiología intervencionista"
+      ],
+      "responseGroupId": "cardiologia_moguilner",
+      "sourceCell": "A6",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Del Carpio Ysmael",
+      "aliases": [
+        "Del Carpio Ysmael",
+        "Ysmael Del Carpio",
+        "Del Carpio Ismael",
+        "Ismael Del Carpio",
+        "Del Carpio",
+        "Carpio"
+      ],
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía general"
+      ],
+      "responseGroupId": "cirugia_del_carpio",
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Cardoso Atilio",
+      "aliases": [
+        "Cardoso Atilio",
+        "Atilio Cardoso",
+        "Cardozo Atilio",
+        "Atilio Cardozo",
+        "Cardoso",
+        "Cardozo"
+      ],
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía general"
+      ],
+      "responseGroupId": "cirugia_cardoso_atilio",
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Heredia Luciano",
+      "aliases": [
+        "Heredia Luciano",
+        "Luciano Heredia",
+        "Heredia"
+      ],
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía general"
+      ],
+      "responseGroupId": "cirugia_heredia",
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Del Bueno Luján",
+      "aliases": [
+        "Del Bueno Luján",
+        "Del Bueno Lujan",
+        "Luján Del Bueno",
+        "Lujan Del Bueno",
+        "Del Bueno"
+      ],
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía general"
+      ],
+      "responseGroupId": "cirugia_del_bueno",
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Cardoso Martin",
+      "aliases": [
+        "Cardoso Martin",
+        "Martin Cardoso",
+        "Martín Cardoso",
+        "Cardozo Martin",
+        "Martin Cardozo",
+        "Martín Cardozo",
+        "Cardoso",
+        "Cardozo"
+      ],
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía maxilofacial"
+      ],
+      "responseGroupId": "cirugia_cardoso_martin",
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Francalancia Gustavo",
+      "aliases": [
+        "Francalancia Gustavo",
+        "Gustavo Francalancia",
+        "Francalancia"
+      ],
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugía maxilofacial"
+      ],
+      "responseGroupId": "cirugia_francalancia",
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Soulergues Federico",
+      "aliases": [
+        "Soulergues Federico",
+        "Federico Soulergues",
+        "Soulerger Federico",
+        "Federico Soulerger",
+        "Soulergues",
+        "Soulerger"
+      ],
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugías estéticas y plásticas",
+        "Cirugía vascular"
+      ],
+      "responseGroupId": "cirugia_soulergues",
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Goldenberg Gustavo",
+      "aliases": [
+        "Goldenberg Gustavo",
+        "Gustavo Goldenberg",
+        "Goldenberg"
+      ],
+      "specialty": "Cirugía",
+      "subservices": [
+        "Cirugías estéticas y plásticas"
+      ],
+      "responseGroupId": "cirugia_goldenberg",
+      "sourceCell": "A7",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Romero Claudia",
+      "aliases": [
+        "Romero Claudia",
+        "Claudia Romero",
+        "Romero"
+      ],
+      "specialty": "Dermatología",
+      "subservices": [],
+      "responseGroupId": "dermatologia_romero",
+      "sourceCell": "A9",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Sedán Verónica",
+      "aliases": [
+        "Sedán Verónica",
+        "Sedan Veronica",
+        "Verónica Sedán",
+        "Veronica Sedan",
+        "Sedán",
+        "Sedan"
+      ],
+      "specialty": "Diabetología",
+      "subservices": [],
+      "responseGroupId": "diabetologia_sedan",
+      "sourceCell": "A10",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Carrizo Mercedes",
+      "aliases": [
+        "Carrizo Mercedes",
+        "Mercedes Carrizo",
+        "Carrizo"
+      ],
+      "specialty": "Diabetología",
+      "subservices": [],
+      "responseGroupId": "diabetologia_carrizo",
+      "sourceCell": "A10",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Orbuj Florencia",
+      "aliases": [
+        "Orbuj Florencia",
+        "Florencia Orbuj",
+        "Orbuj"
+      ],
+      "specialty": "Gastroenterología",
+      "subservices": [],
+      "responseGroupId": "gastroenterologia_orbuj",
+      "sourceCell": "A11",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Jotale José",
+      "aliases": [
+        "Jotale José",
+        "Jotale Jose",
+        "José Jotale",
+        "Jose Jotale",
+        "Jotale"
+      ],
+      "specialty": "Ginecología y Obstetricia",
+      "subservices": [],
+      "responseGroupId": "ginecologia_jotale",
+      "sourceCell": "A12",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Obregón Verónica",
+      "aliases": [
+        "Obregón Verónica",
+        "Obregon Veronica",
+        "Verónica Obregón",
+        "Veronica Obregon",
+        "Obregón",
+        "Obregon"
+      ],
+      "specialty": "Ginecología y Obstetricia",
+      "subservices": [],
+      "responseGroupId": "ginecologia_obregon",
+      "sourceCell": "A12",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Espeche Matías",
+      "aliases": [
+        "Espeche Matías",
+        "Espeche Matias",
+        "Matías Espeche",
+        "Matias Espeche",
+        "Espeche"
+      ],
+      "specialty": "Ginecología y Obstetricia",
+      "subservices": [
+        "Mastología"
+      ],
+      "responseGroupId": "ginecologia_espeche",
+      "sourceCell": "A12",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Drago Grbavac",
+      "aliases": [
+        "Drago Grbavac",
+        "Grbavac Drago",
+        "Grbavac"
+      ],
+      "specialty": "Nefrología",
+      "subservices": [],
+      "responseGroupId": "nefrologia_grbavac",
+      "sourceCell": "A13",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Paolini Roberto",
+      "aliases": [
+        "Paolini Roberto",
+        "Roberto Paolini",
+        "Paolini"
+      ],
+      "specialty": "Neurología",
+      "subservices": [],
+      "responseGroupId": "neurologia_paolini",
+      "sourceCell": "A14",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Edgar Albiño",
+      "aliases": [
+        "Edgar Albiño",
+        "Albiño Edgar",
+        "Vinicio Albiño",
+        "Albiño Vinicio",
+        "Edgar Albino",
+        "Albino Edgar",
+        "Vinicio Albino",
+        "Albino Vinicio",
+        "Albiño",
+        "Albino"
+      ],
+      "specialty": "Neurología",
+      "subservices": [
+        "Neurología infantil",
+        "Epilepsia"
+      ],
+      "responseGroupId": "neurologia_albino",
+      "sourceCell": "A14",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Álvarez Czernik Ángel",
+      "aliases": [
+        "Álvarez Czernik Ángel",
+        "Alvarez Czernik Angel",
+        "Ángel Álvarez Czernik",
+        "Angel Alvarez Czernik",
+        "Álvarez Czernik",
+        "Alvarez Czernik"
+      ],
+      "specialty": "Neurología",
+      "subservices": [
+        "Neurocirugía"
+      ],
+      "responseGroupId": "neurologia_alvarez",
+      "sourceCell": "A14",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Jara Cristina",
+      "aliases": [
+        "Jara Cristina",
+        "Cristina Jara",
+        "Jara"
+      ],
+      "specialty": "Nutrición",
+      "subservices": [],
+      "responseGroupId": "nutricion_jara",
+      "sourceCell": "A15",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Santana Agostina",
+      "aliases": [
+        "Santana Agostina",
+        "Agostina Santana",
+        "Santana"
+      ],
+      "specialty": "Nutrición",
+      "subservices": [],
+      "responseGroupId": "nutricion_santana",
+      "sourceCell": "A15",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Bosso Griselda",
+      "aliases": [
+        "Bosso Griselda",
+        "Griselda Bosso",
+        "Bosso"
+      ],
+      "specialty": "Oncología",
+      "subservices": [],
+      "responseGroupId": "oncologia_bosso",
+      "sourceCell": "A16",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Jaime Silvio",
+      "aliases": [
+        "Jaime Silvio",
+        "Silvio Jaime",
+        "Jaime"
+      ],
+      "specialty": "Pediatría",
+      "subservices": [],
+      "responseGroupId": "pediatria_jaime",
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Persani Betina",
+      "aliases": [
+        "Persani Betina",
+        "Betina Persani",
+        "Persani"
+      ],
+      "specialty": "Pediatría",
+      "subservices": [
+        "Cirugía pediátrica"
+      ],
+      "responseGroupId": "pediatria_persani",
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Serrano",
+      "aliases": [
+        "Serrano"
+      ],
+      "specialty": "Pediatría",
+      "subservices": [],
+      "responseGroupId": "pediatria_serrano",
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Ceballos",
+      "aliases": [
+        "Ceballos",
+        "Zeballos"
+      ],
+      "specialty": "Pediatría",
+      "subservices": [],
+      "responseGroupId": "pediatria_ceballos",
+      "sourceCell": "A17",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Aguilera Milena",
+      "aliases": [
+        "Aguilera Milena",
+        "Milena Aguilera",
+        "Aguilera"
+      ],
+      "specialty": "Psicología",
+      "subservices": [],
+      "responseGroupId": "psicologia_aguilera",
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Lacraouts Lucas",
+      "aliases": [
+        "Lacraouts Lucas",
+        "Lacrouts Lucas",
+        "Lucas Lacraouts",
+        "Lucas Lacrouts",
+        "Lacraouts",
+        "Lacrouts"
+      ],
+      "specialty": "Psicología",
+      "subservices": [],
+      "responseGroupId": "psicologia_lacraouts",
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Mercado José",
+      "aliases": [
+        "Mercado José",
+        "Mercado Jose",
+        "José Mercado",
+        "Jose Mercado",
+        "Mercado"
+      ],
+      "specialty": "Psicología",
+      "subservices": [],
+      "responseGroupId": "psicologia_mercado",
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Poyato Andrés",
+      "aliases": [
+        "Poyato Andrés",
+        "Poyato Andres",
+        "Andrés Poyato",
+        "Andres Poyato",
+        "Poyato"
+      ],
+      "specialty": "Psicología",
+      "subservices": [],
+      "responseGroupId": "psicologia_poyato",
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Rodríguez",
+      "aliases": [
+        "Rodríguez",
+        "Rodriguez"
+      ],
+      "specialty": "Psicología",
+      "subservices": [],
+      "responseGroupId": "psicologia_rodriguez",
+      "sourceCell": "A18",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Monzón",
+      "aliases": [
+        "Monzón",
+        "Monzon"
+      ],
+      "specialty": "Psiquiatría",
+      "subservices": [],
+      "responseGroupId": "psiquiatria_monzon",
+      "sourceCell": "A19",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Herrera Laura",
+      "aliases": [
+        "Herrera Laura",
+        "Laura Herrera",
+        "Herrera"
+      ],
+      "specialty": "Reumatología",
+      "subservices": [],
+      "responseGroupId": "reumatologia_herrera",
+      "sourceCell": "A20",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Longo José Luis",
+      "aliases": [
+        "Longo José Luis",
+        "Longo Jose Luis",
+        "José Luis Longo",
+        "Jose Luis Longo",
+        "Longo José",
+        "Longo Jose",
+        "Longo"
+      ],
+      "specialty": "Traumatología",
+      "subservices": [],
+      "responseGroupId": "traumatologia_longo",
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Castro Germán",
+      "aliases": [
+        "Castro Germán",
+        "Castro German",
+        "Germán Castro",
+        "German Castro",
+        "Castro"
+      ],
+      "specialty": "Traumatología",
+      "subservices": [],
+      "responseGroupId": "traumatologia_castro",
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Vargas Mario",
+      "aliases": [
+        "Vargas Mario",
+        "Mario Vargas",
+        "Vargas"
+      ],
+      "specialty": "Traumatología",
+      "subservices": [],
+      "responseGroupId": "traumatologia_vargas",
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Núñes Gaspar",
+      "aliases": [
+        "Núñes Gaspar",
+        "Nunes Gaspar",
+        "Núñez Gaspar",
+        "Nuñez Gaspar",
+        "Nunez Gaspar",
+        "Gaspar Núñes",
+        "Gaspar Nunes",
+        "Gaspar Núñez",
+        "Gaspar Nuñez",
+        "Gaspar Nunez",
+        "Núñes",
+        "Nunes",
+        "Núñez",
+        "Nuñez",
+        "Nunez"
+      ],
+      "specialty": "Traumatología",
+      "subservices": [],
+      "responseGroupId": "traumatologia_nunes",
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Juárez Marcelo",
+      "aliases": [
+        "Juárez Marcelo",
+        "Juarez Marcelo",
+        "Marcelo Juárez",
+        "Marcelo Juarez",
+        "Juárez",
+        "Juarez"
+      ],
+      "specialty": "Traumatología",
+      "subservices": [],
+      "responseGroupId": "traumatologia_juarez",
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Catullo Marcelo",
+      "aliases": [
+        "Catullo Marcelo",
+        "Marcelo Catullo",
+        "Catullo"
+      ],
+      "specialty": "Traumatología",
+      "subservices": [],
+      "responseGroupId": "traumatologia_catullo",
+      "sourceCell": "A21",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Dennes Enrique",
+      "aliases": [
+        "Dennes Enrique",
+        "Enrique Dennes",
+        "Dennes"
+      ],
+      "specialty": "Urología",
+      "subservices": [],
+      "responseGroupId": "urologia_dennes",
+      "sourceCell": "A22",
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "name": "Wekselman Silvia",
+      "aliases": [
+        "Wekselman Silvia",
+        "Silvia Wekselman",
+        "Wekselman"
+      ],
+      "specialty": "Infectología",
+      "subservices": [],
+      "responseGroupId": "infectologia_wekselman",
+      "sourceCell": "A23",
+      "available": true,
+      "reviewStatus": "reviewed"
+    }
+  ],
+  "insurancePlans": [
+    {
+      "id": "avalian",
+      "name": "AVALIAN",
+      "aliases": [
+        "AVALIAN"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "caja_de_servicios_sociales_santa_cruz",
+      "name": "CAJA DE SERVICIOS SOCIALES SANTA CRUZ",
+      "aliases": [
+        "CAJA DE SERVICIOS SOCIALES SANTA CRUZ",
+        "CSS",
+        "Caja de Servicios Sociales",
+        "Caja de Servicios Sociales de Santa Cruz"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "galeno",
+      "name": "GALENO",
+      "aliases": [
+        "GALENO"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "iosfa",
+      "name": "IOSFA",
+      "aliases": [
+        "IOSFA"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "medicus",
+      "name": "MEDICUS",
+      "aliases": [
+        "MEDICUS"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "medife",
+      "name": "MEDIFE",
+      "aliases": [
+        "MEDIFE"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "osde",
+      "name": "OSDE",
+      "aliases": [
+        "OSDE"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "osdop",
+      "name": "OSDOP",
+      "aliases": [
+        "OSDOP"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "ospatrones",
+      "name": "OSPATRONES",
+      "aliases": [
+        "OSPATRONES"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "ospena",
+      "name": "OSPENA",
+      "aliases": [
+        "OSPENA"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "ospia",
+      "name": "OSPIA",
+      "aliases": [
+        "OSPIA"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "ospm",
+      "name": "OSPM",
+      "aliases": [
+        "OSPM"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "sancor",
+      "name": "SANCOR",
+      "aliases": [
+        "SANCOR",
+        "Sancor Salud"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "swiss_medical",
+      "name": "SWISS MEDICAL",
+      "aliases": [
+        "SWISS MEDICAL",
+        "Swiss"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "visitar",
+      "name": "VISITAR",
+      "aliases": [
+        "VISITAR"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    {
+      "id": "pami",
+      "name": "PAMI",
+      "aliases": [
+        "PAMI"
+      ],
+      "available": true,
+      "reviewStatus": "reviewed"
+    }
+  ]
+}

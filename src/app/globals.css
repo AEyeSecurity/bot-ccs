@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3f6f4;
+  --foreground: #17231f;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Aptos", "Segoe UI Variable", "Trebuchet MS", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Aptos", "Segoe UI Variable", "Trebuchet MS", sans-serif;
+  letter-spacing: 0;
+}
+
+.dashboard-shell {
+  background:
+    radial-gradient(circle at 72% -12%, rgb(190 230 208 / 55%), transparent 31rem),
+    linear-gradient(135deg, #f7faf8 0%, #eff4f1 100%);
+}
+
+.conversation-canvas {
+  background-color: #eff4f1;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgb(23 107 90 / 9%) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+.login-shell {
+  background:
+    radial-gradient(circle at 20% 15%, rgb(129 203 170 / 42%), transparent 30rem),
+    radial-gradient(circle at 86% 80%, rgb(246 201 128 / 35%), transparent 26rem),
+    linear-gradient(135deg, #eff7f3 0%, #f8f5ed 100%);
+}
+
+.catalog-shell {
+  background:
+    radial-gradient(circle at 10% 8%, rgb(183 222 201 / 45%), transparent 30rem),
+    radial-gradient(circle at 92% 16%, rgb(244 201 93 / 22%), transparent 26rem),
+    #f5f7f3;
+}
+
+.catalog-preview {
+  background-color: #e6ded2;
+  background-image: radial-gradient(circle at 1px 1px, rgb(23 59 53 / 10%) 1px, transparent 0);
+  background-size: 18px 18px;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

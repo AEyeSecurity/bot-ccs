@@ -1,0 +1,359 @@
+{
+  "id": "lRDscbvgNSzjOoP3",
+  "name": "BOT CCS",
+  "createdAt": "2026-05-29T14:01:09.796Z",
+  "updatedAt": "2026-06-10T16:35:00Z",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bot-ccs",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -900,
+        0
+      ],
+      "id": "9f24e25c-e3c4-4d7b-90e7-2c4e3fdc0fd6",
+      "name": "Webhook Twilio BOT CCS",
+      "webhookId": "6b0fcbbc-3e31-44e4-b1f7-3bb24e0322be"
+    },
+    {
+      "parameters": {
+        "jsCode": "function sanitize(body) {\n  const clean = {};\n  for (const [key, value] of Object.entries(body || {})) {\n    if (/^MediaUrl\\d+$/i.test(key) || /^MediaUrl$/i.test(key)) continue;\n    clean[key] = value;\n  }\n  return clean;\n}\n\nconst webhook = $input.first().json || {};\nconst body = webhook.body || webhook || {};\nconst rawBody = String(body.Body || '').trim();\nconst buttonPayload = String(body.ButtonPayload || '').trim();\nconst buttonText = String(body.ButtonText || '').trim();\nconst listId = String(body.ListId || body.ListID || '').trim();\nconst listTitle = String(body.ListTitle || '').trim();\nconst bodyForIntent = String(buttonPayload || buttonText || listId || listTitle || rawBody || '').trim();\nconst numMedia = parseInt(String(body.NumMedia || 0), 10) || 0;\nconst mediaContentTypes = [];\nconst mediaUrls = [];\nfor (let i = 0; i < numMedia; i++) {\n  if (body[`MediaContentType${i}`]) mediaContentTypes.push(String(body[`MediaContentType${i}`]));\n  if (body[`MediaUrl${i}`]) mediaUrls.push(String(body[`MediaUrl${i}`]));\n}\n\nreturn [{\n  json: {\n    from: String(body.From || ''),\n    to: String(body.To || ''),\n    body: bodyForIntent,\n    messageSid: String(body.MessageSid || body.SmsMessageSid || body.SmsSid || '').trim() || null,\n    profileName: String(body.ProfileName || '').trim() || null,\n    numMedia,\n    mediaContentTypes,\n    mediaUrls,\n    rawPayload: sanitize(body)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        0
+      ],
+      "id": "7996a9eb-2329-48e0-9627-cad0999e74c4",
+      "name": "Preparar inbound Twilio"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Sos un clasificador de intención para el WhatsApp de Clínica Cruz del Sur.\n\nREGLAS OBLIGATORIAS:\n- Devolvé únicamente JSON válido.\n- No redactes respuestas finales al paciente.\n- No des indicaciones médicas.\n- Elegí solo una de estas intenciones: OPENING, TURNOS_MEDICOS_SELECTOR, TURNOS_MEDICOS_ATENCION_MEDICA, TURNOS_MEDICOS_IMAGENES_MEDICAS, IMAGENES_ORDEN_LLEGADA_RADIOGRAFIA, IMAGENES_ORDEN_LLEGADA_ECG, IMAGENES_ORDEN_LLEGADA_ECOCARDIOGRAMA, IMAGENES_ORDEN_LLEGADA_TOMOGRAFIA, IMAGENES_ORDEN_LLEGADA_ESPINOGRAMA, LABORATORIO_CLINICO, INFORMES_MEDICOS_IMAGENES_MEDICAS, INFORMES_MEDICOS_ESTUDIOS_PATOLOGIA, INFORMES_MEDICOS_LABORATORIO_CLINICO, RECETAS_MEDICAS, NUESTROS_EDIFICIOS, INTERNACION, OBRAS_SOCIALES, MEDICOS_CLINICOS, OTRAS_CONSULTAS, TELEMEDICINA_DRA_ESTRADA, FUERA_ALCANCE_MEDICO.\n- Si el texto menciona síntomas, diagnóstico, medicación, interpretación de estudios, urgencias, emergencias o recomendaciones clínicas, devolvé FUERA_ALCANCE_MEDICO.\n- Si menciona telemedicina o Dra. Estrada, priorizá TELEMEDICINA_DRA_ESTRADA.\n- Si menciona Clínica Médica como especialidad, usá TURNOS_MEDICOS_ATENCION_MEDICA.\n- Si menciona médico clínico o médicos clínicos como atención por orden de llegada, usá MEDICOS_CLINICOS.\n- Si hay duda, devolvé OTRAS_CONSULTAS con needs_operator=true.\n\nFormato exacto:\n{\"intent_key\":\"OTRAS_CONSULTAS\",\"confidence\":0.75,\"needs_operator\":false,\"reason\":\"breve\"}\n\nMensaje del paciente:\n{{ $json.body }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        0
+      ],
+      "id": "603a49de-f3d7-4d21-a50e-a905f3b3f2d7",
+      "name": "Clasificar intención Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "XheYFizKmpqToHhL",
+          "name": "N8N Gemini Sinoca"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "let inbound = {};\ntry {\n  inbound = $('Preparar inbound Twilio').item.json || {};\n} catch (error) {\n  inbound = $input.first().json || {};\n}\n\nconst gemini = $input.first().json || {};\nconst classification = {\n  intent_key: typeof gemini.intent_key === 'string' ? gemini.intent_key : undefined,\n  confidence: Number(gemini.confidence || 0),\n  needs_operator: Boolean(gemini.needs_operator),\n  reason: typeof gemini.reason === 'string' ? gemini.reason : undefined\n};\n\nreturn [{\n  json: {\n    ...inbound,\n    geminiClassification: classification\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        0
+      ],
+      "id": "00a59a76-17bb-4b70-bf4c-2f6b0477c660",
+      "name": "Preparar payload API"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:3010/api/bot/inbound",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-bot-ccs-secret",
+              "value": "={{ $env.BOT_CCS_WEBHOOK_SECRET || '' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        60,
+        0
+      ],
+      "id": "472a5897-1612-4d1f-96fd-9244af0a8eed",
+      "name": "Procesar inbound en CCS API"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ab1a21b2-1768-4b0f-8ec7-0bc1a78582ff",
+              "leftValue": "={{ $json.shouldReply }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        300,
+        0
+      ],
+      "id": "bd6863ad-5cda-4f88-936b-37e9240f43fa",
+      "name": "¿Responder paciente?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:3010/api/bot/send",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-bot-ccs-secret",
+              "value": "={{ $env.BOT_CCS_WEBHOOK_SECRET || '' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        560,
+        -120
+      ],
+      "id": "76cf8140-3e9e-43c9-a055-750c392c0d94",
+      "name": "Enviar WhatsApp CCS",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:3010/api/bot/outbound",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-bot-ccs-secret",
+              "value": "={{ $env.BOT_CCS_WEBHOOK_SECRET || '' }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ outboundMessageId: $('Procesar inbound en CCS API').item.json.outboundMessageId, twilioMessageSid: $json.sid || $json.messageSid || null, twilioStatus: $json.status || ($json.error ? 'failed' : 'sent'), rawPayload: $json }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        820,
+        -120
+      ],
+      "id": "1f2f2f1e-f6f0-4f3a-a18e-aae2cbf2c629",
+      "name": "Registrar outbound bot",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<Response></Response>",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1080,
+        -120
+      ],
+      "id": "596a53fc-583f-4d5a-b094-9fe31509ceaf",
+      "name": "Responder Twilio OK"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<Response></Response>",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        560,
+        140
+      ],
+      "id": "47564158-c74a-4ff1-9ff6-48a6b897c462",
+      "name": "Responder Twilio sin bot"
+    }
+  ],
+  "connections": {
+    "Webhook Twilio BOT CCS": {
+      "main": [
+        [
+          {
+            "node": "Preparar inbound Twilio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar inbound Twilio": {
+      "main": [
+        [
+          {
+            "node": "Clasificar intención Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clasificar intención Gemini": {
+      "main": [
+        [
+          {
+            "node": "Preparar payload API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar payload API": {
+      "main": [
+        [
+          {
+            "node": "Procesar inbound en CCS API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar inbound en CCS API": {
+      "main": [
+        [
+          {
+            "node": "¿Responder paciente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Responder paciente?": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp CCS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder Twilio sin bot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp CCS": {
+      "main": [
+        [
+          {
+            "node": "Registrar outbound bot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Registrar outbound bot": {
+      "main": [
+        [
+          {
+            "node": "Responder Twilio OK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "versionId": "6f9fa3b6-cd4a-46ab-a064-f905533ba3c1",
+  "versionCounter": 3,
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "tags": []
+}

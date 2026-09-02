@@ -1,0 +1,49 @@
+{
+  "name": "bot-ccs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3010",
+    "build": "next build",
+    "start": "next start -p 3010",
+    "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:bot:report": "node scripts/run-bot-test-matrix.mjs",
+    "catalog:import": "node scripts/import-bot-2026.mjs",
+    "catalog:generate-managed": "node scripts/generate-managed-catalog.mjs",
+    "catalog:seed-managed": "node scripts/seed-managed-catalog.mjs",
+    "maintenance:conversations": "node scripts/run-conversation-maintenance.mjs",
+    "verify:catalog-db": "node scripts/verify-managed-catalog-db.mjs",
+    "verify:catalog-admin-live": "node scripts/verify-admin-catalog-live.mjs",
+    "db:apply": "node scripts/apply-migrations.mjs",
+    "db:seed": "node scripts/seed-database.mjs",
+    "twilio:templates": "node scripts/sync-twilio-templates.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "dotenv": "^17.4.2",
+    "lucide-react": "^1.17.0",
+    "next": "16.2.9",
+    "pg": "^8.21.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "twilio": "^6.0.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^4.1.9",
+    "xlsx": "^0.18.5"
+  }
+}
