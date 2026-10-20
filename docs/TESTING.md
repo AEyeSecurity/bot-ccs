@@ -6,7 +6,7 @@ La prueba real de WhatsApp y el reinicio del host quedan pospuestos. Seguir [las
 
 ```powershell
 docker compose --env-file C:/ProgramData/BotCCS/deploy.env build web maintenance tools
-docker compose --env-file C:/ProgramData/BotCCS/deploy.env --profile tools run --rm tools npm test
+docker compose --env-file C:/ProgramData/BotCCS/deploy.env --profile tools run --rm -e GEMINI_API_KEY= tools npm test
 docker compose --env-file C:/ProgramData/BotCCS/deploy.env --profile tools run --rm tools npm run lint
 ```
 
@@ -91,7 +91,7 @@ try {
   docker compose --env-file C:/ProgramData/BotCCS/deploy.env -p bot-ccs-validation up -d --no-build --wait web
   if ($LASTEXITCODE -ne 0) { throw 'Falló el inicio de validación' }
   $env:BOT_CCS_ENV_FILE = 'C:/ProgramData/BotCCS/validation-tools.env'
-  docker compose --env-file C:/ProgramData/BotCCS/deploy.env -p bot-ccs-validation --profile tools run --rm tools node scripts/with-n8n-validation.mjs
+  docker compose --env-file C:/ProgramData/BotCCS/deploy.env -p bot-ccs-validation --profile tools run --rm -e GEMINI_API_KEY= tools node scripts/with-n8n-validation.mjs
   if ($LASTEXITCODE -ne 0) { throw 'Falló la matriz' }
 } finally {
   Remove-Item Env:BOT_CCS_ENV_FILE, Env:BOT_CCS_PORT -ErrorAction SilentlyContinue
@@ -119,7 +119,7 @@ Pull fast-forward desde main, imágenes web/maintenance/tools reconstruidas con 
 
 ## Aislamiento del clasificador Gemini
 
-El setup de Vitest elimina GEMINI_API_KEY heredada del contenedor tools. Las pruebas del clasificador habilitan una clave ficticia y simulan fetch explícitamente. Así las pruebas herméticas no consultan Gemini real ni dependen de su clasificación. El primer ensayo con 0f87e48 detectó esa dependencia: 318/319 pruebas; tras corregir el aislamiento, 319/319 aprobadas. Esto no modifica la clave ni el clasificador del proceso productivo.
+El setup de Vitest conserva las variables heredadas. Ejecutar las pruebas con `-e GEMINI_API_KEY=` en Compose tools para impedir consultas reales a Gemini. Las pruebas del clasificador habilitan una clave ficticia y simulan fetch explícitamente. Así las pruebas herméticas no consultan Gemini real ni dependen de su clasificación. El primer ensayo con 0f87e48 detectó esa dependencia: 318/319 pruebas; tras aislar la clave, 319/319 aprobadas. El aislamiento se aplica ahora en el comando Compose, en lugar de eliminar la variable en setup-env.ts. Esto no modifica la clave ni el clasificador del proceso productivo.
 
 ## Despliegue Gemini lazy — 20 de octubre de 2026
 
