@@ -4,6 +4,8 @@ Este archivo registra cambios funcionales y operativos. A partir de la creación
 
 ## 2026-10-20
 
+- Desplegado 0f87e48 y publicado el workflow canónico en el n8n existente mediante API: mismo ID, webhook y credenciales Header Auth; eliminados los nodos Gemini/payload, 8 nodos activos. Respaldo privado fuera de Git; imágenes reconstruidas y servicios web/mantenimiento recreados saludables. Setup de Vitest corregido para eliminar la clave Gemini heredada y evitar consultas externas en pruebas herméticas (319 pruebas aprobadas, lint/build OK). Matriz aislada completa: 229 escenarios, 17 HTTP y 9 n8n, cero incidentes; readiness local/público y recursos públicos HTTP200.
+
 - Iteración 4 (clasificación Gemini "lazy"): la intención ya no se clasifica siempre en n8n. Se retiró el nodo `Clasificar intención Gemini` (y el nodo intermedio `Preparar payload API`) del workflow canónico, que ahora reenvía el inbound directo a `/api/bot/inbound`. `detectIntent`, `evaluateInboundTurn` y `getDocumentValidationRequestsForTurn` pasaron a ser asíncronos y, solo cuando las reglas determinísticas no clasifican, invocan la nueva `classifyIntentWithGemini()` (`src/lib/intent-classifier.ts`) contra la REST de Gemini con timeout y caída a `OTRAS_CONSULTAS` ante error o ausencia de `GEMINI_API_KEY`. Se eliminó `geminiClassification` del contrato del payload. Pruebas y docs actualizados (319 pruebas, lint y build correctos).
 - Aplicado en SERVER-CIT el commit 402b0c4 mediante pull fast-forward y reconstrucción Docker. Web y mantenimiento recreados saludables; 312 pruebas, lint/build y matriz aislada sin incidentes (229 escenarios, 17 HTTP, 9 n8n). Readiness local/público, inicio y vCard verificados. No se reinició Windows ni se enviaron pruebas WhatsApp reales.
 

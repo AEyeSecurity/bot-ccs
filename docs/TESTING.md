@@ -115,3 +115,12 @@ Imágenes aplicadas en producción: web y maintenance saludables, usuario node y
 ## Actualización desplegada 402b0c4 — 20 de octubre de 2026
 
 Pull fast-forward desde main, imágenes web/maintenance/tools reconstruidas con build correcto y lint aprobado. Matriz aislada finalizada a las 20:15 UTC: 312 pruebas aprobadas, ninguna fallida u omitida; 229 escenarios, 54 ramas, 23 transiciones, 17 verificaciones HTTP y 9 recorridos n8n, sin incidentes. Workflow temporal retirado e instancia de ensayo detenida. Web y maintenance recreados y saludables; readiness local y público HTTP200 (ok=true, testInstance=false), inicio y /vcards/ccs-laboratorio-clinico.vcf HTTP200. Cloudflared continuó activo. Reinicio limitado a los servicios del bot; Windows y WhatsApp real siguen pendientes.
+
+
+## Aislamiento del clasificador Gemini
+
+El setup de Vitest elimina GEMINI_API_KEY heredada del contenedor tools. Las pruebas del clasificador habilitan una clave ficticia y simulan fetch explícitamente. Así las pruebas herméticas no consultan Gemini real ni dependen de su clasificación. El primer ensayo con 0f87e48 detectó esa dependencia: 318/319 pruebas; tras corregir el aislamiento, 319/319 aprobadas. Esto no modifica la clave ni el clasificador del proceso productivo.
+
+## Despliegue Gemini lazy — 20 de octubre de 2026
+
+Commit 0f87e48 aplicado. Workflow BOT CCS real actualizado mediante API n8n, activado y cotejado con el JSON canónico: 8 nodos, sin clasificación Gemini ni Preparar payload API, conexiones idénticas, mismo webhook bot-ccs y Header Auth preservado en inbound/send/outbound. Respaldo anterior privado en C:/ServerCIT/backups/BOT_CCS.before-0f87e48.json. Web y maintenance recreados y saludables; runtime conserva GEMINI_API_KEY configurada. Build y lint aprobados. Matriz aislada finalizada 20:58 UTC: 319 pruebas sin fallos ni omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. Workflow temporal retirado e instancia de ensayo detenida. Readiness local/público (ok=true, testInstance=false), página inicial y vCard de laboratorio HTTP200. No se enviaron pruebas WhatsApp reales ni se reinició Windows.

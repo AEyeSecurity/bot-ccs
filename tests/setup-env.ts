@@ -5,6 +5,8 @@ process.env.TWILIO_ACCOUNT_SID ||= "ACtest";
 process.env.TWILIO_AUTH_TOKEN ||= "twilio-auth-test";
 process.env.TWILIO_WHATSAPP_FROM ||= "whatsapp:+5493516424148";
 process.env.BOT_CCS_WEBHOOK_SECRET = "bot-ccs-secret";
+// Hermetic tests must not inherit a live Gemini key from the tools environment.
+delete process.env.GEMINI_API_KEY;
 process.env.VCARD_PUBLIC_BASE_URL ||= "https://vcards.aeye.com.ar";
 
 import initialCatalog from "../data/bot-catalog-initial.json";
