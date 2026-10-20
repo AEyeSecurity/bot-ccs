@@ -46,11 +46,16 @@ export function specialtyEditorModel(catalog: ManagedCatalog, serviceIntent: str
     .filter((block) => block.available)
     .map((block) => block.body);
 
+  const usesCustomBody = Boolean(service.customBody.trim());
+
   return {
     generalBody: service.generalBody,
     generalPhones: phonesIn(service.generalBody),
+    customBody: service.customBody,
+    customPhones: phonesIn(service.customBody),
+    usesCustomBody,
     blocks,
-    preview: joinReply([service.generalBody, ...activeBodies]),
+    preview: usesCustomBody ? service.customBody : joinReply([service.generalBody, ...activeBodies]),
     activeBlockCount: activeBodies.length,
   };
 }

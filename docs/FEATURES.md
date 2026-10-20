@@ -42,6 +42,7 @@ El login admite los alias `admin` y `admindev`, además del email completo; perm
 - Edición de textos, disponibilidad, teléfonos contenidos en el texto, profesionales, estudios, coberturas y mensajes generales.
 - Vista previa exacta de WhatsApp.
 - Especialidades separadas en texto general y bloques profesionales reales.
+- Texto general propio por especialidad: si se completa, la especialidad responde con ese único texto en lugar del armado por bloques.
 - Un bloque editado desde Especialidades o Profesionales modifica el mismo registro, sin duplicación.
 - Teléfonos detectados y mostrados junto al bloque propietario.
 - Estados claros: cambios sin guardar, borrador guardado, pendiente de revisión y publicado.

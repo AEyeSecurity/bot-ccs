@@ -62,7 +62,11 @@ function markChangedEntriesPending(candidate: ManagedCatalog, base: ManagedCatal
   }
   candidate.medicalServices.forEach((entry, index) => {
     const previous = base.medicalServices[index];
-    if (entry.generalBody !== previous.generalBody || entry.available !== previous.available) entry.reviewStatus = "pending";
+    if (
+      entry.generalBody !== previous.generalBody ||
+      entry.customBody !== previous.customBody ||
+      entry.available !== previous.available
+    ) entry.reviewStatus = "pending";
   });
   candidate.imagingStudies.forEach((entry, index) => {
     const previous = base.imagingStudies[index];
@@ -85,7 +89,9 @@ function markChangedEntriesPending(candidate: ManagedCatalog, base: ManagedCatal
 export function prepareCatalogPayload(input: unknown) {
   const catalog = structuredClone(managedCatalogSchema.parse(input));
   for (const entry of Object.values(catalog.direct)) entry.phones = extractManagedPhones(entry.body);
-  for (const service of catalog.medicalServices) service.phones = extractManagedPhones(service.generalBody);
+  for (const service of catalog.medicalServices) {
+    service.phones = extractManagedPhones(service.customBody.trim() ? service.customBody : service.generalBody);
+  }
   for (const study of catalog.imagingStudies) study.phones = extractManagedPhones(study.body);
   for (const group of catalog.professionalResponseGroups) group.phones = extractManagedPhones(group.body);
   return managedCatalogSchema.parse(catalog);
@@ -99,7 +105,8 @@ async function getVersion(status: "draft" | "published") {
     .eq("status", status)
     .maybeSingle();
   if (error) throw httpError(error.message, 500);
-  return data as CatalogVersionRow | null;
+  if (!data) return null;
+  return { ...data, payload: managedCatalogSchema.parse(data.payload) } as CatalogVersionRow;
 }
 
 export async function getCatalogAdminState() {

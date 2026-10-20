@@ -23,6 +23,7 @@ export const managedCatalogSchema = z.object({
       title: z.string().min(1),
       matchers: z.array(z.string().min(1)).min(1),
       generalBody: z.string(),
+      customBody: z.string().default(""),
       phones: z.array(phone),
       sourceCell: z.string().min(1),
       available: z.boolean(),
@@ -144,7 +145,10 @@ export function validateManagedCatalog(input: unknown, options: { requireReviewe
 
   for (const [key, entry] of Object.entries(catalog.messages)) inspectEntry(`Mensaje ${key}`, entry);
   for (const [key, entry] of Object.entries(catalog.direct)) inspectEntry(`Servicio ${key}`, entry);
-  for (const item of catalog.medicalServices) inspectEntry(`Especialidad ${item.title}`, { ...item, body: item.generalBody });
+  for (const item of catalog.medicalServices) {
+    const effectiveBody = item.customBody.trim() ? item.customBody : item.generalBody;
+    inspectEntry(`Especialidad ${item.title}`, { ...item, body: effectiveBody });
+  }
   for (const item of catalog.imagingStudies) inspectEntry(`Estudio ${item.title}`, item);
   for (const item of catalog.professionalResponseGroups) inspectEntry(`Bloque ${item.id}`, item);
   for (const item of catalog.professionals) {
@@ -172,8 +176,10 @@ export function validateManagedCatalog(input: unknown, options: { requireReviewe
     return normalize(firstLine) === normalize(title);
   };
   for (const service of catalog.medicalServices) {
-    if (service.generalBody && beginsWithTitle(service.generalBody, service.title)) {
-      errors.push(`${service.title}: el título interno no debe aparecer en la respuesta`);
+    for (const body of [service.generalBody, service.customBody]) {
+      if (body && beginsWithTitle(body, service.title)) {
+        errors.push(`${service.title}: el título interno no debe aparecer en la respuesta`);
+      }
     }
   }
   for (const study of catalog.imagingStudies) {

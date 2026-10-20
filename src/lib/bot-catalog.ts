@@ -484,6 +484,12 @@ export function activateCatalog(catalog: ManagedCatalog) {
       ),
   }));
   MEDICAL_SERVICES = catalog.medicalServices.map((service) => {
+    if (service.customBody.trim()) {
+      return {
+        ...service,
+        body: service.customBody,
+      };
+    }
     const groups = PROFESSIONAL_RESPONSE_GROUPS
       .filter((group) => group.specialty === service.title && group.available)
       .sort((left, right) => left.order - right.order);

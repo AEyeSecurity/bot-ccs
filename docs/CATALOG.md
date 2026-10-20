@@ -18,8 +18,9 @@ El botón Publicar permanece bloqueado si hay cambios locales, errores o pendien
 ## Edición Por Especialidad
 
 - **Texto general:** introducción opcional del área.
+- **Texto general propio (`customBody`):** opcional; si está completo, reemplaza toda la respuesta de la especialidad y no se concatenan el texto general ni los bloques profesionales. Si queda vacío, se conserva el armado automático.
 - **Bloques profesionales:** respuestas almacenadas en `professionalResponseGroups`.
-- **Vista previa completa:** texto general seguido de los bloques activos y disponibles.
+- **Vista previa completa:** texto general seguido de los bloques activos y disponibles; cuando existe texto propio, la vista previa muestra solo ese texto.
 
 Una especialidad sin texto general no muestra una caja vacía: explica que su respuesta se construye con bloques profesionales. Esos bloques se pueden editar desde la especialidad o desde Profesionales, pero ambas vistas apuntan al mismo objeto persistido.
 

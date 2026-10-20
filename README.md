@@ -74,3 +74,178 @@ La migración Docker precede estas funcionalidades; no las implementa:
 - Reglas avanzadas de SLA/prioridad.
 
 Historia clínica, facturación y CRM externo permanecen fuera del MVP.
+
+## Próximas Iteraciones
+
+Registro de requerimientos del cliente y soluciones propuestas. Se amplía a medida que el cliente sume solicitudes.
+
+### Iteración 1 — Roles, permisos y derivación por área
+
+**Requerimiento del cliente:**
+
+- Crear usuarios para el personal de la clínica, cada uno con **permisos distintos** (acceso a información y a funcionalidades).
+- Cada usuario debe ver **solo los mensajes clasificados para él** (por área, especialidad o profesional).
+- El **admin** debe tener permisos exclusivos: **editar los textos de respuesta automática**, ver quiénes están conectados y cuántos casos se atienden por día.
+- Estados de los casos: `resuelto`, `pendiente`, `en curso`.
+- Los usuarios no-admin solo deben ver casos pendientes, en curso y finalizados **del día**.
+- El admin debe poder **editar los textos de respuesta automática** desde la web.
+
+**Datos de referencia (hoja "Usuarios" del Excel):**
+
+| Área / Usuario | Derivación (especialidades y profesionales) |
+|---|---|
+| Cardiología | Cardiología, Ergometría, ECG, Ecocardiograma, Ecografía Doppler Cardíaca, Holter |
+| TAC | Tomografía computada |
+| RMN | Resonancia Magnética |
+| Admisión | Gastroenterología, Arteriografía, Endoscopia alta y baja |
+| Hemodinamia | Hemodinamia |
+| Call Center | Obras sociales, Recetas médicas |
+| Guardia | Clínica Médica, Espinograma, Radiografía |
+| Pasaje | Nefrología; Cirugía (Cardoso Atilio, Cardoso Martin, Heredia); Diabetología (Carrizo); Neurología (Paolini, Álvarez Czernik); Nutrición (Santana); Traumatología (Vargas, Núñez Gaspar) |
+| Anexo | Cirugía (del Carpio, Luján del Bueno, Soulergues); Oncología; Reumatología; Traumatología (Longo, Castro); Diabetología (Sedán); Dermatología; Urología; Infectología; Ecografías (abdominal, Doppler, renal) |
+| DMO | Mamografía, Psicología, Densitometría ósea, Nutrición |
+| CEMI | Cirugía (Francalancia); Ginecología y Obstetricia; Neurología (Álvarez Czernik); Pediatría; Psiquiatría; Ecografía ginecológica/obstétrica/mamaria |
+| Patología | Biopsias |
+| Laboratorio | Laboratorio clínico |
+| Gamma | (sin asignación) |
+
+**Lo que ya existe en el sistema:**
+
+- Tabla `operators` con campo `role` (`admin`) e `is_active`; autenticación con Supabase Auth.
+- Control de acceso básico: `requireAdmin` protege las APIs administrativas.
+- Tabla `routing_rules` (pensada para reglas de enrutamiento; hoy sin uso para usuarios).
+- Estados de caso ya modelados: `in_progress`, `waiting_operator`, `closed`, `cancelled`.
+- Banco de respuestas editable por admin (ya cubre "modificar textos desde la web").
+
+**Soluciones propuestas:**
+
+1. **Modelo de roles y asignación por área/profesional**
+   - Roles: `admin` (total) y `operator` (restringido). Opcional: `supervisor`.
+   - Nueva tabla `operator_assignments` (o columnas JSONB en `operators`) que asocie a cada usuario un conjunto de etiquetas: especialidades, estudios y profesionales específicos que puede ver.
+   - Para el caso "general vs. particular" (un área como Cardiología vs. un médico puntual), la asignación se expresa como lista de identificadores de especialidad, estudio y profesional. Un caso se muestra al usuario si su intención coincide con **alguna** de esas etiquetas.
+
+2. **Derivación automática de casos**
+   - Cuando el bot detecta la intención (especialidad/estudio/profesional), se asigna automáticamente el caso a los usuarios cuya área coincide (mapeo de la hoja "Usuarios").
+   - Reutilizar/ampliar `routing_rules` para definir ese mapeo, administrable sin tocar código.
+
+3. **Estados de resolución**
+   - Agregar un estado de resolución visible al operador: `pendiente`, `en curso`, `resuelto` (mapeable sobre los estados de caso existentes).
+   - El submenú del chat cambia el estado; los filtros de la bandeja usan esos estados.
+
+4. **Filtros por día y por asignación**
+   - No-admin: solo conversaciones de su área y del día actual (filtro por `created_at` y por asignación).
+   - Admin: vista global + dashboard (usuarios conectados, casos por día).
+
+5. **Presencia y métricas para admin**
+   - Columna `last_seen_at` en `operators`, actualizada con un "heartbeat" del panel; el admin ve quién está conectado.
+   - Conteo de casos por día/operador con una consulta agrupada, mostrado en un panel de métricas.
+
+6. **Edición de textos por admin (desde la web)**
+   - Ya cubierto por el Banco de respuestas. Confirmar con el cliente el alcance exacto (textos de flujo vs. mensajes generales).
+
+7. **Seguridad adicional**
+   - Las credenciales de acceso del Excel (hoja "Tareas") deben tratarse como temporales: rotar la contraseña de admin y entregar credenciales **individuales** a cada usuario (no compartidas).
+
+### Iteración 2 — Texto general editable por especialidad (caso Cardiología)
+
+**Requerimiento del cliente:**
+
+- Hoy, el mensaje pregenerado de **Cardiología** "retoma" varios mensajes distintos y los envía **todos juntos** al paciente.
+- El cliente quiere poder **modificar eso** para que sea **un único texto** que puedan editar libremente, sin que arrastre contenido de otros textos.
+- En concreto: poder **crear un texto general para Cardiología** (y, en general, una respuesta por especialidad que no esté armada por bloques de profesionales).
+
+**Comportamiento actual (técnico):**
+
+- En `bot-catalog.ts` (`activateCatalog`), el cuerpo de cada especialidad se arma automáticamente concatenando el texto general más los bloques de los profesionales disponibles: `texto general + bloque profesional 1 + bloque profesional 2 + ...`.
+- Por eso "Cardiología" responde con la introducción + las fichas de todos los cardiólogos juntas.
+- El editor del banco permite editar textos y bloques por separado, pero **no** permite reemplazar ese armado por un único texto propio.
+
+**Soluciones propuestas:**
+
+1. **Campo de "texto general completo" por especialidad**
+   - Agregar a cada especialidad un campo opcional (por ejemplo `customBody` o `overrideBody`).
+   - Si está completado, la respuesta de la especialidad usa **solo ese texto** y no concatena los bloques profesionales.
+   - Si está vacío, se mantiene el comportamiento actual (armado por bloques), para no romper el resto de especialidades.
+
+2. **Editor en el Banco de respuestas**
+   - En la edición de la especialidad, ofrecer la opción "usar texto general propio" (un textarea) además del armado por bloques.
+   - Mantener la vista previa exacta de WhatsApp que ya existe.
+
+3. **Alcance**
+   - Empezar por Cardiología (el caso puntual que pide el cliente) y dejarlo **configurable por especialidad** para las demás.
+
+4. **Regresión y pruebas**
+   - Validar que las especialidades que no usen el texto propio sigan respondiendo igual (armado por bloques) y que la publicación siga validando teléfonos y disponibilidad.
+
+### Iteración 3 — Respuesta simple con cierre confirmado (caso Medicina Clínica)
+
+> **Estado: pendiente de análisis más profundo.** Se deja anotado para revisar.
+
+**Requerimiento del cliente:**
+
+- Hay casos de respuesta muy simple, como **Medicina Clínica**: solo informa el horario de atención (sin turnos).
+- Si el cliente no pide más información, el caso podría darse por **cerrado** una vez que el paciente **confirme que entendió** (que no hay turnos y que el horario es de X a Y).
+
+**Comportamiento actual (técnico):**
+
+- `MEDICOS_CLINICOS` es un flujo de tipo `info` (`bot-catalog.ts`), con `status: bot_active`. Envía un texto fijo (el horario) y **no** pide confirmación ni cierra la conversación.
+
+**Ideas preliminares (a validar):**
+
+1. **Paso de confirmación**: después de enviar el horario, preguntar algo como "¿Le es de utilidad? ¿Hay algo más en lo que pueda ayudarle?". Si el paciente responde afirmativamente o con un cierre ("no, gracias", "entendido", "ok"), cerrar el caso.
+2. **Detección de confirmación**: sumar un conjunto de términos de confirmación/cierre (como ya existe `GREETINGS` o `CLINICAL_RISK_TERMS`) y una regla que cierre el caso.
+3. **Riesgos a analizar**: cerrar de más (que el paciente aún necesitaba algo), conversaciones que se cierran por un "ok" ambiguo, e impacto en las métricas del panel.
+4. **Alcance**: aplicar solo a flujos "informativos simples" (Medicina Clínica y similares), no a los casos que derivan a operador.
+
+### Iteración 4 — Clasificación Gemini "lazy" (asíncrona y bajo demanda)
+
+**Requerimiento:**
+
+- Que la petición a Gemini **no se haga siempre** (hoy se hace en n8n para todo mensaje).
+- Que recién se invoque cuando el motor determinístico **no pudo clasificar**, al llegar al punto en que se consulta la información de Gemini (opción "lazy").
+
+**Comportamiento actual (técnico):**
+
+- n8n llama siempre al nodo `Clasificar intención Gemini` y el resultado viaja en `geminiClassification`.
+- El motor (`detectIntent`) recorre sus `if` determinísticos y, recién al final, **usa** ese resultado si ninguna regla coincidió.
+
+**Solución propuesta:**
+
+1. Quitar el nodo `Clasificar intención Gemini` del workflow de n8n (deja de llamarse siempre).
+2. Hacer **asíncronas** `detectIntent` y sus llamadores (`evaluateInboundTurn`, `getDocumentValidationRequestsForTurn`) y, solo en el fallback, llamar a una nueva `classifyIntentWithGemini()` que pegue a la REST de Gemini (mismo patrón que `document-validation.ts`, reutilizando `GEMINI_API_KEY` de `env.ts`).
+3. Agregar **timeout y manejo de error**: si Gemini falla o tarda, caer a `OTRAS_CONSULTAS` sin romper el turno.
+4. Actualizar pruebas (`workflow-shape`, `bot-inbound-route`) y documentación.
+
+**Tradeoffs:**
+
+- **A favor:** menos llamadas (menor costo y latencia), motor autocontenido, se elimina la dependencia n8n→Gemini.
+- **En contra:** refactor asíncrono del motor, cambio del contrato de n8n y revalidación de la matriz de pruebas.
+
+### Análisis técnico — Supabase: rol actual y alternativas
+
+**Qué hace Supabase hoy en el proyecto:**
+
+- **PostgreSQL** como base relacional (12 tablas: `operators`, `contacts`, `conversations`, `cases`, `messages`, `knowledge_base`, `routing_rules`, `twilio_templates`, `twilio_callbacks`, `conversation_events`, `app_settings`, `bot_catalog_versions`).
+- **Auth** (Supabase Auth) para el login del panel, mapeado a la tabla `operators`.
+- **RLS** (Row Level Security) + cliente `service_role` para escrituras privilegiadas server-side.
+- SDK `@supabase/supabase-js`; migraciones por script (`db:apply`).
+- **No** usa hoy Storage (las fotos no se guardan), ni Realtime, ni Edge Functions.
+
+**Alternativas y comparación:**
+
+| Opción | Pros | Contras |
+|---|---|---|
+| **Supabase (actual)** | Todo integrado (Postgres + Auth + RLS + SDK); rápido de construir; free tier; bajo mantenimiento. | Vendor lock-in; menos control sobre config/extensiones de Postgres; límites del free tier; costo crece al escalar. |
+| **PostgreSQL propio + Auth.js/JWT** (Neon o servidor propio) | Control total; sin lock-in; más barato a gran escala; uso de ORM (Prisma/Drizzle). | Más trabajo: hosting, backups, autenticación y seguridad a mano (reemplazar RLS por validaciones de app). |
+| **Neon / PlanetScale** (Postgres/MySQL serverless) | Serverless, branching, escala por demanda. | Requiere armar auth por separado; Neon es Postgres (mejor encaje), PlanetScale es MySQL. |
+| **Firebase (Firestore + Auth)** | Realtime y auth integrados. | Modelo NoSQL poco natural para datos relacionales (casos→mensajes→conversaciones); lock-in. |
+| **MongoDB / documental** | Flexible. | Poco recomendable para este esquema relacional con joins. |
+
+**Recomendación (para revisar):**
+
+- **Mantener Supabase** en el corto plazo: es un buen encaje para datos relacionales + Auth + RLS con poco esfuerzo.
+- Reconsiderar solo si aparece alguno de estos disparadores:
+  1. **Costo** a escala (el plan Pro deja de alcanzar).
+  2. Necesidad de **funciones de Postgres** específicas o control fino de la base.
+  3. **Residencia/compliance de datos de salud** (elegir región o self-hosted por exigencias legales).
+- La migración más razonable, si llegara a ser necesaria, sería a **PostgreSQL autogestionado (Neon o servidor propio) + Auth.js**, manteniendo el mismo esquema SQL.

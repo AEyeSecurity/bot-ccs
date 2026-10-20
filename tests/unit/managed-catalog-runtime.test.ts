@@ -74,6 +74,17 @@ describe("managed catalog runtime", () => {
     expect(evaluate("¿Aceptan OSDE?").reply?.text).toContain("no contamos con convenio vigente con OSDE");
   });
 
+  test("uses a specialty custom body instead of assembling its professional blocks", () => {
+    const custom = cloneCatalog();
+    const cardio = custom.medicalServices.find((item) => item.title === "Cardiología")!;
+    cardio.customBody = "Cardiología atiende con turno previo. Envíenos un WhatsApp al +5491111111111.";
+    activateCatalog(custom);
+
+    const result = evaluate("cardiología");
+    expect(result.reply?.text).toContain("Cardiología atiende con turno previo");
+    expect(result.reply?.text).not.toContain("Segovia");
+  });
+
   test("blocks publication validation for pending records and malformed phone metadata", () => {
     const pending = cloneCatalog();
     pending.imagingStudies[0].reviewStatus = "pending";

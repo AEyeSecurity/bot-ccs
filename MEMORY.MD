@@ -5,6 +5,8 @@ Guardar decisiones, recorrido reciente, validación y próximo paso; nunca contr
 Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el historial en docs/CHANGELOG.md.
 
 ## Último trabajo y cómo se hizo
+- Iteración 2 completada: campo opcional `customBody` por especialidad (texto general propio). Si está lleno, la respuesta de la especialidad ignora el armado automático (texto general + bloques). Schema zod, activateCatalog, editor del panel (campo + vista previa + teléfonos), diff de revisión, extracción de teléfonos del cuerpo efectivo, generador y pruebas. 312 pruebas, lint y build OK.
+- README ahora incluye "Próximas Iteraciones" (roles/permisos, texto propio, cierre confirmado, Gemini lazy, análisis Supabase) tras integrar notas locales al hacer pull.
 - Se migró y desplegó BOT CCS en Docker Compose: web, maintenance y cloudflared; tools bajo perfil opcional.
 - Dockerfile multietapa, Next.js standalone en producción, usuario node, una réplica; host 127.0.0.1:3010 -> web:3010.
 - Mantenimiento cada minuto sin superposición; logs stdout rotados por Docker y healthchecks. No arrancar PM2.
@@ -36,4 +38,4 @@ Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el h
 - Retirar ruta ccs del túnel compartido sin perder el CNAME exclusivo: Cloudflare advierte que también elimina DNS; se canceló esa operación.
 - Antes del uso real, verificar admin definitivo y retirar admindev (desactivar operators y luego Auth, conservando historial).
 - No declarar cerradas esas comprobaciones. Al retomarlas actualizar README, MEMORY, TESTING y CHANGELOG; después desarrollar Fase2 en iteraciones separadas.
-- Próxima sesión: leer esta memoria, revisar git status y estado Docker; acordar qué pendiente/iteración se retoma, sin reiniciar ni enviar WhatsApp por iniciativa propia.
+- Próxima sesión: leer esta memoria, revisar git status y estado Docker; acordar qué pendiente/iteración se retoma (siguientes: Iteración 4 Gemini lazy o Iteración 1 roles/permisos), sin reiniciar ni enviar WhatsApp por iniciativa propia.

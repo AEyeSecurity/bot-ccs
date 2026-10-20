@@ -40,6 +40,17 @@ describe("catalog editor presentation model", () => {
     expect(model?.preview).toBe(model?.generalBody);
   });
 
+  test("previews the custom body alone when a specialty overrides its automatic assembly", () => {
+    const source = catalog();
+    const service = source.medicalServices.find((item) => item.title === "Cardiología")!;
+    service.customBody = "Cardiología atiende únicamente con turno previo.";
+
+    const model = specialtyEditorModel(source, service.intent);
+    expect(model?.customBody).toBe("Cardiología atiende únicamente con turno previo.");
+    expect(model?.usesCustomBody).toBe(true);
+    expect(model?.preview).toBe("Cardiología atiende únicamente con turno previo.");
+  });
+
   test("derives phones from the owning block and reflects a single source edit", () => {
     const source = catalog();
     const group = source.professionalResponseGroups.find((item) => item.id === "cardiologia_bossio");

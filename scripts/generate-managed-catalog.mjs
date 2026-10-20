@@ -120,6 +120,7 @@ const medicalServices = data.medicalServices.map((service) => {
     title: service.title,
     matchers: [service.title, ...(serviceAliases[service.title] || [])],
     generalBody,
+    customBody: "",
     phones: phones(generalBody),
     sourceCell: service.sourceCell,
     available: true,

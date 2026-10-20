@@ -64,6 +64,11 @@ type EditorItem = {
   setBody?: (catalog: ManagedCatalog, value: string) => void;
   setAvailable?: (catalog: ManagedCatalog, value: boolean) => void;
   setReview: (catalog: ManagedCatalog, value: "reviewed" | "pending") => void;
+  customBody?: string;
+  customBodyLabel?: string;
+  customBodyHelp?: string;
+  customPhones?: string[];
+  setCustomBody?: (catalog: ManagedCatalog, value: string) => void;
 };
 
 type EditorBlock = {
@@ -139,8 +144,8 @@ function catalogChangeSummary(current: ManagedCatalog, published: ManagedCatalog
   const changed = (left: unknown, right: unknown) => JSON.stringify(left) !== JSON.stringify(right);
   return {
     especialidades: current.medicalServices.filter((item, index) => changed(
-      { body: item.generalBody, available: item.available },
-      { body: published.medicalServices[index].generalBody, available: published.medicalServices[index].available },
+      { body: item.generalBody, customBody: item.customBody, available: item.available },
+      { body: published.medicalServices[index].generalBody, customBody: published.medicalServices[index].customBody, available: published.medicalServices[index].available },
     )).length,
     profesionales: current.professionals.filter((item, index) => {
       const currentGroup = current.professionalResponseGroups.find((group) => group.id === item.responseGroupId);
@@ -207,6 +212,11 @@ function editorItems(category: Category, catalog: ManagedCatalog): EditorItem[] 
         setBody: (next, value) => { next.medicalServices[index].generalBody = value; },
         setAvailable: (next, value) => { next.medicalServices[index].available = value; },
         setReview: (next, value) => { next.medicalServices[index].reviewStatus = value; },
+        customBody: service.customBody,
+        customBodyLabel: "Texto general propio de la especialidad",
+        customBodyHelp: "Si se completa, reemplaza por completo la respuesta de la especialidad: no se concatenan el texto general ni los bloques profesionales.",
+        customPhones: model?.customPhones || [],
+        setCustomBody: (next, value) => { next.medicalServices[index].customBody = value; },
       };
     });
   }
@@ -561,6 +571,13 @@ export function CatalogAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; on
                           <textarea aria-label={item.bodyLabel} value={item.body} onChange={(event) => updateItem(item, (next) => item.setBody?.(next, event.target.value))} rows={Math.min(14, Math.max(5, item.body.split("\n").length + 2))} className="mt-3 w-full resize-y rounded-xl border border-zinc-200 bg-white p-3 text-sm leading-6 outline-none focus:border-[#176b5a] focus:ring-4 focus:ring-emerald-50" />
                           {item.phones.length ? <div className="mt-3"><p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-zinc-500"><Phone size={13} />Teléfonos detectados automáticamente</p><div className="flex flex-wrap gap-2">{item.phones.map((phone) => <span key={phone} title="Para modificarlo, edite el número dentro del texto" className="rounded-full bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700">{phone}</span>)}</div><p className="mt-2 text-[11px] text-zinc-400">Se modifican dentro del texto; no son campos separados.</p></div> : null}
                         </div> : item.emptyBodyMessage ? <div className="flex gap-2 rounded-xl border border-sky-200 bg-sky-50 p-3 text-sm leading-6 text-sky-900"><Info size={17} className="mt-0.5 shrink-0" /><p>{item.emptyBodyMessage}</p></div> : null}
+
+                        {item.setCustomBody ? <div className={`mt-3 rounded-xl border p-3 ${item.customBody?.trim() ? "border-violet-300 bg-violet-50/40" : "border-zinc-200 bg-white"}`}>
+                          <p className="flex items-center gap-2 text-sm font-bold text-zinc-800"><FileText size={16} className="text-violet-600" />{item.customBodyLabel}</p>
+                          {item.customBodyHelp ? <p className="mt-1 text-xs leading-5 text-zinc-500">{item.customBodyHelp}</p> : null}
+                          <textarea aria-label={item.customBodyLabel} value={item.customBody} onChange={(event) => updateItem(item, (next) => item.setCustomBody?.(next, event.target.value))} rows={Math.min(14, Math.max(5, (item.customBody || "").split("\n").length + 2))} placeholder="Opcional: deje este campo vacío para conservar el armado automático (texto general + bloques)." className="mt-3 w-full resize-y rounded-xl border border-zinc-200 bg-white p-3 text-sm leading-6 outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-50" />
+                          {item.customPhones?.length ? <div className="mt-3"><p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-zinc-500"><Phone size={13} />Teléfonos detectados automáticamente</p><div className="flex flex-wrap gap-2">{item.customPhones.map((phone) => <span key={phone} title="Para modificarlo, edite el número dentro del texto" className="rounded-full bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700">{phone}</span>)}</div><p className="mt-2 text-[11px] text-zinc-400">Se modifican dentro del texto; no son campos separados.</p></div> : null}
+                        </div> : null}
 
                         {item.blocks?.length ? <div className="mt-4 space-y-3">
                           <div><p className="font-bold text-zinc-800">Bloques profesionales</p><p className="mt-1 text-xs leading-5 text-zinc-500">Cada bloque edita el mismo contenido disponible en la sección Profesionales. No se crean copias.</p></div>
