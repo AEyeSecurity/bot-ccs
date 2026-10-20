@@ -5,6 +5,7 @@ El login admite los alias `admin` y `admindev`, además del email completo; perm
 ## Atención Al Paciente
 
 - Saludo natural para mensajes indefinidos.
+- Clasificación de intención determinística; Gemini solo interviene bajo demanda como último recurso cuando ninguna regla coincide.
 - Respuesta directa con agradecimiento corto cuando el primer mensaje ya identifica la necesidad.
 - Turnos médicos por especialidad, profesión, subespecialidad o profesional específico.
 - Respuesta completa para una especialidad y bloque individual para un profesional.

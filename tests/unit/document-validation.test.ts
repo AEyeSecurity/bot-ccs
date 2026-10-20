@@ -12,7 +12,6 @@ function payload(overrides: Partial<NormalizedInbound> = {}): NormalizedInbound 
     mediaContentTypes: ["image/jpeg"],
     mediaUrls: ["https://example.test/media/front.jpg"],
     rawPayload: {},
-    geminiClassification: null,
     ...overrides,
   };
 }

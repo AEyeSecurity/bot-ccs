@@ -5,6 +5,7 @@ Guardar decisiones, recorrido reciente, validación y próximo paso; nunca contr
 Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el historial en docs/CHANGELOG.md.
 
 ## Último trabajo y cómo se hizo
+- Iteración 4 (Gemini lazy) completada: se retiró el nodo `Clasificar intención Gemini` (y `Preparar payload API`) del workflow n8n; `detectIntent`/`evaluateInboundTurn`/`getDocumentValidationRequestsForTurn` son async y, solo en el fallback, llaman a `classifyIntentWithGemini()` (nuevo `src/lib/intent-classifier.ts`, REST Gemini con timeout 5s, cae a OTRAS_CONSULTAS si falla o falta GEMINI_API_KEY). Se quitó `geminiClassification` del contrato del payload. Nuevo `GEMINI_INTENT_MODEL`. 319 pruebas, lint y build OK.
 - Despliegue 2026-10-20: pull fast-forward a 402b0c4, imágenes reconstruidas y web/maintenance recreados saludables. 312 pruebas, lint/build, 229 escenarios, 17 HTTP y 9 n8n OK; readiness local/público, inicio y vCard HTTP200. Ensayo detenido. Reinicio de servicios Docker; host sin reiniciar.
 - Iteración 2 completada: campo opcional `customBody` por especialidad (texto general propio). Si está lleno, la respuesta de la especialidad ignora el armado automático (texto general + bloques). Schema zod, activateCatalog, editor del panel (campo + vista previa + teléfonos), diff de revisión, extracción de teléfonos del cuerpo efectivo, generador y pruebas. 312 pruebas, lint y build OK.
 - README ahora incluye "Próximas Iteraciones" (roles/permisos, texto propio, cierre confirmado, Gemini lazy, análisis Supabase) tras integrar notas locales al hacer pull.
@@ -39,4 +40,4 @@ Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el h
 - Retirar ruta ccs del túnel compartido sin perder el CNAME exclusivo: Cloudflare advierte que también elimina DNS; se canceló esa operación.
 - Antes del uso real, verificar admin definitivo y retirar admindev (desactivar operators y luego Auth, conservando historial).
 - No declarar cerradas esas comprobaciones. Al retomarlas actualizar README, MEMORY, TESTING y CHANGELOG; después desarrollar Fase2 en iteraciones separadas.
-- Próxima sesión: leer esta memoria, revisar git status y estado Docker; acordar qué pendiente/iteración se retoma (siguientes: Iteración 4 Gemini lazy o Iteración 1 roles/permisos), sin reiniciar ni enviar WhatsApp por iniciativa propia.
+- Próxima sesión: leer esta memoria, revisar git status y estado Docker; acordar qué pendiente/iteración se retoma (siguientes: Iteración 1 roles/permisos o Iteración 3 cierre confirmado), sin reiniciar ni enviar WhatsApp por iniciativa propia.

@@ -28,7 +28,6 @@ async function postInbound(from, body, overrides = {}) {
     numMedia: overrides.numMedia || 0,
     mediaContentTypes: overrides.mediaContentTypes || [],
     rawPayload: {},
-    geminiClassification: null,
   };
 
   const response = await fetch(`${baseUrl}/api/bot/inbound`, {

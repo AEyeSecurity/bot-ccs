@@ -73,7 +73,6 @@ function inbound(from: string, body: string, overrides: Record<string, unknown> 
       (overrides.mediaUrls as string[]) ||
       Array.from({ length: numMedia }).map((_, index) => `mock://valid-${index}`),
     rawPayload: {},
-    geminiClassification: null,
   };
 }
 

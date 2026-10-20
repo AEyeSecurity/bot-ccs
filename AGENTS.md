@@ -30,7 +30,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 - The bot is **deterministic**: no LLM writes replies. `src/lib/bot-core.ts` (intent rules + case steps), `bot-catalog.ts` (`buildFlows` from the published catalog), `bot-engine.ts` (persistence, serializes inbound per phone number to avoid races).
 - Runtime path: Twilio → n8n `POST /webhook/bot-ccs` → `/api/bot/inbound` → engine → Supabase → `/api/bot/send` (Twilio) → `/api/bot/outbound` + `/api/twilio/status`.
-- Gemini has **two separate uses**, neither writes replies: (1) an intent classifier that runs in n8n on every message but is consumed only as a last-resort fallback in `detectIntent` (`bot-core.ts:1099`); (2) vision OCR for DNI/credential/medical-order media in `document-validation.ts`.
+- Gemini has **two separate uses**, neither writes replies: (1) a lazy intent classifier invoked only when deterministic rules miss, via `classifyIntentWithGemini()` (`intent-classifier.ts`, called from `detectIntent` in `bot-core.ts`); (2) vision OCR for DNI/credential/medical-order media in `document-validation.ts`. The intent classifier is asynchronous, has a timeout and falls back to `OTRAS_CONSULTAS`; n8n no longer classifies intent.
 - Publishing the catalog swaps the in-memory cache with **no build or restart**. A `revision` conflict returns `409`. Admin routes require the `admin` role (`401`/`403` otherwise); privileged writes use `service_role` server-side with RLS on.
 - Sensitive media is fetched transiently into memory for Gemini validation, never stored as files or displayed in the CRM.
 

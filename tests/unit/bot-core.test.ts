@@ -37,7 +37,6 @@ function payload(body: string, overrides: Partial<NormalizedInbound> = {}): Norm
     numMedia: 0,
     mediaContentTypes: [],
     rawPayload: {},
-    geminiClassification: null,
     ...overrides,
   };
 }
@@ -80,8 +79,8 @@ function withoutAccents(value: string) {
 }
 
 describe("bot core detection", () => {
-  test("generic greeting opens a natural prompt without numeric menus", () => {
-    const result = evaluateInboundTurn({
+  test("generic greeting opens a natural prompt without numeric menus", async () => {
+    const result = await evaluateInboundTurn({
       payload: payload("hola"),
       conversation: conversation(),
       openCase: null,
@@ -94,8 +93,8 @@ describe("bot core detection", () => {
     expect(result.reply?.text).not.toMatch(/\n\s*1\./);
   });
 
-  test("does not repeat the greeting after the conversation was already opened", () => {
-    const result = evaluateInboundTurn({
+  test("does not repeat the greeting after the conversation was already opened", async () => {
+    const result = await evaluateInboundTurn({
       payload: payload("quiero un turno medico"),
       conversation: conversation({ current_intent: OPENING_INTENT }),
       openCase: null,
@@ -108,7 +107,7 @@ describe("bot core detection", () => {
     expect(result.currentStep).toBe("professional_or_service");
   });
 
-  test("reclassifies the open appointment request without repeating the greeting", () => {
+  test("reclassifies the open appointment request without repeating the greeting", async () => {
     const selectorCase = {
       intent_key: "TURNOS_MEDICOS_SELECTOR",
       status: "in_progress" as const,
@@ -117,7 +116,7 @@ describe("bot core detection", () => {
       case_data: {},
     };
 
-    const attention = evaluateInboundTurn({
+    const attention = await evaluateInboundTurn({
       payload: payload("Cardiología"),
       conversation: conversation({ current_intent: "TURNOS_MEDICOS_SELECTOR", current_step: "professional_or_service" }),
       openCase: selectorCase,
@@ -128,7 +127,7 @@ describe("bot core detection", () => {
     expect(attention.reply?.text).toContain("nombre completo del paciente");
     expect(attention.currentStep).toBe("patient_identity");
 
-    const imaging = evaluateInboundTurn({
+    const imaging = await evaluateInboundTurn({
       payload: payload("Resonancia"),
       conversation: conversation({ current_intent: "TURNOS_MEDICOS_SELECTOR", current_step: "professional_or_service" }),
       openCase: selectorCase,
@@ -140,8 +139,8 @@ describe("bot core detection", () => {
     expect(imaging.reply?.text).toContain("+5492976211361");
   });
 
-  test("closes the selector with the unavailable-service message", () => {
-    const result = evaluateInboundTurn({
+  test("closes the selector with the unavailable-service message", async () => {
+    const result = await evaluateInboundTurn({
       payload: payload("servicio inventado"),
       conversation: conversation({ current_intent: "TURNOS_MEDICOS_SELECTOR", current_step: "professional_or_service" }),
       openCase: {
@@ -161,10 +160,10 @@ describe("bot core detection", () => {
     expect(result.reply?.text).toBe(BOT_2026_DATA.direct.unavailableService.body);
   });
 
-  test("detects all specialties as medical appointment requests", () => {
+  test("detects all specialties as medical appointment requests", async () => {
     for (const specialty of MEDICAL_SERVICES) {
       expect(detectSpecialty(specialty.title)?.title).toBe(specialty.title);
-      const result = detectIntent(payload(specialty.title), conversation({ current_intent: OPENING_INTENT }),);
+      const result = await detectIntent(payload(specialty.title), conversation({ current_intent: OPENING_INTENT }),);
       if (specialty.title === "Cirugía") {
         expect(result.intent).toBe("TURNOS_MEDICOS_SELECTOR");
         expect(result.ambiguity).toEqual(expect.arrayContaining(["Cirugía general", "Cirugía maxilofacial"]));
@@ -175,7 +174,7 @@ describe("bot core detection", () => {
     }
   });
 
-  test("routes every declared profession variant to the full specialty response", () => {
+  test("routes every declared profession variant to the full specialty response", async () => {
     for (const [specialtyTitle, aliases] of Object.entries(PROFESSION_ALIASES)) {
       if (specialtyTitle === "Cirugía") continue;
       const specialty = MEDICAL_SERVICES.find((item) => item.title === specialtyTitle);
@@ -188,7 +187,7 @@ describe("bot core detection", () => {
           const text = `Hola, necesito sacar un turno con ${variant}, por favor`;
           expect(detectSpecialty(text)?.title).toBe(specialtyTitle);
 
-          const result = evaluateInboundTurn({
+          const result = await evaluateInboundTurn({
             payload: payload(text),
             conversation: conversation(),
             openCase: null,
@@ -203,8 +202,8 @@ describe("bot core detection", () => {
     }
   });
 
-  test("routes surgery through explicit sub-specialties without emitting titles", () => {
-    const initial = evaluateInboundTurn({
+  test("routes surgery through explicit sub-specialties without emitting titles", async () => {
+    const initial = await evaluateInboundTurn({
       payload: payload("Necesito un cirujano"),
       conversation: conversation(),
       openCase: null,
@@ -221,12 +220,12 @@ describe("bot core detection", () => {
       "cirugía vascular": ["cirugia_soulergues"],
     } as const;
     for (const [message, groupIds] of Object.entries(expectedGroups)) {
-      const result = detectIntent(payload(message), conversation());
+      const result = await detectIntent(payload(message), conversation());
       expect(result.intent).toBe("TURNOS_MEDICOS_ATENCION_MEDICA");
       expect(new Set(result.seededData.professionalResponseGroupIds as string[])).toEqual(new Set(groupIds));
     }
 
-    const general = evaluateInboundTurn({
+    const general = await evaluateInboundTurn({
       payload: payload("general"),
       conversation: conversation({ current_intent: "TURNOS_MEDICOS_SELECTOR", current_step: "professional_or_service" }),
       openCase: {
@@ -248,8 +247,8 @@ describe("bot core detection", () => {
     expect(general.reply?.text).not.toContain("Cardoso Martin especialista");
   });
 
-  test("uses the Cardoso prompt and resolves surname plus sub-specialty", () => {
-    const ambiguous = evaluateInboundTurn({
+  test("uses the Cardoso prompt and resolves surname plus sub-specialty", async () => {
+    const ambiguous = await evaluateInboundTurn({
       payload: payload("Doc Cardozo"),
       conversation: conversation(),
       openCase: null,
@@ -260,9 +259,9 @@ describe("bot core detection", () => {
     expect(ambiguous.reply?.text).not.toContain("Cardoso Atilio, Cardoso Martin");
     expect(ambiguous.caseState?.caseData.selectionContext).toBe("cardoso");
 
-    expect(detectIntent(payload("Cardoso maxilofacial"), conversation()).seededData.professionalResponseGroupIds)
+    expect((await detectIntent(payload("Cardoso maxilofacial"), conversation())).seededData.professionalResponseGroupIds)
       .toEqual(["cirugia_cardoso_martin"]);
-    expect(detectIntent(payload("Cardozo cirugía general"), conversation()).seededData.professionalResponseGroupIds)
+    expect((await detectIntent(payload("Cardozo cirugía general"), conversation())).seededData.professionalResponseGroupIds)
       .toEqual(["cirugia_cardoso_atilio"]);
   });
 
@@ -286,7 +285,7 @@ describe("bot core detection", () => {
     expect(detectInsuranceInquiry("¿Qué obras sociales aceptan?")).toEqual({ kind: "generic" });
   });
 
-  test("answers insurance questions during an active case without changing its state", () => {
+  test("answers insurance questions during an active case without changing its state", async () => {
     const openCase = {
       intent_key: "TURNOS_MEDICOS_ATENCION_MEDICA",
       status: "in_progress" as const,
@@ -294,7 +293,7 @@ describe("bot core detection", () => {
       required_fields_status: { professional_or_service: true, patient_identity: false },
       case_data: { professionalOrService: "Cardiología" },
     };
-    const result = evaluateInboundTurn({
+    const result = await evaluateInboundTurn({
       payload: payload("¿Aceptan OSDE 210?"),
       conversation: conversation({ current_intent: openCase.intent_key, current_step: openCase.current_step }),
       openCase,
@@ -308,8 +307,8 @@ describe("bot core detection", () => {
     expect(result.caseState?.caseData).toEqual(openCase.case_data);
   });
 
-  test("uses the unavailable-service copy only for explicit unknown appointments", () => {
-    const unavailable = evaluateInboundTurn({
+  test("uses the unavailable-service copy only for explicit unknown appointments", async () => {
+    const unavailable = await evaluateInboundTurn({
       payload: payload("Quiero un turno con kinesiología"),
       conversation: conversation(),
       openCase: null,
@@ -318,7 +317,7 @@ describe("bot core detection", () => {
     expect(unavailable.intent).toBe("SERVICIO_NO_DISPONIBLE");
     expect(unavailable.reply?.text).toBe(BOT_2026_DATA.direct.unavailableService.body);
     expect(unavailable.reply?.text.match(/Gracias por comunicarse/g)).toHaveLength(1);
-    expect(detectIntent(payload("Necesito un certificado"), conversation()).intent).toBe("OTRAS_CONSULTAS");
+    expect((await detectIntent(payload("Necesito un certificado"), conversation())).intent).toBe("OTRAS_CONSULTAS");
   });
 
   test("detects every declared professional alias and preserves response groups", () => {
@@ -414,9 +413,9 @@ describe("bot core detection", () => {
     }
   });
 
-  test("distinguishes clínica médica specialty from médicos clínicos walk-in information", () => {
-    expect(detectIntent(payload("Clínica Médica"), conversation()).intent).toBe("TURNOS_MEDICOS_ATENCION_MEDICA");
-    expect(detectIntent(payload("médicos clínicos"), conversation()).intent).toBe("MEDICOS_CLINICOS");
+  test("distinguishes clínica médica specialty from médicos clínicos walk-in information", async () => {
+    expect((await detectIntent(payload("Clínica Médica"), conversation())).intent).toBe("TURNOS_MEDICOS_ATENCION_MEDICA");
+    expect((await detectIntent(payload("médicos clínicos"), conversation())).intent).toBe("MEDICOS_CLINICOS");
   });
 
   test("detects remote versus local city for telemedicine", () => {
@@ -444,9 +443,9 @@ describe("bot core detection", () => {
     }
   });
 
-  test("flags clinical risk prompts out of scope", () => {
+  test("flags clinical risk prompts out of scope", async () => {
     expect(containsClinicalRisk("Tengo dolor y quiero saber qué medicación tomar")).toBe(true);
-    expect(detectIntent(payload("Tengo dolor y quiero saber qué medicación tomar"), conversation()).intent).toBe(
+    expect((await detectIntent(payload("Tengo dolor y quiero saber qué medicación tomar"), conversation())).intent).toBe(
       "FUERA_ALCANCE_MEDICO",
     );
   });
@@ -457,8 +456,8 @@ describe("bot core detection", () => {
     expect(namesMatch("Guillermo Fernandez", "Juan Perez")).toBe(false);
   });
 
-  test("does not satisfy DNI media with numMedia alone", () => {
-    const result = evaluateInboundTurn({
+  test("does not satisfy DNI media with numMedia alone", async () => {
+    const result = await evaluateInboundTurn({
       payload: payload("Juan Perez", {
         numMedia: 2,
         mediaContentTypes: ["image/jpeg", "image/jpeg"],
@@ -487,6 +486,43 @@ describe("bot core detection", () => {
     for (const key of SHEET_VISIBLE_BRANCHES) {
       if (key === "TURNOS_MEDICOS" || key === "INFORMES_MEDICOS") continue;
       expect(FLOWS[key]).toBeDefined();
+    }
+  });
+
+  test("calls Gemini lazily only when deterministic rules miss and honors its classification", async () => {
+    process.env.GEMINI_API_KEY = "gemini-test-key";
+    const fetchMock = vi.spyOn(global, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          candidates: [{ content: { parts: [{ text: '{"intent_key":"LABORATORIO_CLINICO","confidence":0.8,"needs_operator":false,"reason":"prueba"}' }] } }],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      ),
+    );
+
+    try {
+      const result = await detectIntent(payload("un texto que no coincide con ninguna regla"), conversation());
+      expect(result.intent).toBe("LABORATORIO_CLINICO");
+      expect(result.confidence).toBe(0.8);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    } finally {
+      delete process.env.GEMINI_API_KEY;
+      fetchMock.mockRestore();
+    }
+  });
+
+  test("falls through to OTRAS_CONSULTAS when the lazy classifier fails", async () => {
+    process.env.GEMINI_API_KEY = "gemini-test-key";
+    const fetchMock = vi.spyOn(global, "fetch").mockResolvedValue(
+      new Response("error", { status: 500 }),
+    );
+
+    try {
+      const result = await detectIntent(payload("otro texto sin regla"), conversation());
+      expect(result.intent).toBe("OTRAS_CONSULTAS");
+    } finally {
+      delete process.env.GEMINI_API_KEY;
+      fetchMock.mockRestore();
     }
   });
 });

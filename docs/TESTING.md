@@ -25,7 +25,7 @@ node scripts/verify-bot-n8n-e2e.mjs
 
 ## Cobertura
 
-- Unitarias: detección, normalización, catálogo, caché, DNI, vencimientos y modelo del editor.
+- Unitarias: detección, normalización, catálogo, caché, DNI, vencimientos, modelo del editor y clasificador de intención Gemini "lazy" (timeout y caída a `OTRAS_CONSULTAS`).
 - Integración: APIs administrativas, inbound, envío, persistencia y forma del workflow.
 - Matriz generada: caminos por especialidad, profesión, profesional, estudio, servicio directo, cobertura y ambigüedad.
 - HTTP local: contratos productivos con el proceso levantado.

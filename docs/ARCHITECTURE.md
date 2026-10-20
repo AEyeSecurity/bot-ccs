@@ -2,7 +2,7 @@
 
 ## Vista General
 
-BOT CCS es un asistente determinístico de WhatsApp y un panel web de operación para Clínica Cruz del Sur. Gemini se utiliza únicamente como apoyo acotado de clasificación y validación documental; no redacta las respuestas enviadas al paciente.
+BOT CCS es un asistente determinístico de WhatsApp y un panel web de operación para Clínica Cruz del Sur. Gemini se utiliza únicamente como apoyo acotado: validación documental y clasificación de intención bajo demanda cuando las reglas determinísticas no resuelven el mensaje; no redacta las respuestas enviadas al paciente.
 
 ```text
 Paciente
@@ -25,7 +25,7 @@ La aplicación Next.js también sirve el panel de conversaciones y el editor adm
 - **Supabase/PostgreSQL:** operadores, contactos, conversaciones, casos, mensajes, eventos, callbacks y versiones del catálogo.
 - **n8n:** normaliza el webhook de Twilio y mantiene un único recorrido técnico hacia la API local.
 - **Twilio:** recepción y envío de mensajes, media/vCards y callbacks de estado.
-- **Gemini:** clasificación auxiliar y OCR estructurado para documentos.
+- **Gemini:** OCR estructurado para documentos y clasificación de intención "lazy" (solo cuando el motor determinístico no clasificó, con timeout y caída a `OTRAS_CONSULTAS`).
 - **Docker Compose:** ejecuta web, mantenimiento y conector Cloudflare con reinicio automático y logs rotados; tools contiene las herramientas bajo un perfil opcional.
 - **Mantenimiento en contenedor:** ejecuta cierres idempotentes cada minuto, sin tareas Windows.
 

@@ -74,7 +74,7 @@ async function attachDocumentValidations(
   conversation: ConversationSnapshot,
   openCase: CaseSnapshot | null,
 ) {
-  const requests = getDocumentValidationRequestsForTurn({ payload, conversation, openCase });
+  const requests = await getDocumentValidationRequestsForTurn({ payload, conversation, openCase });
   if (!requests.length) return payload;
 
   const validations = await Promise.all(
@@ -412,7 +412,7 @@ async function processInboundForContact(payload: NormalizedInbound) {
 
   const openCase = await openCaseForConversation(supabase, String(conversation.id));
   const payloadWithValidations = await attachDocumentValidations(payload, conversation, openCase);
-  const result = evaluateInboundTurn({
+  const result = await evaluateInboundTurn({
     payload: payloadWithValidations,
     conversation,
     openCase,

@@ -10,7 +10,7 @@ function cloneCatalog() {
   return structuredClone(baseline);
 }
 
-function evaluate(body: string) {
+async function evaluate(body: string) {
   const payload: NormalizedInbound = {
     from: "whatsapp:+5491110000001",
     to: "whatsapp:+5493516424148",
@@ -20,7 +20,6 @@ function evaluate(body: string) {
     numMedia: 0,
     mediaContentTypes: [],
     rawPayload: {},
-    geminiClassification: null,
   };
   const conversation: ConversationSnapshot = {
     id: "conversation-1",
@@ -36,51 +35,51 @@ function evaluate(body: string) {
 afterEach(() => activateCatalog(baseline));
 
 describe("managed catalog runtime", () => {
-  test("uses the short acknowledgement for every resolved initial request", () => {
+  test("uses the short acknowledgement for every resolved initial request", async () => {
     for (const body of ["arteriografía", "cardiología", "Dr. Segovia", "laboratorio", "¿Aceptan OSDE?"]) {
-      const result = evaluate(body);
+      const result = await evaluate(body);
       expect(result.reply?.text).toContain("Gracias por comunicarse con Clínica Cruz del Sur.");
       expect(result.reply?.text).not.toContain("¿En qué podemos ayudarle?");
     }
-    expect(evaluate("hola").reply?.text).toContain("¿En qué podemos ayudarle?");
+    expect((await evaluate("hola")).reply?.text).toContain("¿En qué podemos ayudarle?");
   });
 
-  test("recognizes disabled specialty, professional, study, direct service and insurance", () => {
+  test("recognizes disabled specialty, professional, study, direct service and insurance", async () => {
     const unavailable = baseline.messages.unavailableService.body;
 
     const specialtyCatalog = cloneCatalog();
     specialtyCatalog.medicalServices.find((item) => item.title === "Cardiología")!.available = false;
     activateCatalog(specialtyCatalog);
-    expect(evaluate("cardiólogo")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
+    expect(await evaluate("cardiólogo")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
 
     const professionalCatalog = cloneCatalog();
     professionalCatalog.professionals.find((item) => item.name === "Segovia Néstor")!.available = false;
     activateCatalog(professionalCatalog);
-    expect(evaluate("Dr Segovia")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
+    expect(await evaluate("Dr Segovia")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
 
     const studyCatalog = cloneCatalog();
     studyCatalog.imagingStudies.find((item) => item.title === "Arteriografía")!.available = false;
     activateCatalog(studyCatalog);
-    expect(evaluate("arteriografía")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
+    expect(await evaluate("arteriografía")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
 
     const directCatalog = cloneCatalog();
     directCatalog.direct.laboratory.available = false;
     activateCatalog(directCatalog);
-    expect(evaluate("laboratorio")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
+    expect(await evaluate("laboratorio")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
 
     const insuranceCatalog = cloneCatalog();
     insuranceCatalog.insurancePlans.find((item) => item.name === "OSDE")!.available = false;
     activateCatalog(insuranceCatalog);
-    expect(evaluate("¿Aceptan OSDE?").reply?.text).toContain("no contamos con convenio vigente con OSDE");
+    expect((await evaluate("¿Aceptan OSDE?")).reply?.text).toContain("no contamos con convenio vigente con OSDE");
   });
 
-  test("uses a specialty custom body instead of assembling its professional blocks", () => {
+  test("uses a specialty custom body instead of assembling its professional blocks", async () => {
     const custom = cloneCatalog();
     const cardio = custom.medicalServices.find((item) => item.title === "Cardiología")!;
     cardio.customBody = "Cardiología atiende con turno previo. Envíenos un WhatsApp al +5491111111111.";
     activateCatalog(custom);
 
-    const result = evaluate("cardiología");
+    const result = await evaluate("cardiología");
     expect(result.reply?.text).toContain("Cardiología atiende con turno previo");
     expect(result.reply?.text).not.toContain("Segovia");
   });

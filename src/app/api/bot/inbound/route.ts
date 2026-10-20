@@ -16,15 +16,6 @@ const schema = z.object({
   mediaContentTypes: z.array(z.string()).optional().default([]),
   mediaUrls: z.array(z.string()).optional().default([]),
   rawPayload: z.record(z.string(), z.unknown()).optional(),
-  geminiClassification: z
-    .object({
-      intent_key: z.string().optional(),
-      confidence: z.coerce.number().optional(),
-      needs_operator: z.boolean().optional(),
-      reason: z.string().optional(),
-    })
-    .nullable()
-    .optional(),
 });
 
 function stringValue(value: unknown) {
@@ -62,18 +53,6 @@ function normalizePayload(input: Record<string, unknown>) {
         .filter(Boolean)
         .map(String);
 
-  const geminiClassification =
-    input.geminiClassification && typeof input.geminiClassification === "object"
-      ? input.geminiClassification
-      : input.intent_key || input.confidence
-        ? {
-            intent_key: input.intent_key,
-            confidence: input.confidence,
-            needs_operator: input.needs_operator,
-            reason: input.reason,
-          }
-        : null;
-
   return {
     from: stringValue(input.from ?? input.From),
     to: stringValue(input.to ?? input.To),
@@ -84,7 +63,6 @@ function normalizePayload(input: Record<string, unknown>) {
     mediaContentTypes,
     mediaUrls,
     rawPayload: sanitizeTwilioPayload(input) as Record<string, unknown>,
-    geminiClassification,
   };
 }
 
@@ -97,7 +75,6 @@ export async function POST(request: NextRequest) {
       ...parsed,
       messageSid: parsed.messageSid ?? null,
       profileName: parsed.profileName ?? null,
-      geminiClassification: parsed.geminiClassification ?? null,
     };
     const result = await processInbound(payload);
     return Response.json(result);

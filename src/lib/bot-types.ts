@@ -9,12 +9,6 @@ export type NormalizedInbound = {
   mediaUrls?: string[];
   documentValidations?: Partial<Record<DocumentMediaField, DocumentValidationResult>>;
   rawPayload?: Record<string, unknown>;
-  geminiClassification?: {
-    intent_key?: string;
-    confidence?: number;
-    needs_operator?: boolean;
-    reason?: string;
-  } | null;
 };
 
 export type ConversationStatus =

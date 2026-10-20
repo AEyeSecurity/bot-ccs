@@ -1,6 +1,6 @@
 # BOT CCS
 
-Asistente WhatsApp y panel de atención para Clínica Cruz del Sur. El motor es determinístico: Gemini clasifica y valida documentos, pero no redacta respuestas al paciente.
+Asistente WhatsApp y panel de atención para Clínica Cruz del Sur. El motor es determinístico: Gemini valida documentos y, bajo demanda y solo como último recurso, clasifica la intención. No redacta respuestas al paciente.
 
 ## Arquitectura y ejecución
 
@@ -198,6 +198,8 @@ Registro de requerimientos del cliente y soluciones propuestas. Se amplía a med
 4. **Alcance**: aplicar solo a flujos "informativos simples" (Medicina Clínica y similares), no a los casos que derivan a operador.
 
 ### Iteración 4 — Clasificación Gemini "lazy" (asíncrona y bajo demanda)
+
+> **Estado: completada.** La clasificación dejó de hacerse siempre en n8n; ahora `detectIntent` es asíncrono e invoca `classifyIntentWithGemini()` (`src/lib/intent-classifier.ts`) únicamente cuando las reglas determinísticas no clasificaron, con timeout y caída a `OTRAS_CONSULTAS` ante error. El nodo `Clasificar intención Gemini` se retiró del workflow de n8n.
 
 **Requerimiento:**
 

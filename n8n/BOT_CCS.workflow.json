@@ -35,53 +35,6 @@
     },
     {
       "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "models/gemini-2.5-flash",
-          "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "=Sos un clasificador de intención para el WhatsApp de Clínica Cruz del Sur.\n\nREGLAS OBLIGATORIAS:\n- Devolvé únicamente JSON válido.\n- No redactes respuestas finales al paciente.\n- No des indicaciones médicas.\n- Elegí solo una de estas intenciones: OPENING, TURNOS_MEDICOS_SELECTOR, TURNOS_MEDICOS_ATENCION_MEDICA, TURNOS_MEDICOS_IMAGENES_MEDICAS, IMAGENES_ORDEN_LLEGADA_RADIOGRAFIA, IMAGENES_ORDEN_LLEGADA_ECG, IMAGENES_ORDEN_LLEGADA_ECOCARDIOGRAMA, IMAGENES_ORDEN_LLEGADA_TOMOGRAFIA, IMAGENES_ORDEN_LLEGADA_ESPINOGRAMA, LABORATORIO_CLINICO, INFORMES_MEDICOS_IMAGENES_MEDICAS, INFORMES_MEDICOS_ESTUDIOS_PATOLOGIA, INFORMES_MEDICOS_LABORATORIO_CLINICO, RECETAS_MEDICAS, NUESTROS_EDIFICIOS, INTERNACION, OBRAS_SOCIALES, MEDICOS_CLINICOS, OTRAS_CONSULTAS, TELEMEDICINA_DRA_ESTRADA, FUERA_ALCANCE_MEDICO.\n- Si el texto menciona síntomas, diagnóstico, medicación, interpretación de estudios, urgencias, emergencias o recomendaciones clínicas, devolvé FUERA_ALCANCE_MEDICO.\n- Si menciona telemedicina o Dra. Estrada, priorizá TELEMEDICINA_DRA_ESTRADA.\n- Si menciona Clínica Médica como especialidad, usá TURNOS_MEDICOS_ATENCION_MEDICA.\n- Si menciona médico clínico o médicos clínicos como atención por orden de llegada, usá MEDICOS_CLINICOS.\n- Si hay duda, devolvé OTRAS_CONSULTAS con needs_operator=true.\n\nFormato exacto:\n{\"intent_key\":\"OTRAS_CONSULTAS\",\"confidence\":0.75,\"needs_operator\":false,\"reason\":\"breve\"}\n\nMensaje del paciente:\n{{ $json.body }}"
-            }
-          ]
-        },
-        "jsonOutput": true,
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.googleGemini",
-      "typeVersion": 1,
-      "position": [
-        -464,
-        0
-      ],
-      "id": "603a49de-f3d7-4d21-a50e-a905f3b3f2d7",
-      "name": "Clasificar intención Gemini",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "XheYFizKmpqToHhL",
-          "name": "N8N Gemini Sinoca"
-        }
-      },
-      "continueOnFail": true
-    },
-    {
-      "parameters": {
-        "jsCode": "let inbound = {};\ntry {\n  inbound = $('Preparar inbound Twilio').item.json || {};\n} catch (error) {\n  inbound = $input.first().json || {};\n}\n\nconst gemini = $input.first().json || {};\nconst classification = {\n  intent_key: typeof gemini.intent_key === 'string' ? gemini.intent_key : undefined,\n  confidence: Number(gemini.confidence || 0),\n  needs_operator: Boolean(gemini.needs_operator),\n  reason: typeof gemini.reason === 'string' ? gemini.reason : undefined\n};\n\nreturn [{\n  json: {\n    ...inbound,\n    geminiClassification: classification\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -176,
-        0
-      ],
-      "id": "00a59a76-17bb-4b70-bf4c-2f6b0477c660",
-      "name": "Preparar payload API"
-    },
-    {
-      "parameters": {
         "method": "POST",
         "url": "http://127.0.0.1:3010/api/bot/inbound",
         "sendHeaders": true,
@@ -269,28 +222,6 @@
       ]
     },
     "Preparar inbound Twilio": {
-      "main": [
-        [
-          {
-            "node": "Clasificar intención Gemini",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Clasificar intención Gemini": {
-      "main": [
-        [
-          {
-            "node": "Preparar payload API",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Preparar payload API": {
       "main": [
         [
           {

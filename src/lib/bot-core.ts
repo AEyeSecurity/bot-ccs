@@ -27,6 +27,7 @@ import {
   type ProfessionalDetection,
   type StepRequirement,
 } from "./bot-catalog";
+import { classifyIntentWithGemini } from "./intent-classifier";
 import type {
   BotCaseData,
   BotFieldKey,
@@ -962,15 +963,15 @@ function buildFlowMessage(flowIntent: string, options: CoreOptions, includeGreet
   );
 }
 
-export function detectIntent(
+export async function detectIntent(
   payload: NormalizedInbound,
   conversation: ConversationSnapshot | null,
-): {
+): Promise<{
   intent: string;
   confidence: number;
   seededData: BotCaseData;
   ambiguity?: readonly string[];
-} {
+}> {
   const text = payload.body.trim();
   const normalized = normalizeText(text);
   const seededData: BotCaseData = {};
@@ -1096,12 +1097,12 @@ export function detectIntent(
     return { intent: "NUESTROS_EDIFICIOS", confidence: 0.85, seededData };
   }
 
-  const gemini = payload.geminiClassification;
-  const geminiIntent = gemini?.intent_key || "";
+  const classification = await classifyIntentWithGemini(text);
+  const geminiIntent = classification?.intent_key || "";
   if (geminiIntent && FLOWS[geminiIntent]) {
     return {
       intent: isIntentAvailable(geminiIntent) ? geminiIntent : UNAVAILABLE_SERVICE_INTENT,
-      confidence: Number(gemini?.confidence || 0),
+      confidence: Number(classification?.confidence || 0),
       seededData,
     };
   }
@@ -1347,11 +1348,11 @@ function buildSelectorPromptResult(
   };
 }
 
-function handleTurnosMedicosSelectorTurn(
+async function handleTurnosMedicosSelectorTurn(
   payload: NormalizedInbound,
   openCase: CaseSnapshot,
   options: CoreOptions,
-): CoreTurnResult {
+): Promise<CoreTurnResult> {
   const selectionContext = String(openCase.case_data?.selectionContext || "");
   if (selectionContext === "surgery" || selectionContext === "cardoso") {
     const contextualSelection = detectSurgeryContextSelection(payload.body, selectionContext);
@@ -1378,7 +1379,7 @@ function handleTurnosMedicosSelectorTurn(
     }
   }
 
-  const detected = detectIntent(payload, null);
+  const detected = await detectIntent(payload, null);
   if (detected.intent !== UNAVAILABLE_SERVICE_INTENT && !isIntentAvailable(detected.intent)) {
     detected.intent = UNAVAILABLE_SERVICE_INTENT;
     detected.seededData = {};
@@ -1483,7 +1484,7 @@ function validationRequestsForCaseTurn(
     }));
 }
 
-export function getDocumentValidationRequestsForTurn(args: {
+export async function getDocumentValidationRequestsForTurn(args: {
   payload: NormalizedInbound;
   conversation: ConversationSnapshot;
   openCase: CaseSnapshot | null;
@@ -1501,18 +1502,18 @@ export function getDocumentValidationRequestsForTurn(args: {
     return flow?.kind === "case" ? validationRequestsForCaseTurn(flow, payload, openCase, {}) : [];
   }
 
-  const detected = detectIntent(payload, conversation);
+  const detected = await detectIntent(payload, conversation);
   if (detected.intent !== UNAVAILABLE_SERVICE_INTENT && !isIntentAvailable(detected.intent)) return [];
   const flow = getFlow(detected.intent);
   return flow?.kind === "case" ? validationRequestsForCaseTurn(flow, payload, null, detected.seededData) : [];
 }
 
-export function evaluateInboundTurn(args: {
+export async function evaluateInboundTurn(args: {
   payload: NormalizedInbound;
   conversation: ConversationSnapshot;
   openCase: CaseSnapshot | null;
   options: CoreOptions;
-}): CoreTurnResult {
+}): Promise<CoreTurnResult> {
   const { payload, conversation, openCase, options } = args;
 
   const muted = muteWhileWaitingOperator(conversation, openCase);
@@ -1525,7 +1526,7 @@ export function evaluateInboundTurn(args: {
 
   if (openCase?.status === "in_progress") {
     if (openCase.intent_key === TURNOS_MEDICOS_SELECTOR_INTENT) {
-      return handleTurnosMedicosSelectorTurn(payload, openCase, options);
+      return await handleTurnosMedicosSelectorTurn(payload, openCase, options);
     }
 
     const flow = getFlow(openCase.intent_key);
@@ -1581,7 +1582,7 @@ export function evaluateInboundTurn(args: {
     }
   }
 
-  const detected = detectIntent(payload, conversation);
+  const detected = await detectIntent(payload, conversation);
   if (detected.intent !== UNAVAILABLE_SERVICE_INTENT && !isIntentAvailable(detected.intent)) {
     detected.intent = UNAVAILABLE_SERVICE_INTENT;
     detected.seededData = {};

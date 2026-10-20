@@ -39,6 +39,7 @@ export function getServerEnv() {
     twilioStatusCallbackUrl: optional("TWILIO_STATUS_CALLBACK_URL"),
     geminiApiKey: optional("GEMINI_API_KEY"),
     geminiVisionModel: optional("GEMINI_VISION_MODEL") || "gemini-2.5-flash",
+    geminiIntentModel: optional("GEMINI_INTENT_MODEL") || "gemini-2.5-flash",
     botWebhookSecret: requiredEnv("BOT_CCS_WEBHOOK_SECRET"),
     vcardPublicBaseUrl: optional("VCARD_PUBLIC_BASE_URL") || "https://ccs.aeye.com.ar/vcards",
     humanTakeoverTimeoutMinutes: Number(optional("HUMAN_TAKEOVER_TIMEOUT_MINUTES") || "10"),
