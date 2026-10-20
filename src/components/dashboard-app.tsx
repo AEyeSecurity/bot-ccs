@@ -248,7 +248,9 @@ export function DashboardApp() {
     setAuthError("");
     setBusy(true);
     const normalizedLogin = loginId.trim().toLowerCase();
-    const email = normalizedLogin === "admin" ? "admin@bot-ccs.local" : normalizedLogin;
+    const email = ["admin", "admindev"].includes(normalizedLogin)
+      ? `${normalizedLogin}@bot-ccs.local`
+      : normalizedLogin;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
     if (error) setAuthError(error.message);

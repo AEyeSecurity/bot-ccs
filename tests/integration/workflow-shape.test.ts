@@ -9,6 +9,8 @@ describe("n8n workflow shape", () => {
     const sendNode = workflow.nodes.find((node: { name: string }) => node.name === "Enviar WhatsApp CCS");
     expect(sendNode?.type).toBe("n8n-nodes-base.httpRequest");
     expect(sendNode?.parameters?.url).toBe("http://127.0.0.1:3010/api/bot/send");
+    expect(sendNode?.parameters?.authentication).toBe("genericCredentialType");
+    expect(sendNode?.parameters?.genericAuthType).toBe("httpHeaderAuth");
     expect(JSON.stringify(workflow)).not.toContain("n8n-nodes-base.twilio");
   });
 });

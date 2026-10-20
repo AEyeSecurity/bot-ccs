@@ -16,7 +16,7 @@ Paciente
   -> POST /api/bot/outbound y /api/twilio/status
 ```
 
-La aplicación Next.js también sirve el panel de conversaciones y el editor administrativo en `https://ccs.aeye.com.ar/`. El proceso productivo escucha en `127.0.0.1:3010` y Cloudflare Tunnel publica el dominio.
+La aplicación Next.js también sirve el panel de conversaciones y el editor administrativo en `https://ccs.aeye.com.ar/`. El contenedor escucha en `0.0.0.0:3010`; Docker publica `127.0.0.1:3010` en el host para n8n y diagnóstico. Cloudflare Tunnel publica el dominio.
 
 ## Componentes
 
@@ -26,8 +26,8 @@ La aplicación Next.js también sirve el panel de conversaciones y el editor adm
 - **n8n:** normaliza el webhook de Twilio y mantiene un único recorrido técnico hacia la API local.
 - **Twilio:** recepción y envío de mensajes, media/vCards y callbacks de estado.
 - **Gemini:** clasificación auxiliar y OCR estructurado para documentos.
-- **PM2:** mantiene el proceso `bot-ccs-web` activo.
-- **Programador de tareas de Windows:** ejecuta watchdog y mantenimiento de conversaciones.
+- **Docker Compose:** ejecuta web, mantenimiento y conector Cloudflare con reinicio automático y logs rotados; tools contiene las herramientas bajo un perfil opcional.
+- **Mantenimiento en contenedor:** ejecuta cierres idempotentes cada minuto, sin tareas Windows.
 
 ## Estados Y Casos
 
@@ -60,8 +60,8 @@ No existe fallback productivo al XLSX ni a datos TypeScript. Si el proceso inici
 - Las APIs administrativas exigen rol `admin`; responden `401` sin sesión y `403` para operadores comunes.
 - Las escrituras privilegiadas se realizan server-side con `service_role`.
 - RLS permanece habilitado en Supabase.
-- Los secretos solo viven en `.env.local` o en el entorno del servicio.
-- Los adjuntos sensibles no se descargan ni se muestran en el panel; se conserva metadata mínima y huellas no reversibles.
+- Los secretos se inyectan desde archivos privados fuera del repositorio y mediante el secret del túnel. `.env.local` es una entrada opcional para herramientas y no forma parte de las imágenes.
+- Los adjuntos se descargan temporalmente en memoria y se envían a Gemini para validación; no se persisten como archivos ni se muestran en el panel.
 - Los logs, reportes, respaldos y variables reales están excluidos del repositorio.
 
 ## Decisiones Vigentes
@@ -71,3 +71,25 @@ No existe fallback productivo al XLSX ni a datos TypeScript. Si el proceso inici
 - Un solo catálogo publicado como fuente productiva.
 - No se cambian contratos de n8n al editar contenido.
 - El operador controla la publicación; guardar un borrador nunca cambia la respuesta productiva.
+
+## Docker: configuración vigente desde 2026-10-16
+
+Aplicación y mantenimiento en Docker Compose; n8n existente conserva el workflow editable y llama al puerto loopback3010 del host. Supabase sigue externo y conserva los datos. Cloudflare dedicado se configura con el perfil public y token propio. Las vCards se generan desde el catálogo publicado en /vcards/. BOT_CCS_WEBHOOK_SECRET es obligatorio, usando Header Auth en n8n. PM2 y tareas Windows son mecanismos históricos retirados al completar el corte. Ver docs/OPERATIONS.md y docs/TESTING.md.
+
+## Organización del proyecto
+
+| Ruta | Uso vigente |
+| --- | --- |
+| `src/` | Panel, APIs, motor, catálogo y vCards |
+| `scripts/` | Mantenimiento y herramientas de pruebas, importación y migraciones ejecutadas en Docker |
+| `n8n/BOT_CCS.workflow.json` | Exportación canónica del workflow externo, sin secretos |
+| `data/` y `src/lib/bot-2026-data.ts` | Importación y fixtures de pruebas; no son contenido productivo |
+| `supabase/` | Esquema, migraciones y seeds explícitos; preservar el historial |
+| `tests/` | Pruebas herméticas, integración y matriz del bot |
+| `public/` | Directorio de recursos estáticos; sin imágenes de ejemplo de Next.js |
+| `docs/` | Documentación canónica de arquitectura, operación, pruebas y producto |
+| `Dockerfile`, `compose.yaml`, `.dockerignore` | Construcción, servicios, herramientas y exclusiones |
+
+Las dependencias y `.next` se generan dentro de las imágenes. Los reportes viven en un volumen Docker y los logs en el mecanismo de rotación de Docker. No hay montajes de fuentes o dependencias del host en web o mantenimiento. El único archivo externo montado en producción es el token del túnel, de solo lectura. Los archivos privados de entorno se inyectan al crear los contenedores.
+
+Se retiraron configuraciones PM2, instaladores/watchdog Windows, el script de corte inicial, snapshots de workflows y el sincronizador antiguo de menús Twilio. La limpieza no altera tablas, usuarios, catálogo publicado ni configuración del n8n compartido.

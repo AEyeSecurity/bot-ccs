@@ -1,13 +1,9 @@
-import fs from "node:fs";
-import path from "node:path";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 
-dotenv.config({ path: path.join(process.cwd(), ".env.local") });
+dotenv.config({ path: ".env.local" });
 
-const logPath = path.join(process.cwd(), "logs", "bot-ccs-maintenance.log");
-fs.mkdirSync(path.dirname(logPath), { recursive: true });
-const writeLog = (message) => fs.appendFileSync(logPath, `${new Date().toISOString()} - ${message}\n`);
+const writeLog = (message) => console.log(`${new Date().toISOString()} - ${message}`);
 
 try {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {

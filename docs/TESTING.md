@@ -1,15 +1,18 @@
 # Estrategia De Pruebas
 
+La prueba real de WhatsApp y el reinicio del host quedan pospuestos. Seguir [las comprobaciones pendientes de operación](OPERATIONS.md#comprobaciones-pendientes) cuando se retomen. No cuentan como aprobados en la matriz automática.
+
 ## Comandos
 
 ```powershell
-npm test
-npm run lint
-npm run build
-npm run test:bot:report
+docker compose --env-file C:/ProgramData/BotCCS/deploy.env build web maintenance tools
+docker compose --env-file C:/ProgramData/BotCCS/deploy.env --profile tools run --rm tools npm test
+docker compose --env-file C:/ProgramData/BotCCS/deploy.env --profile tools run --rm tools npm run lint
 ```
 
-Verificaciones adicionales:
+La construcción de web ejecuta `npm run build` dentro de Docker. La matriz `npm run test:bot:report` se ejecuta mediante el runner aislado descrito abajo, nunca contra producción. No instalar dependencias ni compilar en el host.
+
+Verificaciones adicionales, dentro de `tools`:
 
 ```powershell
 npm run verify:catalog-db
@@ -27,7 +30,7 @@ node scripts/verify-bot-n8n-e2e.mjs
 - Matriz generada: caminos por especialidad, profesión, profesional, estudio, servicio directo, cobertura y ambigüedad.
 - HTTP local: contratos productivos con el proceso levantado.
 - n8n E2E: webhook completo hacia la API local.
-- Operación: PM2, URL pública, watchdog y mantenimiento.
+- Operación: contenedores saludables, URL pública, túnel y mantenimiento.
 
 ## Casos Críticos
 
@@ -50,8 +53,8 @@ Una versión puede darse de alta solo si:
 - no faltan ramas visibles en la matriz;
 - HTTP y n8n E2E no tienen incidentes;
 - la URL local y pública responden `200`;
-- PM2 está `online`;
-- watchdog y mantenimiento terminan con código `0`;
+- web y mantenimiento están saludables, y el túnel está conectado;
+- mantenimiento termina sus ciclos correctamente y sin superposición;
 - el cambio y sus pruebas están documentados.
 
 ## Línea Base
@@ -65,4 +68,45 @@ Una versión puede darse de alta solo si:
 - 9 recorridos n8n aprobados.
 - Cero incidentes y cero ramas visibles faltantes.
 
-Los reportes generados son evidencia local y no se versionan porque pueden contener información operativa.
+Los reportes generados se conservan en el volumen Compose `test_reports`; no se versionan porque pueden contener información operativa. El proyecto de validación usa su propio volumen.
+
+## Validación Docker
+
+Ejecutar npm test, npm run lint, npm run build y npm run test:bot:report dentro de las imágenes/servicio tools. APP_BASE_URL parametriza las pruebas HTTP y N8N_WEBHOOK_BOT_CCS_URL selecciona el webhook. Usar una instancia aislada del bot con TWILIO_TRANSPORT=mock y BOT_CCS_TEST_INSTANCE=1, un workflow temporal apuntando a ella y credencial Header Auth; nunca dirigir teléfonos sintéticos al transporte real. Supabase conserva las filas anteriores; las pruebas HTTP crean filas sintéticas adicionales sin eliminar datos.
+
+Verificar salud, vCards desde catálogo, rechazo sin secreto, persistencia después de recrear el contenedor, mantenimiento sin superposición y llamadas del n8n compartido al puerto publicado. WhatsApp real requiere un número de prueba autorizado. El reinicio del host requiere ventana coordinada por los demás servicios. No confundir healthy con verificación completa de Twilio o arranque del servidor.
+
+### Runner reproducible de n8n
+
+scripts/with-n8n-validation.mjs crea un workflow temporal con ruta única, reutiliza las credenciales por referencia, apunta al puerto13010, ejecuta la matriz y retira el workflow en finally. Requiere N8N_API_KEY solo en el entorno privado de tools, APP_BASE_URL=http://web:3010, N8N_ADMIN_BASE_URL=http://host.docker.internal:5678 y BOT_CCS_VALIDATION_API_URL=http://127.0.0.1:13010. El contenedor web de validación debe usar test.env sin la clave administrativa de n8n; tools puede usar validation-tools.env. No montar ese archivo en producción.
+
+Matriz Docker de referencia del 20 de octubre de 2026: 310 pruebas aprobadas, 229 escenarios, 54 ramas, 23 transiciones, 17 verificaciones HTTP y 9 recorridos n8n, sin incidentes. Build y lint aprobados. El puerto3010 y el túnel propio ya están operativos; WhatsApp real y reinicio del host siguen pendientes.
+
+Desde PowerShell, ejecutar el ensayo con los archivos privados ya preparados:
+
+```powershell
+$env:BOT_CCS_ENV_FILE = 'C:/ProgramData/BotCCS/test.env'
+$env:BOT_CCS_PORT = '13010'
+try {
+  docker compose --env-file C:/ProgramData/BotCCS/deploy.env -p bot-ccs-validation up -d --no-build --wait web
+  if ($LASTEXITCODE -ne 0) { throw 'Falló el inicio de validación' }
+  $env:BOT_CCS_ENV_FILE = 'C:/ProgramData/BotCCS/validation-tools.env'
+  docker compose --env-file C:/ProgramData/BotCCS/deploy.env -p bot-ccs-validation --profile tools run --rm tools node scripts/with-n8n-validation.mjs
+  if ($LASTEXITCODE -ne 0) { throw 'Falló la matriz' }
+} finally {
+  Remove-Item Env:BOT_CCS_ENV_FILE, Env:BOT_CCS_PORT -ErrorAction SilentlyContinue
+  docker compose --env-file C:/ProgramData/BotCCS/deploy.env -p bot-ccs-validation stop web
+}
+```
+
+Para leer la evidencia, usar el mismo proyecto `-p bot-ccs-validation` con `tools`, por ejemplo `cat /app/test-reports/bot-test-matrix-summary.latest.json`. No usar `down -v` si se desea conservarla.
+
+## Comprobación de publicación del 20 de octubre de 2026
+
+Web y mantenimiento saludables en Docker, tareas nativas deshabilitadas, ensayo detenido. Configuración remota del túnel exclusivo recibida y CNAME verificado en el panel. Login público, readiness (ok=true, testInstance=false) y laboratorio.vcf HTTP200. El cambio es de publicación y documentación; no altera el motor del bot. WhatsApp real y reinicio completo del host siguen sin ejecutar. La ruta compartida antigua se conserva hasta resolver la advertencia de eliminación de DNS.
+
+## Validación de limpieza del 20 de octubre de 2026
+
+Imágenes reconstruidas desde la carpeta limpia, sin dependencias ni compilación del host. Build y lint aprobados en Docker. Matriz terminada a las 17:44 UTC: 310 pruebas aprobadas, ninguna fallida u omitida; 229 escenarios, 54 ramas, 23 transiciones, 17 verificaciones HTTP y 9 recorridos n8n aprobados, cero incidentes. Se comprobó la ausencia de scripts de despliegue retirados en la imagen tools y la sintaxis del mantenimiento. Reportes persistidos en `bot-ccs-validation_test_reports`; workflow temporal retirado e instancia de ensayo detenida.
+
+Imágenes aplicadas en producción: web y maintenance saludables, usuario node y sin montajes de fuentes del host. Mantenimiento completó su ciclo con cero cierres; las dos tareas nativas continúan deshabilitadas. Readiness local y público (`ok=true`, `testInstance=false`), página principal, vCard de laboratorio y salud del n8n existente respondieron HTTP200. El conector Cloudflare continuó activo. No se ejecutaron WhatsApp real ni reinicio del host.

@@ -1,5 +1,7 @@
 # Funcionalidades Implementadas
 
+El login admite los alias `admin` y `admindev`, además del email completo; permisos y estado activo se comprueban mediante Supabase Auth y `operators`. `admindev` es una cuenta administrativa temporal de desarrollo que debe retirarse antes del uso con usuarios reales, según OPERATIONS.md.
+
 ## Atención Al Paciente
 
 - Saludo natural para mensajes indefinidos.
@@ -54,3 +56,7 @@
 - No descarga estudios.
 - No ofrece visualización segura de adjuntos.
 - No incluye analítica gerencial avanzada ni asignación por equipos.
+
+## Docker: configuración vigente desde 2026-10-16
+
+Aplicación y mantenimiento en Docker Compose; n8n existente conserva el workflow editable y llama al puerto loopback3010 del host. Supabase sigue externo y conserva los datos. Cloudflare dedicado se configura con el perfil public y token propio. Las vCards se generan desde el catálogo publicado en /vcards/. BOT_CCS_WEBHOOK_SECRET es obligatorio, usando Header Auth en n8n. PM2 y tareas Windows son mecanismos históricos retirados al completar el corte. Ver docs/OPERATIONS.md y docs/TESTING.md.

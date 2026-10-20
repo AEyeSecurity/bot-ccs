@@ -48,10 +48,23 @@ La interfaz permite editar contenido y disponibilidad, pero no alias, intencione
 
 ## Importación Controlada
 
+Abrir una sesión de herramientas Docker con montajes explícitos de los archivos que se van a generar. Estos montajes se usan únicamente para la importación; los servicios productivos no montan fuentes del host.
+
 ```powershell
-npm run catalog:import -- "C:\BOT CCS\data\Bot 2026 reconstruido.xlsx" "C:\BOT CCS\src\lib\bot-2026-data.ts"
+docker compose --env-file C:/ProgramData/BotCCS/deploy.env --profile tools run --rm -v "${PWD}/data:/app/data" -v "${PWD}/src/lib/bot-2026-data.ts:/app/src/lib/bot-2026-data.ts" tools sh
+```
+
+Dentro de esa misma sesión Linux:
+
+```sh
+npm run catalog:import -- "/app/data/Bot 2026 reconstruido.xlsx" "/app/src/lib/bot-2026-data.ts"
 npm run catalog:generate-managed
+```
+
+Revisar los cambios generados y ejecutar la matriz de pruebas antes de publicar. `catalog:seed-managed` solo inicializa una base sin catálogo publicado; si ya existe uno no lo reemplaza. Su ejecución explícita en tools es:
+
+```sh
 npm run catalog:seed-managed
 ```
 
-La importación se debe ejecutar únicamente cuando se modifica la estructura no editable desde el panel. Después debe correrse toda la matriz de pruebas antes de publicar.
+La importación se debe ejecutar únicamente cuando se modifica la estructura no editable desde el panel. Para bases existentes, publicar mediante el flujo administrativo controlado. No usar seeds como actualización o recuperación del catálogo productivo.

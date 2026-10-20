@@ -50,4 +50,19 @@ describe("bot inbound route", () => {
     expect(payload.rawPayload.MediaUrl0).toBeUndefined();
     expect(payload.rawPayload.mediaUrls).toBeUndefined();
   });
+
+  test("rejects missing authentication before processing", async () => {
+    const { POST } = await import("@/app/api/bot/inbound/route");
+    const response = await POST(new NextRequest("http://localhost/api/bot/inbound", { method: "POST", body: "{}" }));
+    expect(response.status).toBe(401);
+    expect(processHolder.processInbound).not.toHaveBeenCalled();
+  });
+
+  test("does not silently allow requests when the shared secret is unconfigured", async () => {
+    delete process.env.BOT_CCS_WEBHOOK_SECRET;
+    const { POST } = await import("@/app/api/bot/inbound/route");
+    const response = await POST(new NextRequest("http://localhost/api/bot/inbound", { method: "POST", body: "{}" }));
+    expect(response.status).toBe(500);
+    expect(processHolder.processInbound).not.toHaveBeenCalled();
+  });
 });

@@ -1,10 +1,7 @@
 {
   "id": "lRDscbvgNSzjOoP3",
   "name": "BOT CCS",
-  "createdAt": "2026-05-29T14:01:09.796Z",
-  "updatedAt": "2026-06-10T16:35:00Z",
   "active": true,
-  "isArchived": false,
   "nodes": [
     {
       "parameters": {
@@ -16,7 +13,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -900,
+        -896,
         0
       ],
       "id": "9f24e25c-e3c4-4d7b-90e7-2c4e3fdc0fd6",
@@ -30,7 +27,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -660,
+        -656,
         0
       ],
       "id": "7996a9eb-2329-48e0-9627-cad0999e74c4",
@@ -57,7 +54,7 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1,
       "position": [
-        -420,
+        -464,
         0
       ],
       "id": "603a49de-f3d7-4d21-a50e-a905f3b3f2d7",
@@ -77,7 +74,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -180,
+        -176,
         0
       ],
       "id": "00a59a76-17bb-4b70-bf4c-2f6b0477c660",
@@ -93,26 +90,30 @@
             {
               "name": "Content-Type",
               "value": "application/json"
-            },
-            {
-              "name": "x-bot-ccs-secret",
-              "value": "={{ $env.BOT_CCS_WEBHOOK_SECRET || '' }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json) }}",
-        "options": {}
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        60,
+        64,
         0
       ],
       "id": "472a5897-1612-4d1f-96fd-9244af0a8eed",
-      "name": "Procesar inbound en CCS API"
+      "name": "Procesar inbound en CCS API",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xcMIhWaBIJfnLhZk",
+          "name": "BOT CCS Docker API"
+        }
+      }
     },
     {
       "parameters": {
@@ -142,7 +143,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        300,
+        304,
         0
       ],
       "id": "bd6863ad-5cda-4f88-936b-37e9240f43fa",
@@ -158,27 +159,31 @@
             {
               "name": "Content-Type",
               "value": "application/json"
-            },
-            {
-              "name": "x-bot-ccs-secret",
-              "value": "={{ $env.BOT_CCS_WEBHOOK_SECRET || '' }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json) }}",
-        "options": {}
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
         560,
-        -120
+        -128
       ],
       "id": "76cf8140-3e9e-43c9-a055-750c392c0d94",
       "name": "Enviar WhatsApp CCS",
-      "continueOnFail": true
+      "continueOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xcMIhWaBIJfnLhZk",
+          "name": "BOT CCS Docker API"
+        }
+      }
     },
     {
       "parameters": {
@@ -190,27 +195,31 @@
             {
               "name": "Content-Type",
               "value": "application/json"
-            },
-            {
-              "name": "x-bot-ccs-secret",
-              "value": "={{ $env.BOT_CCS_WEBHOOK_SECRET || '' }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ outboundMessageId: $('Procesar inbound en CCS API').item.json.outboundMessageId, twilioMessageSid: $json.sid || $json.messageSid || null, twilioStatus: $json.status || ($json.error ? 'failed' : 'sent'), rawPayload: $json }) }}",
-        "options": {}
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        820,
-        -120
+        832,
+        -128
       ],
       "id": "1f2f2f1e-f6f0-4f3a-a18e-aae2cbf2c629",
       "name": "Registrar outbound bot",
-      "continueOnFail": true
+      "continueOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xcMIhWaBIJfnLhZk",
+          "name": "BOT CCS Docker API"
+        }
+      }
     },
     {
       "parameters": {
@@ -223,8 +232,8 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1080,
-        -120
+        1088,
+        -128
       ],
       "id": "596a53fc-583f-4d5a-b094-9fe31509ceaf",
       "name": "Responder Twilio OK"
@@ -241,7 +250,7 @@
       "typeVersion": 1.4,
       "position": [
         560,
-        140
+        144
       ],
       "id": "47564158-c74a-4ff1-9ff6-48a6b897c462",
       "name": "Responder Twilio sin bot"
@@ -345,15 +354,11 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
-  },
-  "staticData": null,
-  "versionId": "6f9fa3b6-cd4a-46ab-a064-f905533ba3c1",
-  "versionCounter": 3,
-  "triggerCount": 0,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {},
-  "tags": []
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false,
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  }
 }

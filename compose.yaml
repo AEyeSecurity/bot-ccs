@@ -1,0 +1,77 @@
+name: bot-ccs
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+services:
+  web:
+    image: bot-ccs-web:${BOT_CCS_IMAGE_TAG:-local}
+    build:
+      context: .
+      target: runtime
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392}
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:?Set public Supabase URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:?Set public anon key}
+    env_file: ["${BOT_CCS_ENV_FILE:?Set private runtime env file}"]
+    environment:
+      PORT: "3010"
+      HOSTNAME: 0.0.0.0
+      VCARD_PUBLIC_BASE_URL: https://ccs.aeye.com.ar/vcards
+    ports: ["127.0.0.1:${BOT_CCS_PORT:-3010}:3010"]
+    restart: unless-stopped
+    init: true
+    logging: *logging
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3010/api/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+  maintenance:
+    image: bot-ccs-maintenance:${BOT_CCS_IMAGE_TAG:-local}
+    build:
+      context: .
+      target: maintenance
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392}
+    env_file: ["${BOT_CCS_ENV_FILE:?Set private runtime env file}"]
+    restart: unless-stopped
+    init: true
+    logging: *logging
+    healthcheck:
+      test: ["CMD", "node", "-e", "const fs=require('fs');process.exit(Date.now()-fs.statSync('/tmp/maintenance-ok').mtimeMs<180000?0:1)"]
+      interval: 60s
+      start_period: 60s
+      retries: 3
+  cloudflared:
+    image: ${CLOUDFLARED_IMAGE:-cloudflare/cloudflared@sha256:a15a3b50b8dabd57ac2090e9484c0247dba9dfa1f0df4d298d4317f9d69eb2d5}
+    command: ["tunnel", "--no-autoupdate", "run", "--token-file", "/run/secrets/tunnel_token"]
+    secrets: [tunnel_token]
+    depends_on:
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+    logging: *logging
+    profiles: [public]
+  tools:
+    image: bot-ccs-tools:${BOT_CCS_IMAGE_TAG:-local}
+    build:
+      context: .
+      target: tools
+      args:
+        NODE_IMAGE: ${NODE_IMAGE:-node:22-bookworm-slim@sha256:c3de60bf2f9dd0ac6370e6117950ff62d6e339527e7472301c9c78a017978392}
+    env_file: ["${BOT_CCS_ENV_FILE:?Set private runtime env file}"]
+    environment:
+      APP_BASE_URL: http://web:3010
+    volumes:
+      - test_reports:/app/test-reports
+    profiles: [tools]
+    init: true
+    logging: *logging
+secrets:
+  tunnel_token:
+    file: ${BOT_CCS_TUNNEL_TOKEN_FILE:-./missing-tunnel-token}
+volumes:
+  test_reports:

@@ -356,4 +356,9 @@ async function main() {
   }
 }
 
+if (process.env.BOT_CCS_TEST_INSTANCE !== "1" || process.env.TWILIO_TRANSPORT !== "mock" || !webhookUrl.includes("bot-ccs-docker-test")) {
+  throw new Error("n8n matrix requires the dedicated validation workflow and mock transport");
+}
+const readiness = await fetch(`${process.env.APP_BASE_URL}/api/health/ready`).then((response) => response.json());
+if (!readiness.testInstance) throw new Error("Target is not an isolated mock instance");
 await main();

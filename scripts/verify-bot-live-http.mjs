@@ -8,7 +8,7 @@ dotenv.config({ path: path.join(process.cwd(), ".env.local") });
 const reportDir = path.join(process.cwd(), "test-reports");
 fs.mkdirSync(reportDir, { recursive: true });
 
-const baseUrl = "http://127.0.0.1:3010";
+const baseUrl = process.env.APP_BASE_URL || "http://127.0.0.1:3010";
 const secret = process.env.BOT_CCS_WEBHOOK_SECRET || "";
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
@@ -387,4 +387,9 @@ async function main() {
   }
 }
 
+if (process.env.BOT_CCS_TEST_INSTANCE !== "1" || process.env.TWILIO_TRANSPORT !== "mock") {
+  throw new Error("HTTP matrix requires an isolated mock instance");
+}
+const readiness = await fetch(`${baseUrl}/api/health/ready`).then((response) => response.json());
+if (!readiness.testInstance) throw new Error("Target is not an isolated mock instance");
 await main();

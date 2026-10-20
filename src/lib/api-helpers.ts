@@ -33,7 +33,6 @@ export async function parseBody(request: NextRequest): Promise<Record<string, un
 
 export function requireBotSecret(request: NextRequest) {
   const expected = getServerEnv().botWebhookSecret;
-  if (!expected) return;
 
   const provided =
     request.headers.get("x-bot-ccs-secret") ||
