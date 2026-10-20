@@ -5,6 +5,7 @@ Guardar decisiones, recorrido reciente, validación y próximo paso; nunca contr
 Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el historial en docs/CHANGELOG.md.
 
 ## Último trabajo y cómo se hizo
+- Despliegue 2026-10-20: pull fast-forward a 402b0c4, imágenes reconstruidas y web/maintenance recreados saludables. 312 pruebas, lint/build, 229 escenarios, 17 HTTP y 9 n8n OK; readiness local/público, inicio y vCard HTTP200. Ensayo detenido. Reinicio de servicios Docker; host sin reiniciar.
 - Iteración 2 completada: campo opcional `customBody` por especialidad (texto general propio). Si está lleno, la respuesta de la especialidad ignora el armado automático (texto general + bloques). Schema zod, activateCatalog, editor del panel (campo + vista previa + teléfonos), diff de revisión, extracción de teléfonos del cuerpo efectivo, generador y pruebas. 312 pruebas, lint y build OK.
 - README ahora incluye "Próximas Iteraciones" (roles/permisos, texto propio, cierre confirmado, Gemini lazy, análisis Supabase) tras integrar notas locales al hacer pull.
 - Se migró y desplegó BOT CCS en Docker Compose: web, maintenance y cloudflared; tools bajo perfil opcional.
