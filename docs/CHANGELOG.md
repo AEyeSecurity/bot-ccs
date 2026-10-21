@@ -4,6 +4,8 @@ Este archivo registra cambios funcionales y operativos. A partir de la creación
 
 ## 2026-10-20
 
+- Diagnóstico directo autorizado de Gemini con texto sintético de turno cardiología: gemini-2.5-flash HTTP200 en 3017ms, intención TURNOS_MEDICOS_ATENCION_MEDICA con confianza 0.95. Sin WhatsApp, conversaciones ni cambios productivos; documentada la comprobación puntual.
+
 - Versionada la retirada de la limpieza de GEMINI_API_KEY en tests/setup-env.ts; documentado el aislamiento mediante -e GEMINI_API_KEY= en Compose tools. 319 pruebas con clave vacía, lint y build aprobados; sin cambios de runtime.
 
 - Desplegado 0f87e48 y publicado el workflow canónico en el n8n existente mediante API: mismo ID, webhook y credenciales Header Auth; eliminados los nodos Gemini/payload, 8 nodos activos. Respaldo privado fuera de Git; imágenes reconstruidas y servicios web/mantenimiento recreados saludables. Setup de Vitest corregido para eliminar la clave Gemini heredada y evitar consultas externas en pruebas herméticas (319 pruebas aprobadas, lint/build OK). Matriz aislada completa: 229 escenarios, 17 HTTP y 9 n8n, cero incidentes; readiness local/público y recursos públicos HTTP200.
