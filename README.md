@@ -81,6 +81,8 @@ Registro de requerimientos del cliente y soluciones propuestas. Se amplía a med
 
 ### Iteración 1 — Roles, permisos y derivación por área
 
+> **Estado: entrega 1 completada** (áreas, derivación y permisos; alta por CLI). Pendientes: entrega 2 (estado de resolución y filtro por día) y entrega 3 (alta de usuarios desde la web, presencia y métricas).
+
 **Requerimiento del cliente:**
 
 - Crear usuarios para el personal de la clínica, cada uno con **permisos distintos** (acceso a información y a funcionalidades).
@@ -145,6 +147,18 @@ Registro de requerimientos del cliente y soluciones propuestas. Se amplía a med
 
 7. **Seguridad adicional**
    - Las credenciales de acceso del Excel (hoja "Tareas") deben tratarse como temporales: rotar la contraseña de admin y entregar credenciales **individuales** a cada usuario (no compartidas).
+
+**Decisiones de diseño acordadas:**
+
+- Cada área de la hoja "Usuarios" es una **cuenta** que puede tener varios accesos simultáneos (varias computadoras del mismo consultorio ven lo mismo).
+- La derivación se decide por intent, especialidad, estudio o profesional nombrado (por ejemplo, "electrocardiograma" o "Dr. Segovia" → Cardiología; "Nefrología" → Pasaje).
+- Gamma queda pendiente, sin regla de derivación.
+- Un operador de la misma área puede tomar una conversación que otro compañero estaba atendiendo. Operadores de otras áreas no.
+- Los pendientes y en curso de días anteriores siguen visibles para el área hasta marcarse `resuelto`.
+- Un paciente que vuelve después de 24 h abre una solicitud nueva; el caso anterior se conserva.
+- Admin puede crear y dar de baja usuarios desde la web. También existe alta por línea de comandos.
+
+**Pendientes de definición con el cliente:** se llevan en un documento privado local (no versionado), con las preguntas y las decisiones a revisar.
 
 ### Iteración 2 — Texto general editable por especialidad (caso Cardiología)
 

@@ -3,6 +3,7 @@ import { insertConversationEvent } from "./api-helpers";
 import { evaluateInboundTurn, getDocumentValidationRequestsForTurn } from "./bot-core";
 import { validateDocumentMedia } from "./document-validation";
 import { createAdminSupabaseClient } from "./supabase";
+import { buildAreaPatch } from "./areas";
 import { getPublishedCatalog } from "./catalog-store";
 import { getServerEnv } from "./env";
 import type {
@@ -422,9 +423,11 @@ async function processInboundForContact(payload: NormalizedInbound) {
   });
 
   await insertInboundMessage(supabase, payloadWithValidations, contact.id, String(conversation.id), result.intent, result.confidence);
+  const areaPatch = await buildAreaPatch(supabase, result.currentIntent, result.caseState?.caseData ?? openCase?.case_data);
 
   if (!result.shouldReply) {
     await updateConversationAfterInbound(supabase, String(conversation.id), {
+      ...areaPatch,
       status: result.status,
       current_intent: result.currentIntent,
       current_step: result.currentStep,
@@ -449,6 +452,7 @@ async function processInboundForContact(payload: NormalizedInbound) {
   );
 
   await updateConversationAfterInbound(supabase, String(conversation.id), {
+    ...areaPatch,
     status: result.status,
     current_intent: result.currentIntent,
     current_step: result.currentStep,

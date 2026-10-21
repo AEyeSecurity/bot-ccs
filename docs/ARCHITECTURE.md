@@ -54,6 +54,14 @@ Los pasos y datos requeridos se almacenan en el caso. La detección puede reclas
 
 No existe fallback productivo al XLSX ni a datos TypeScript. Si el proceso inicia sin poder obtener una publicación válida, la API responde `503`. Si la base falla después de una carga correcta, la versión ya cargada sigue vigente.
 
+## Áreas Y Derivación
+
+- `areas` (cuentas de área), `area_rules` (intent o `response_group_id` de profesional por área), `operator_areas` (un usuario puede tener varias áreas) y `conversations.area_ids` (lista; una conversación puede estar en varias áreas).
+- `src/lib/areas.ts` resuelve las claves del turno (intent de especialidad, estudio o profesional) y deriva `area_ids`. Si el paciente nombra un profesional con regla propia para su especialidad, solo cuentan esas áreas; un profesional sin regla no deriva a nadie.
+- La regla de cada turno: intents no derivables (saludo, OTRAS_CONSULTAS) no modifican `area_ids`.
+- Permisos (`canViewConversation`, `canTakeConversation`, `canOperateConversation`): ver por área; tomar por cualquier operador del área; liberar y cerrar por dueño o sin dueño dentro del área; admin sin restricción.
+- La carga inicial vive en la migración 004 y se valida contra el catálogo en `tests/unit/areas.test.ts`. Gamma queda sin área hasta definirla.
+
 ## Seguridad Y Privacidad
 
 - El panel usa Supabase Auth y relaciona la sesión con un operador activo.

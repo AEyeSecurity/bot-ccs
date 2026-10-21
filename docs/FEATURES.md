@@ -27,6 +27,15 @@ El login admite los alias `admin` y `admindev`, además del email completo; perm
 - Control de imágenes inválidas, cara faltante, datos incompletos, documento inconsistente y concurrencia.
 - Los adjuntos no se persisten como archivos ni se muestran en el CRM.
 
+## Áreas Y Permisos (Iteración 1, entrega 1)
+
+- Cada área de la hoja "Usuarios" es una cuenta. Varias computadoras pueden usar la misma cuenta y ven lo mismo.
+- La conversación se deriva por intent, especialidad, estudio o profesional nombrado (por ejemplo, "electrocardiograma" o "Dr. Segovia" a Cardiología, "Nefrología" a Pasaje).
+- Un operador solo ve las conversaciones de sus áreas. Admin ve todas, incluidas las que no tienen área.
+- Un compañero del área puede tomar una conversación que otro estaba atendiendo; el cambio queda registrado. Liberar y cerrar requieren ser el dueño o que no tenga dueño dentro del área.
+- Alta de usuarios por línea de comandos: `npm run operator:create` (ver OPERATIONS).
+- Pendiente: visualización de áreas en el panel, alta desde la web, presencia y métricas (entregas 2 y 3); estado de resolución y filtro por día (entrega 2).
+
 ## Panel De Conversaciones
 
 - Búsqueda y filtros por estado.

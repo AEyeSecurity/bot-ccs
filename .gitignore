@@ -63,4 +63,7 @@ next-env.d.ts
 # accidental local scratch file
 /-
 
+# notas privadas de trabajo con el cliente (no versionar)
+/NOTAS-CLIENTE.local.md
+
 !.env.docker.example

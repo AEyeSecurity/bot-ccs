@@ -14,6 +14,7 @@ export type Operator = {
   email: string;
   role: OperatorRole;
   is_active: boolean;
+  area_ids?: string[];
 };
 
 export type Contact = {
@@ -39,6 +40,7 @@ export type Conversation = {
   last_outbound_at: string | null;
   last_activity_at: string;
   unread_count: number;
+  area_ids?: string[];
   priority: string;
   source: string;
   created_at: string;

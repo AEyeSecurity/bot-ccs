@@ -8,6 +8,14 @@ Se creó la cuenta temporal `admindev@bot-ccs.local`, operador activo con rol `a
 
 **Pendiente obligatorio antes de habilitar el sistema a usuarios reales:** eliminar la cuenta temporal `admindev`. Primero desactivar su registro en `operators` para bloquear las APIs incluso con sesiones existentes y después eliminar su identidad de Supabase Auth, preservando el historial de acciones y referencias existentes. Verificar el acceso de un administrador definitivo antes de retirarla. No automatizar un borrado de contactos, conversaciones o datos clínicos al eliminar esta cuenta.
 
+## Alta de usuarios de área
+
+- Comando: `npm run operator:create -- --username cardiologia --name "Cardiología" --areas "Cardiología"`. Varias áreas se separan con coma. Para un admin: `--role admin` (sin áreas).
+- Requiere `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` o en el entorno. Ejecutar dentro del servicio Compose `tools` con las variables inyectadas.
+- Crea la cuenta en Supabase Auth con email `<usuario>@bot-ccs.local` (el login acepta solo el usuario), la registra en `operators` y asigna las áreas en `operator_areas`. Si ya existe, actualiza nombre, áreas y reactiva la cuenta, sin cambiar la contraseña.
+- La contraseña temporal se imprime una sola vez. Entregarla en persona y pedir el cambio en el primer acceso. No registrarla en logs ni en Git.
+- Los nombres de área deben existir en la tabla `areas` (migración 004).
+
 ## Requisitos y configuración
 
 Docker Engine con contenedores Linux y Compose. El host no necesita Node ni PM2 para BOT CCS. El n8n compartido continúa fuera de este stack y conserva los otros workflows.

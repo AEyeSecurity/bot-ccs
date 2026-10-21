@@ -3,6 +3,7 @@ import { apiError, getOperatorFromRequest } from "@/lib/auth";
 import { expireTakeovers } from "@/lib/api-helpers";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import type { Contact, Conversation, Message, Operator } from "@/lib/domain";
+import { isAdmin } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +11,7 @@ const allowedStatuses = new Set(["bot_active", "waiting_operator", "human_takeov
 
 export async function GET(request: NextRequest) {
   try {
-    await getOperatorFromRequest(request);
+    const operator = await getOperatorFromRequest(request);
     const supabase = createAdminSupabaseClient();
     await expireTakeovers(supabase);
 
@@ -26,6 +27,11 @@ export async function GET(request: NextRequest) {
 
     if (status && allowedStatuses.has(status)) {
       query = query.eq("status", status);
+    }
+
+    // Operadores de área: solo las conversaciones derivadas a sus áreas. Admin ve todas.
+    if (!isAdmin(operator)) {
+      query = query.overlaps("area_ids", operator.area_ids || []);
     }
 
     const { data: conversations, error } = await query;

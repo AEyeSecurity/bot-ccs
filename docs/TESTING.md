@@ -32,6 +32,13 @@ node scripts/verify-bot-n8n-e2e.mjs
 - n8n E2E: webhook completo hacia la API local.
 - Operación: contenedores saludables, URL pública, túnel y mantenimiento.
 
+## Áreas Y Permisos
+
+- `tests/unit/areas.test.ts`: carga inicial contra el catálogo, casos de derivación de la hoja Usuarios (Cardiología, Pasaje, Anexo, CEMI, estudios, profesionales sin regla y múltiples áreas) y matriz de permisos.
+- `tests/integration/areas-access-route.test.ts`: listado por área, takeover entre compañeros, bloqueo de otra área, detalle de mensajes y cierre.
+- `tests/integration/area-derivation-inbound.test.ts`: mensajes entrantes reales deciden `area_ids`; un saludo no cambia el área existente.
+- Pendiente: validar la migración 004 contra Supabase real con `npm run db:apply` en un entorno de prueba.
+
 ## Casos Críticos
 
 - Frente y dorso de DNI coincidentes, inconsistentes, incompletos, inválidos y concurrentes.

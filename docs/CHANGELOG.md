@@ -2,6 +2,15 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Iteración 1, Entrega 1: áreas, derivación y permisos
+
+- Migración `004_roles_areas.sql`: tablas `areas`, `area_rules` (intent o profesional por área), `operator_areas` (un usuario puede tener varias áreas) y `conversations.area_ids`. Carga inicial desde la hoja "Usuarios" del Excel. Gamma queda pendiente.
+- `src/lib/areas.ts`: traduce el turno (intent o profesional nombrado) a claves de área y deriva `area_ids`. Permisos: ver por área; tomar, para cualquier operador del área aunque otro compañero la tuviera; liberar y cerrar, para el dueño o si no tiene dueño dentro del área; admin siempre.
+- El motor recalcula `area_ids` en cada turno con intent derivable. Saludos y OTRAS_CONSULTAS no cambian el área existente.
+- Rutas: el listado filtra por área para operadores (admin ve todo). takeover, release, close, send y messages validan el área. takeover registra `previous_operator_id`.
+- `npm run operator:create`: alta por línea de comandos de una cuenta de área o admin, con contraseña temporal mostrada una sola vez.
+- Pruebas: derivación con los casos del Excel, carga validada contra el catálogo, matriz de permisos, rutas y mensajes entrantes reales. 343 pruebas, lint y build correctos.
+
 ## 2026-10-20
 
 - Diagnóstico directo autorizado de Gemini con texto sintético de turno cardiología: gemini-2.5-flash HTTP200 en 3017ms, intención TURNOS_MEDICOS_ATENCION_MEDICA con confianza 0.95. Sin WhatsApp, conversaciones ni cambios productivos; documentada la comprobación puntual.

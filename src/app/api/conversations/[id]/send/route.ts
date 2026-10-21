@@ -5,6 +5,7 @@ import { addMinutes, insertConversationEvent } from "@/lib/api-helpers";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import { sendWhatsappMessage } from "@/lib/twilio";
 import { getServerEnv } from "@/lib/env";
+import { accessDenied, canViewConversation, isAdmin } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -31,11 +32,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
       .eq("id", id)
       .single();
     if (conversationError) throw new Error(conversationError.message);
+    if (!canViewConversation(operator, conversation)) throw accessDenied();
     if (!conversation.contact?.whatsapp_number) throw Object.assign(new Error("Conversation has no WhatsApp contact"), { status: 400 });
     if (conversation.status !== "human_takeover") {
       throw apiStatusError("Tomá control de la conversación antes de enviar.", 409);
     }
-    if (conversation.assigned_operator_id && conversation.assigned_operator_id !== operator.id) {
+    if (!isAdmin(operator) && conversation.assigned_operator_id && conversation.assigned_operator_id !== operator.id) {
       throw apiStatusError("La conversación está tomada por otro operador.", 403);
     }
 

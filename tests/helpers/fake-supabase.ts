@@ -5,7 +5,8 @@ type Filter =
   | { type: "neq"; field: string; value: unknown }
   | { type: "in"; field: string; values: unknown[] }
   | { type: "gt"; field: string; value: unknown }
-  | { type: "lte"; field: string; value: unknown };
+  | { type: "lte"; field: string; value: unknown }
+  | { type: "overlaps"; field: string; values: unknown[] };
 
 type Operation =
   | { type: "select" }
@@ -76,6 +77,11 @@ class FakeQuery implements PromiseLike<QueryResult> {
     return this;
   }
 
+  overlaps(field: string, values: unknown[]) {
+    this.filters.push({ type: "overlaps", field, values });
+    return this;
+  }
+
   lte(field: string, value: unknown) {
     this.filters.push({ type: "lte", field, value });
     return this;
@@ -132,6 +138,8 @@ class FakeQuery implements PromiseLike<QueryResult> {
             return filter.values.includes(current);
           case "lte":
             return compareValues(current, filter.value) <= 0;
+          case "overlaps":
+            return Array.isArray(current) && current.some((item) => filter.values.includes(item));
           case "gt":
             return compareValues(current, filter.value) > 0;
           default:

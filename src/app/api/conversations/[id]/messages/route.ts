@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { apiError, getOperatorFromRequest } from "@/lib/auth";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import { expireTakeovers } from "@/lib/api-helpers";
+import { accessDenied, canViewConversation } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +10,7 @@ type RouteContext = { params: Promise<{ id: string }> };
 
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    await getOperatorFromRequest(request);
+    const operator = await getOperatorFromRequest(request);
     const { id } = await context.params;
     const supabase = createAdminSupabaseClient();
     await expireTakeovers(supabase);
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       .eq("id", id)
       .single();
     if (conversationError) throw new Error(conversationError.message);
+    if (!canViewConversation(operator, conversation)) throw accessDenied();
 
     const { data: messages, error: messagesError } = await supabase
       .from("messages")

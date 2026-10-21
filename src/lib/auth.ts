@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { createAdminSupabaseClient } from "./supabase";
 import type { Operator } from "./domain";
+import { loadOperatorAreaIds } from "./areas";
 
 export async function getOperatorFromRequest(request: NextRequest): Promise<Operator> {
   const auth = request.headers.get("authorization") || "";
@@ -32,7 +33,9 @@ export async function getOperatorFromRequest(request: NextRequest): Promise<Oper
     throw Object.assign(new Error("Operator not registered"), { status: 403 });
   }
 
-  return data as Operator;
+  const operator = data as Operator;
+  const area_ids = operator.role === "admin" ? [] : await loadOperatorAreaIds(supabase, operator.id);
+  return { ...operator, area_ids };
 }
 
 export function requireAdmin(operator: Operator) {
