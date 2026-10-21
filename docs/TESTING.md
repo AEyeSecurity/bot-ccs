@@ -37,7 +37,7 @@ node scripts/verify-bot-n8n-e2e.mjs
 - `tests/unit/areas.test.ts`: carga inicial contra el catálogo, casos de derivación de la hoja Usuarios (Cardiología, Pasaje, Anexo, CEMI, estudios, profesionales sin regla y múltiples áreas) y matriz de permisos.
 - `tests/integration/areas-access-route.test.ts`: listado por área, takeover entre compañeros, bloqueo de otra área, detalle de mensajes y cierre.
 - `tests/integration/area-derivation-inbound.test.ts`: mensajes entrantes reales deciden `area_ids`; un saludo no cambia el área existente.
-- Pendiente: validar la migración 004 contra Supabase real con `npm run db:apply` en un entorno de prueba.
+- Migración 004 validada en el Supabase actual el 21 de octubre de 2026 con autorización del usuario; no existe un proyecto de prueba separado. Ver OPERATIONS para alcance y comprobaciones.
 
 ## Casos Críticos
 
@@ -135,3 +135,7 @@ Commit 0f87e48 aplicado. Workflow BOT CCS real actualizado mediante API n8n, act
 ## Diagnóstico directo Gemini — 20 de octubre de 2026
 
 Por solicitud del usuario se ejecutó una llamada real del clasificador con el texto sintético «hola quiero un turno para cardiologia». Se cargó la función desde el fuente con TypeScript transpileModule en tools y se usaron el prompt, timeout y configuración del clasificador con las credenciales privadas del entorno productivo, sin imprimirlas. Resultado: gemini-2.5-flash, HTTP200, 3017ms, intent_key=TURNOS_MEDICOS_ATENCION_MEDICA, confidence=0.95, needs_operator=false. No se enviaron mensajes WhatsApp ni se crearon conversaciones. Es una muestra de conectividad y respuesta; no demuestra disponibilidad continua. En el flujo normal esta intención explícita se resuelve mediante reglas, sin necesitar Gemini.
+
+## Áreas y permisos — validación del servidor, 21 de octubre de 2026
+
+Pull a 1faa2f3. Imágenes web/maintenance/tools reconstruidas con build correcto; lint y 343 pruebas herméticas aprobadas en tools con GEMINI_API_KEY vacía. Migración 004 aplicada por autorización expresa en el Supabase actual: 13 áreas, 63 reglas, 0 asociaciones; RLS activo en areas/area_rules/operator_areas y area_ids uuid[] NOT NULL verificados. No existe proyecto Supabase de prueba separado. Matriz con transporte mock finalizada a las 03:08 UTC: 343 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP, 9 n8n, cero incidentes. Workflow temporal retirado e instancia de ensayo detenida. Web/mantenimiento recreados saludables; readiness local/público (ok=true, testInstance=false), inicio y vCard HTTP200. No se probaron cuentas reales por área ni se crearon/asignaron operadores. WhatsApp real y reinicio Windows siguen pendientes.

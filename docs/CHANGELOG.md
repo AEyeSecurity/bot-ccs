@@ -11,6 +11,10 @@ Este archivo registra cambios funcionales y operativos. A partir de la creación
 - `npm run operator:create`: alta por línea de comandos de una cuenta de área o admin, con contraseña temporal mostrada una sola vez.
 - Pruebas: derivación con los casos del Excel, carga validada contra el catálogo, matriz de permisos, rutas y mensajes entrantes reales. 343 pruebas, lint y build correctos.
 
+## 2026-10-21
+
+- Validación y despliegue de 1faa2f3 en servidor mediante Docker. Migración 004 aplicada explícitamente en el Supabase actual por decisión del usuario (no existe proyecto de prueba): 13 áreas, 63 reglas, RLS y columna de derivación verificados; 0 asociaciones de operadores. Build/lint y 343 pruebas aprobados, matriz con 229 escenarios, 17 HTTP y 9 n8n sin incidentes. Web/mantenimiento saludables y acceso local/público HTTP200. Documentado que test.env y validation-tools.env comparten la base productiva; sin altas/asignaciones de usuarios.
+
 ## 2026-10-20
 
 - Diagnóstico directo autorizado de Gemini con texto sintético de turno cardiología: gemini-2.5-flash HTTP200 en 3017ms, intención TURNOS_MEDICOS_ATENCION_MEDICA con confianza 0.95. Sin WhatsApp, conversaciones ni cambios productivos; documentada la comprobación puntual.
