@@ -6,6 +6,7 @@ Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el h
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- Alta solicitada Medicina Nuclear en Supabase: ATENCION_MEDICA_MEDICINA_NUCLEAR, 19 especialidades; publicada versión 6 y borrador existente actualizado a revisión 63 sin publicar sus otros cambios. Sin texto/profesionales, disponible=false para completar desde Especialidades. Web reiniciada por caché; readiness público OK. 343 pruebas, lint/build y matriz 17 HTTP/9 n8n sin incidentes; ensayo detenido.
 - Validación/despliegue servidor 2026-10-21 finalizados: matriz 03:08 UTC con 343 pruebas, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP, 9 n8n y cero incidentes; ensayo detenido/workflow temporal retirado. Web/maintenance recreados saludables; readiness local/público, inicio y vCard HTTP200. Sin WhatsApp real ni reinicio Windows.
 - Diagnóstico Gemini real autorizado (servidor): gemini-2.5-flash HTTP200 en 3017ms, TURNOS_MEDICOS_ATENCION_MEDICA, confianza 0.95. Sin WhatsApp ni persistencia; no prueba estabilidad del proveedor.
 - Iteración 1, entrega 1 (áreas, derivación y permisos) implementada y subida a GitHub (main).

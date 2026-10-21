@@ -13,6 +13,8 @@ Este archivo registra cambios funcionales y operativos. A partir de la creación
 
 ## 2026-10-21
 
+- Agregada Medicina Nuclear al catálogo Supabase publicado y al borrador existente, conservando todas sus otras ediciones. Publicación 6, 19 especialidades; entrada inicialmente desactivada y sin texto/profesionales para completar desde el panel. Validación de payloads, 343 pruebas, lint y build aprobados; web reiniciada para recargar estructura y readiness público correcto. Matriz aislada: 17 HTTP y 9 n8n aprobados, cero incidentes; ensayo detenido.
+
 - Validación y despliegue de 1faa2f3 en servidor mediante Docker. Migración 004 aplicada explícitamente en el Supabase actual por decisión del usuario (no existe proyecto de prueba): 13 áreas, 63 reglas, RLS y columna de derivación verificados; 0 asociaciones de operadores. Build/lint y 343 pruebas aprobados, matriz con 229 escenarios, 17 HTTP y 9 n8n sin incidentes. Web/mantenimiento saludables y acceso local/público HTTP200. Documentado que test.env y validation-tools.env comparten la base productiva; sin altas/asignaciones de usuarios.
 
 ## 2026-10-20
