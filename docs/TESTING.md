@@ -165,3 +165,9 @@ Web y maintenance recreados saludables; readiness local/público (ok=true, testI
 ## Pull de 41b1774 — 26 de octubre de 2026
 
 Integrado origin/main con los cambios locales previos. Conflicto de MEMORY.MD resuelto conservando el historial real del servidor y las nuevas decisiones de permisos y balanceo. 374 pruebas herméticas, lint y build aprobados en Compose, con imágenes etiquetadas pull-41b1774. Alcance de esta sesión: actualización del checkout; no se recrearon servicios ni se modificaron Supabase o runtime.env. Producción continúa con d7b6782 y la corrección local del catálogo. Matriz HTTP/n8n y despliegue del nuevo código pendientes.
+
+## Despliegue Docker de 41b1774 — 26 de octubre de 2026
+
+Aplicada la imagen pull-41b1774 ya validada (374 pruebas, lint y build) con etiqueta productiva docker-migration. Matriz previa al despliegue finalizada a las 22:29 UTC: 374 pruebas sin fallos ni omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n aprobados, cero incidentes. Ensayo con transporte mock sobre el Supabase compartido; workflow temporal retirado e instancia detenida, reportes conservados en volumen.
+
+Web y maintenance recreados y saludables; identificador de imagen web cotejado con pull-41b1774. Readiness local y público (ok=true, testInstance=false), inicio y vCard de laboratorio HTTP200; túnel activo. Paneles admin con lista predeterminada admin,admindev, verificada sin modificar runtime.env. Imagen anterior etiquetada before-41b1774-20261026. Sin migraciones nuevas, reinicio Windows ni WhatsApp real.

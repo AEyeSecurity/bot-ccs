@@ -6,7 +6,7 @@ Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el h
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
-- Pull origin/main 41b1774 integrado preservando despliegues locales; 374 pruebas, lint/build OK en Compose con etiqueta pull-41b1774. Servicio activo conserva d7b6782; nuevo despliegue/configuración BOT_CCS_ADMIN_USERS pendientes.
+- DESPLEGADO 41b1774 el 26/10: imagen pull-41b1774 aplicada como docker-migration, web/maintenance recreados saludables. 374 pruebas, lint/build OK; matriz 22:29 UTC: 229 escenarios, 17 HTTP/9 n8n, cero incidentes. Readiness local/público/inicio/vCard HTTP200. Admins efectivos admin,admindev por default; ensayo detenido/workflow temporal retirado. Imagen anterior before-41b1774-20261026.
 - SERVIDOR 2026-10-26: integrado origin/main d7b6782 con documentos locales; panel por resolución y Medicina Nuclear como estudio. Build/lint/365 pruebas OK; matriz 19:21 UTC: 229 escenarios, 17 HTTP/9 n8n, cero incidentes. Web/maintenance recreados saludables, readiness local/público/inicio/vCard HTTP200. Ensayo detenido/workflow temporal retirado; imagen anterior etiquetada before-d7b6782-20261026.
 - Entrega 2 (resolución): migración 006 (resolution_status abierta/pendiente/resuelta + resolved_at/by; cierre auto 24h → pendiente). Close con mark_resolved; /api/conversations/[id]/resolution; filtros resolution/from/to. Confirm "Marcar resuelta y cerrar"/"Solo cerrar".
 - Entrega 3 (presencia + usuarios web): migración 007 (operators.last_seen_at); POST /api/presence (latido 30 s, conectado 90 s); GET/POST/PATCH /api/admin/operators; panel "Usuarios".
