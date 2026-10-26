@@ -6,6 +6,8 @@ Este archivo registra cambios funcionales y operativos. A partir de la creación
 
 - Corrección de modelo: Medicina Nuclear es un **estudio** (`IMAGENES_MEDICINA_NUCLEAR`), no una especialidad. Se agrega `scripts/fix-medicina-nuclear-as-study.mjs` para eliminar la especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` y agregar el estudio (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). Pendiente de ejecutar con `--apply` en el servidor.
 - El panel ya no expone el estado técnico del bot: se quitó el filtro de "Estado" y las etiquetas técnicas se reemplazaron por el estado de resolución (Abierta/Pendiente/Resuelta).
+- Paneles admin restringidos a las cuentas listadas en `BOT_CCS_ADMIN_USERS` (default `admin,admindev`): Banco de respuestas, Usuarios y Panel de datos. `/api/me` expone `permissions.admin`; las rutas `/api/admin/*` exigen `requireAdminPanels`.
+- Derivación automática al área menos ocupada: cuando un intent cae en varias áreas, se asigna a la de menor ocupación (conversaciones abiertas con resolución `abierta`); empate al azar.
 
 ## Iteración 1, Entrega 3: panel de datos
 

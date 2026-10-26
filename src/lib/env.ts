@@ -27,6 +27,13 @@ export function getDocumentFingerprintSecret() {
   return requiredEnv("SESSION_SECRET");
 }
 
+export function getPanelAdminUsernames() {
+  return (optional("BOT_CCS_ADMIN_USERS") || "admin,admindev")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+}
+
 export function getServerEnv() {
   return {
     supabaseUrl: requiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
@@ -42,6 +49,7 @@ export function getServerEnv() {
     geminiIntentModel: optional("GEMINI_INTENT_MODEL") || "gemini-2.5-flash",
     botWebhookSecret: requiredEnv("BOT_CCS_WEBHOOK_SECRET"),
     vcardPublicBaseUrl: optional("VCARD_PUBLIC_BASE_URL") || "https://ccs.aeye.com.ar/vcards",
+    panelAdminUsernames: getPanelAdminUsernames(),
     humanTakeoverTimeoutMinutes: Number(optional("HUMAN_TAKEOVER_TIMEOUT_MINUTES") || "10"),
     retentionMessagesDays: Number(optional("RETENTION_MESSAGES_DAYS") || "90"),
     retentionLogsDays: Number(optional("RETENTION_LOGS_DAYS") || "30"),

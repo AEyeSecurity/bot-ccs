@@ -24,6 +24,8 @@ Guardar runtime.env, deploy.env y tunnel-token.txt fuera del repositorio (C:/Pro
 
 Las variables NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY se usan durante el build y son públicas por diseño. Las claves service_role, Twilio y Gemini solo se inyectan al ejecutar. Cambiar las variables públicas requiere reconstruir web.
 
+`BOT_CCS_ADMIN_USERS` (default `admin,admindev`) define qué cuentas admin acceden a los paneles de administración (Banco de respuestas, Usuarios, Panel de datos); los usernames se separan con coma. Para rotar o agregar administradores, editar esta variable en runtime.env y reiniciar web.
+
 ## Construcción y ejecución
 
 ~~~powershell

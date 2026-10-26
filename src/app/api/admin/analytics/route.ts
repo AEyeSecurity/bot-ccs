@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { apiError, getOperatorFromRequest, requireAdmin } from "@/lib/auth";
+import { apiError, getOperatorFromRequest, requireAdminPanels } from "@/lib/auth";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import {
   buildAnalyticsReport,
@@ -24,7 +24,7 @@ function dayBounds(dateString: string | null) {
 export async function GET(request: NextRequest) {
   try {
     const operator = await getOperatorFromRequest(request);
-    requireAdmin(operator);
+    requireAdminPanels(operator);
     const supabase = createAdminSupabaseClient();
 
     const url = new URL(request.url);

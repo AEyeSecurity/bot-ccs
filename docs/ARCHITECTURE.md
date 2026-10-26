@@ -67,6 +67,7 @@ No existe fallback productivo al XLSX ni a datos TypeScript. Si el proceso inici
 - `areas` (cuentas de área), `area_rules` (intent o `response_group_id` de profesional por área), `operator_areas` (un usuario puede tener varias áreas) y `conversations.area_ids` (lista; una conversación puede estar en varias áreas).
 - `src/lib/areas.ts` resuelve las claves del turno (intent de especialidad, estudio o profesional) y deriva `area_ids`. Si el paciente nombra un profesional con regla propia para su especialidad, solo cuentan esas áreas; un profesional sin regla no deriva a nadie.
 - La regla de cada turno: intents no derivables (saludo, OTRAS_CONSULTAS) no modifican `area_ids`.
+- Derivación al área menos ocupada: si el intent cae en varias áreas, `buildAreaPatch` carga la ocupación (`loadAreaOccupation`: conversaciones no cerradas con `resolution_status = 'abierta'`) y elige la de menor ocupación (`pickLeastBusyArea`), con empate al azar.
 - Permisos (`canViewConversation`, `canTakeConversation`, `canOperateConversation`): ver por área; tomar por cualquier operador del área; liberar y cerrar por dueño o sin dueño dentro del área; admin sin restricción.
 - La carga inicial vive en la migración 004 y se valida contra el catálogo en `tests/unit/areas.test.ts`. Gamma es área de contacto (sin reglas de derivación); la migración 005 agrega Gamma y los profesionales faltantes.
 - Presencia: `operators.last_seen_at` (migración 007), actualizada por `POST /api/presence` desde el panel; "conectado" = latido en los últimos 90 s.
@@ -76,6 +77,7 @@ No existe fallback productivo al XLSX ni a datos TypeScript. Si el proceso inici
 ## Seguridad Y Privacidad
 
 - El panel usa Supabase Auth y relaciona la sesión con un operador activo.
+- Los paneles administrativos (Banco de respuestas, Usuarios, Panel de datos) y sus rutas `/api/admin/*` quedan restringidos a las cuentas listadas en `BOT_CCS_ADMIN_USERS` (default `admin,admindev`) mediante `canAccessAdminPanels`/`requireAdminPanels`; `/api/me` expone `permissions.admin`.
 - Las APIs administrativas exigen rol `admin`; responden `401` sin sesión y `403` para operadores comunes.
 - Las escrituras privilegiadas se realizan server-side con `service_role`.
 - RLS permanece habilitado en Supabase.

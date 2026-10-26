@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { createAdminSupabaseClient } from "./supabase";
+import { getPanelAdminUsernames } from "./env";
 import type { Operator } from "./domain";
 import { loadOperatorAreaIds } from "./areas";
 
@@ -40,6 +41,19 @@ export async function getOperatorFromRequest(request: NextRequest): Promise<Oper
 
 export function requireAdmin(operator: Operator) {
   if (operator.role !== "admin") {
+    throw Object.assign(new Error("Administrator access required"), { status: 403 });
+  }
+  return operator;
+}
+
+export function canAccessAdminPanels(operator: Operator) {
+  if (operator.role !== "admin") return false;
+  const username = (operator.email || "").split("@")[0].toLowerCase();
+  return getPanelAdminUsernames().includes(username);
+}
+
+export function requireAdminPanels(operator: Operator) {
+  if (!canAccessAdminPanels(operator)) {
     throw Object.assign(new Error("Administrator access required"), { status: 403 });
   }
   return operator;

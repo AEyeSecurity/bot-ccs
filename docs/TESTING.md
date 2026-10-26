@@ -43,6 +43,8 @@ node scripts/verify-bot-n8n-e2e.mjs
 - `tests/integration/admin-operators-route.test.ts`: listado con áreas (403 para no admin), alta con contraseña temporal, rechazo sin áreas, reset de contraseña, desactivación y cambio a admin sin áreas.
 - `tests/unit/analytics.test.ts`: volumen, resolución, actividad, tiempos y derivación global y por usuario.
 - `tests/integration/analytics-route.test.ts`: reporte con selector sin admins y 403 para no admin.
+- `tests/unit/auth.test.ts`: `canAccessAdminPanels` según la lista `BOT_CCS_ADMIN_USERS` (default, override por env, operador y admin no listado).
+- `tests/unit/area-balancing.test.ts`: `pickLeastBusyArea` (menor ocupación y empate), `loadAreaOccupation` y `buildAreaPatch` (deriva a la menos ocupada).
 - Pendiente: validar las migraciones 005, 006 y 007 contra el Supabase actual con `npm run db:apply`.
 
 ## Casos Críticos
