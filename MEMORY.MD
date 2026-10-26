@@ -20,8 +20,8 @@ Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado po
 - Presencia: heartbeat 30 s; conectado = últimos 90 s.
 
 ## Pendientes y siguiente paso
-- DISCREPANCIA medicina nuclear: en esta sesión se decidió CONTACTO (número+vCard, sin publicar hasta aprobar texto); el servidor la agregó como ESPECIALIDAD disponible=false. Conciliar con el cliente antes de habilitarla.
-- PENDIENTE EN SERVIDOR: git pull de b98ed71, tests/lint/build en Docker; aplicar migraciones 005/006/007 (npm run db:apply) y verificar resolución/presencia.
+- MEDICINA NUCLEAR = ESTUDIO (no especialidad). Script scripts/fix-medicina-nuclear-as-study.mjs listo para eliminar la especialidad ATENCION_MEDICA_MEDICINA_NUCLEAR y agregar IMAGENES_MEDICINA_NUCLEAR (available=false, texto pendiente). Pendiente ejecutar --apply en servidor + texto + definir si deriva a Gamma.
+- PENDIENTE EN SERVIDOR: git pull, tests/lint/build en Docker; aplicar migraciones 005/006/007 (npm run db:apply); ejecutar fix-medicina-nuclear-as-study.mjs --apply; reiniciar web.
 - Confirmar con cliente NOTAS-CLIENTE (1-27): Catullo, Gastro/Clínica Médica/Anexo, dirección Sector A, texto de medicina nuclear.
 - Futuro: derivación balanceada al menos ocupado (métrica + asignación pendientes de definir).
 - Previo a uso real: WhatsApp real, reinicio del host, retirar admindev, rotar contraseña admin de "Tareas" (ver README).

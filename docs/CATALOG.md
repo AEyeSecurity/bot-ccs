@@ -70,6 +70,10 @@ npm run catalog:seed-managed
 
 La importación se debe ejecutar únicamente cuando se modifica la estructura no editable desde el panel. Para bases existentes, publicar mediante el flujo administrativo controlado. No usar seeds como actualización o recuperación del catálogo productivo.
 
+## Corrección: Medicina Nuclear como estudio (26 de octubre de 2026)
+
+Medicina Nuclear es un **estudio**, no una especialidad. La entrada agregada el 21 de octubre como especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` se corrige con `scripts/fix-medicina-nuclear-as-study.mjs`, que elimina la especialidad y agrega el estudio `IMAGENES_MEDICINA_NUCLEAR` (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). Ejecutar con `--apply` en el servicio tools y reiniciar web para recargar la caché; luego completar el texto y marcarlo revisado desde el panel antes de publicar.
+
 ## Alta controlada: Medicina Nuclear (21 de octubre de 2026)
 
 Se agregó Medicina Nuclear con intención ATENCION_MEDICA_MEDICINA_NUCLEAR y alias medicina nuclear al catálogo productivo Supabase. Hay 19 especialidades. La entrada está desactivada y sin contenido ni profesionales, lista para completar en Especialidades antes de habilitarla. Se creó la publicación 6 preservando la anterior en el historial y se añadió únicamente la misma entrada al borrador en curso (revisión 63), conservando sus demás ediciones sin publicarlas. Se validaron ambos payloads y se aplicó la ampliación estructural en una transacción con bloqueo de catálogo; no se modificaron XLSX ni fixtures. Como el cambio estructural se hizo fuera de la API editorial, se reinició web para recargar la caché; las ediciones normales publicadas desde el panel no requieren reinicio.

@@ -2,6 +2,11 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## 2026-10-26
+
+- Corrección de modelo: Medicina Nuclear es un **estudio** (`IMAGENES_MEDICINA_NUCLEAR`), no una especialidad. Se agrega `scripts/fix-medicina-nuclear-as-study.mjs` para eliminar la especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` y agregar el estudio (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). Pendiente de ejecutar con `--apply` en el servidor.
+- El panel ya no expone el estado técnico del bot: se quitó el filtro de "Estado" y las etiquetas técnicas se reemplazaron por el estado de resolución (Abierta/Pendiente/Resuelta).
+
 ## Iteración 1, Entrega 3: panel de datos
 
 - `src/lib/analytics.ts` (`buildAnalyticsReport`): agregación pura de volumen, resolución, actividad (casos atendidos = conversaciones en las que participó, con desglose de intervenciones y mensajes), tiempos (primera respuesta, resolución, cola) y derivación (top gestiones y top áreas).
