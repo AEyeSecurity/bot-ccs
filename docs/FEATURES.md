@@ -34,13 +34,18 @@ El login admite los alias `admin` y `admindev`, además del email completo; perm
 - Un operador solo ve las conversaciones de sus áreas. Admin ve todas, incluidas las que no tienen área.
 - Un compañero del área puede tomar una conversación que otro estaba atendiendo; el cambio queda registrado. Liberar y cerrar requieren ser el dueño o que no tenga dueño dentro del área.
 - Alta de usuarios por línea de comandos: `npm run operator:create` (ver OPERATIONS).
-- Pendiente: visualización de áreas en el panel, alta desde la web, presencia y métricas (entregas 2 y 3); estado de resolución y filtro por día (entrega 2).
+- Estado de resolución por conversación: `abierta`, `pendiente` o `resuelta`, con botón de cambio y filtro propio (entrega 2).
+- Filtro por rango de fechas (desde/hasta) en la bandeja.
+- Alta y edición de usuarios desde la web (admin): crear, activar/desactivar, asignar áreas y resetear contraseña con temporal mostrada una sola vez.
+- Presencia: latido del panel cada 30 s; el listado de usuarios muestra "conectado" según el último latido (90 s).
+- Panel de datos (admin): análisis global o por usuario con rango de fechas — volumen, resolución, casos atendidos (participación + intervenciones + mensajes), tiempos de primera respuesta/resolución/cola, conectados y derivación por gestión y área.
 
 ## Panel De Conversaciones
 
-- Búsqueda y filtros por estado.
+- Búsqueda y filtros por estado y por resolución; rango de fechas.
 - Lectura de mensajes y estado del caso.
 - Toma de control, respuesta humana, liberación y cierre manual.
+- Al cerrar una conversación abierta o pendiente se pregunta si marcarla resuelta; el cierre por abandono queda pendiente.
 - El bot no responde mientras existe control humano.
 - El control humano vence según `HUMAN_TAKEOVER_TIMEOUT_MINUTES` después del último mensaje del operador.
 - Si se libera sin respuesta humana, la conversación cierra al cumplirse 24 horas desde el último inbound.

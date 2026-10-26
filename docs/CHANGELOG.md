@@ -2,7 +2,35 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
-## Iteración 1, Entrega 1: áreas, derivación y permisos
+## Iteración 1, Entrega 3: panel de datos
+
+- `src/lib/analytics.ts` (`buildAnalyticsReport`): agregación pura de volumen, resolución, actividad (casos atendidos = conversaciones en las que participó, con desglose de intervenciones y mensajes), tiempos (primera respuesta, resolución, cola) y derivación (top gestiones y top áreas).
+- `GET /api/admin/analytics?from&to&operator_id` (admin): devuelve el reporte y el selector de operadores (sin admins). Rango de fechas inclusivo.
+- Panel "Panel de datos" (`analytics-panel.tsx`): selector de usuario ("Todos" o un operador), rango desde/hasta, tarjetas de volumen/resolución/actividad/tiempos, conectados y barras de derivación.
+- Pruebas: `tests/unit/analytics.test.ts` (4) y `tests/integration/analytics-route.test.ts` (2). 365 pruebas, lint y build correctos (host).
+
+## Iteración 1, Entrega 3: presencia y usuarios desde la web
+
+- Migración `007_presence.sql`: `operators.last_seen_at`.
+- `POST /api/presence`: latido del panel (30 s); "conectado" = último latido en 90 s.
+- `GET/POST/PATCH /api/admin/operators`: listar (con áreas), crear (contraseña temporal), editar, activar/desactivar y resetear contraseña desde la web. Reutiliza la lógica de `scripts/create-operator.mjs`.
+- Panel "Usuarios" (admin): listado con estado de conexión, alta/edición, asignación de áreas y contraseña temporal mostrada una sola vez.
+- Pruebas: `presence-route.test.ts` (2) y `admin-operators-route.test.ts` (7). 359 pruebas, lint y build correctos (host).
+
+## Iteración 1, Entrega 2: estado de resolución y filtro por día
+
+- Migración `006_resolution_status.sql`: `conversations.resolution_status` (`abierta`/`pendiente`/`resuelta`, por defecto `abierta`), `resolved_at` y `resolved_by`. Reemplaza `close_unanswered_released_conversations` para que el cierre automático por abandono deje `pendiente`.
+- Cerrar acepta `mark_resolved`: si es `true` marca `resuelta`; si no, conserva el estado. Ruta nueva `POST /api/conversations/[id]/resolution`.
+- `/api/conversations` filtra por `resolution`, `from` y `to` (última actividad).
+- Panel: chips de resolución, rango de fechas, badge y control de resolución en la ficha, y confirmación "Marcar resuelta y cerrar" / "Solo cerrar".
+- Pruebas: `tests/integration/resolution-route.test.ts` (6) y ajuste de `conversation-release.test.ts`. 350 pruebas, lint y build correctos (host).
+
+## Iteración 1, ajuste tras reunión con el cliente: Gamma y profesionales
+
+- Migración `005_gamma_contacto_profesionales.sql`: crea el área Gamma como área de contacto (sin reglas de derivación); agrega reglas para Goldenberg (Pasaje), Juárez y Catullo (Pasaje, Catullo pendiente de confirmar), Albiño (CEMI) y Jara (DMO); quita Álvarez Czernik de CEMI (queda solo en Pasaje).
+- Pruebas de áreas actualizadas: leen las migraciones 004 y 005, esperan 14 áreas y cubren los profesionales nuevos.
+- Medicina nuclear: decidida como contacto (número de Cámara Gamma y vCard), no como caso. No se publicó: el texto para el paciente está pendiente con el cliente y el catálogo bloquea publicar registros en revisión pendiente.
+- Validación: 344 pruebas, lint y build correctos (en host; pendiente validar en Docker Compose y aplicar 005 en Supabase de prueba).
 
 - Migración `004_roles_areas.sql`: tablas `areas`, `area_rules` (intent o profesional por área), `operator_areas` (un usuario puede tener varias áreas) y `conversations.area_ids`. Carga inicial desde la hoja "Usuarios" del Excel. Gamma queda pendiente.
 - `src/lib/areas.ts`: traduce el turno (intent o profesional nombrado) a claves de área y deriva `area_ids`. Permisos: ver por área; tomar, para cualquier operador del área aunque otro compañero la tuviera; liberar y cerrar, para el dueño o si no tiene dueño dentro del área; admin siempre.

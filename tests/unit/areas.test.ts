@@ -12,19 +12,37 @@ import {
   type AreaRule,
 } from "@/lib/areas";
 
-const migration = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/004_roles_areas.sql"), "utf8");
+const migration004 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/004_roles_areas.sql"), "utf8");
+const migration005 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/005_gamma_contacto_profesionales.sql"), "utf8");
 
-// Las reglas viven en la migración (fuente de la carga inicial). Se leen de ahí para no duplicarlas.
-const areasBlock = migration.slice(migration.indexOf("insert into public.areas"), migration.indexOf(";", migration.indexOf("insert into public.areas")));
-const areaNames = [...areasBlock.matchAll(/'([^']+)'/g)].map((match) => match[1]);
+// Las reglas viven en las migraciones (fuente de la carga inicial). Se leen de ahí para no duplicarlas.
+function insertNames(sql: string) {
+  const start = sql.indexOf("insert into public.areas");
+  if (start < 0) return [];
+  const block = sql.slice(start, sql.indexOf(";", start));
+  return [...block.matchAll(/'([^']+)'/g)].map((match) => match[1]);
+}
+const areaNames = [...new Set([...insertNames(migration004), ...insertNames(migration005)])];
 const areaIdByName = new Map(areaNames.map((name) => [name, `area:${name}`]));
-const seededRules: AreaRule[] = [...migration.matchAll(/\('([^']+)',\s*'([A-Z_]+)',\s*(null|'[a-z_]+')\)/g)].map(
-  ([, areaName, intentKey, group]) => ({
-    area_id: areaIdByName.get(areaName) || `missing:${areaName}`,
+
+function tuplesOf(sql: string, areaIdOf: (name: string) => string): AreaRule[] {
+  return [...sql.matchAll(/\('([^']+)',\s*'([A-Z_]+)',\s*(null|'[a-z_]+')\)/g)].map(([, areaName, intentKey, group]) => ({
+    area_id: areaIdOf(areaName),
     intent_key: intentKey,
     response_group_id: group === "null" ? null : group.slice(1, -1),
-  }),
-);
+  }));
+}
+
+const areaIdOf = (name: string) => areaIdByName.get(name) || `missing:${name}`;
+const removals = [
+  ...migration005.matchAll(/a\.name = '([^']+)'\s+and r\.intent_key = '([A-Z_]+)'\s+and r\.response_group_id = '([a-z_]+)'/g),
+].map(([, areaName, intentKey, group]) => ({ area_id: areaIdOf(areaName), intent_key: intentKey, response_group_id: group }));
+const seededRules: AreaRule[] = [
+  ...tuplesOf(migration004, areaIdOf).filter(
+    (rule) => !removals.some((removed) => removed.area_id === rule.area_id && removed.intent_key === rule.intent_key && removed.response_group_id === rule.response_group_id),
+  ),
+  ...tuplesOf(migration005, areaIdOf),
+];
 
 const id = (name: string) => areaIdByName.get(name) as string;
 const names = (ids: string[]) => ids.map((areaId) => areaId.replace(/^area:/, "")).sort();
@@ -45,9 +63,9 @@ beforeAll(async () => {
 });
 
 describe("carga inicial de áreas (hoja Usuarios)", () => {
-  test("crea las 13 áreas de la hoja, sin Gamma", () => {
-    expect(areaNames).toHaveLength(13);
-    expect(areaNames).not.toContain("Gamma");
+  test("crea las 13 áreas de la hoja más Gamma (área de contacto)", () => {
+    expect(areaNames).toHaveLength(14);
+    expect(areaNames).toContain("Gamma");
   });
 
   test("cada regla apunta a un área existente y a intents o profesionales del catálogo", () => {
@@ -100,8 +118,8 @@ describe("carga inicial de áreas (hoja Usuarios)", () => {
     expect(derive(SPECIALTY, { professionalResponseGroupIds: ["diabetologia_carrizo"], professionalOrService: "Carrizo Mercedes" })).toEqual(["Pasaje"]);
   });
 
-  test("un profesional que aparece en dos áreas se muestra en ambas", () => {
-    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["neurologia_alvarez"], professionalOrService: "Álvarez Czernik Ángel" })).toEqual(["CEMI", "Pasaje"]);
+  test("Álvarez Czernik va solo a Pasaje (la hoja actualizada ya no lo lista en CEMI)", () => {
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["neurologia_alvarez"], professionalOrService: "Álvarez Czernik" })).toEqual(["Pasaje"]);
   });
 
   test("especialidad genérica con varias áreas la muestra en todas ellas (pendiente con el cliente)", () => {
@@ -109,13 +127,22 @@ describe("carga inicial de áreas (hoja Usuarios)", () => {
     expect(derive("ATENCION_MEDICA_TRAUMATOLOGIA")).toEqual(["Anexo", "Pasaje"]);
   });
 
-  test("profesional que no figura en la hoja no se deriva a ningún área (solo admin)", () => {
-    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["cirugia_goldenberg"], professionalOrService: "Goldenberg Gustavo" })).toEqual([]);
-    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["neurologia_albino"], professionalOrService: "Edgar Albiño" })).toEqual([]);
+  test("profesionales agregados en la hoja actualizada van a su área", () => {
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["cirugia_goldenberg"], professionalOrService: "Goldenberg Gustavo" })).toEqual(["Pasaje"]);
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["traumatologia_juarez"], professionalOrService: "Juárez Marcelo" })).toEqual(["Pasaje"]);
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["traumatologia_catullo"], professionalOrService: "Catullo Marcelo" })).toEqual(["Pasaje"]);
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["neurologia_albino"], professionalOrService: "Edgar Albiño" })).toEqual(["CEMI"]);
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["nutricion_jara"], professionalOrService: "Jara Cristina" })).toEqual(["DMO"]);
   });
 
-  test("Gamma no tiene derivación", () => {
-    expect(seededRules.some((rule) => rule.area_id === "missing:Gamma")).toBe(false);
+  test("profesional con regla va a su área; sin regla (no figura en la hoja) no deriva a ninguna", () => {
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["nutricion_santana"], professionalOrService: "Santana Agostina" })).toEqual(["Pasaje"]);
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["unknown_group"], professionalOrService: "Desconocido" })).toEqual([]);
+  });
+
+  test("Gamma es área de contacto: no deriva casos", () => {
+    expect(seededRules.some((rule) => rule.area_id === id("Gamma"))).toBe(false);
+    expect(derive("IMAGENES_MEDICINA_NUCLEAR")).toEqual([]);
   });
 
   test("selector de especialidad y saludo no derivan a ninguna área", () => {

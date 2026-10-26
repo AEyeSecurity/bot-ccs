@@ -38,6 +38,12 @@ node scripts/verify-bot-n8n-e2e.mjs
 - `tests/integration/areas-access-route.test.ts`: listado por área, takeover entre compañeros, bloqueo de otra área, detalle de mensajes y cierre.
 - `tests/integration/area-derivation-inbound.test.ts`: mensajes entrantes reales deciden `area_ids`; un saludo no cambia el área existente.
 - Migración 004 validada en el Supabase actual el 21 de octubre de 2026 con autorización del usuario; no existe un proyecto de prueba separado. Ver OPERATIONS para alcance y comprobaciones.
+- `tests/integration/resolution-route.test.ts`: cambio de resolución, resuelta→pendiente limpia `resolved_at/by`, estado inválido, y cierre con/sin `mark_resolved`.
+- `tests/integration/presence-route.test.ts`: latido actualiza `last_seen_at`; operador no registrado.
+- `tests/integration/admin-operators-route.test.ts`: listado con áreas (403 para no admin), alta con contraseña temporal, rechazo sin áreas, reset de contraseña, desactivación y cambio a admin sin áreas.
+- `tests/unit/analytics.test.ts`: volumen, resolución, actividad, tiempos y derivación global y por usuario.
+- `tests/integration/analytics-route.test.ts`: reporte con selector sin admins y 403 para no admin.
+- Pendiente: validar las migraciones 005, 006 y 007 contra el Supabase actual con `npm run db:apply`.
 
 ## Casos Críticos
 

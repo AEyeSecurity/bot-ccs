@@ -7,6 +7,16 @@ export type ConversationStatus =
 
 export type OperatorRole = "admin" | "operator";
 
+export const RESOLUTION_STATUSES = ["abierta", "pendiente", "resuelta"] as const;
+
+export type ResolutionStatus = (typeof RESOLUTION_STATUSES)[number];
+
+export const RESOLUTION_LABELS: Record<ResolutionStatus, string> = {
+  abierta: "Abierta",
+  pendiente: "Pendiente",
+  resuelta: "Resuelta",
+};
+
 export type Operator = {
   id: string;
   auth_user_id: string | null;
@@ -15,6 +25,7 @@ export type Operator = {
   role: OperatorRole;
   is_active: boolean;
   area_ids?: string[];
+  last_seen_at?: string | null;
 };
 
 export type Contact = {
@@ -41,6 +52,9 @@ export type Conversation = {
   last_activity_at: string;
   unread_count: number;
   area_ids?: string[];
+  resolution_status?: ResolutionStatus;
+  resolved_at?: string | null;
+  resolved_by?: string | null;
   priority: string;
   source: string;
   created_at: string;

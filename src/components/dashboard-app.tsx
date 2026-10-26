@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+  BarChart3,
   Bot,
   ChevronLeft,
   CheckCircle2,
@@ -16,13 +17,16 @@ import {
   ShieldCheck,
   Stethoscope,
   UserCheck,
+  Users,
   XCircle,
 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
 import type { CaseRecord, ConversationListItem, ConversationStatus, Message, Operator } from "@/lib/domain";
-import { STATUS_LABELS } from "@/lib/domain";
+import { RESOLUTION_LABELS, RESOLUTION_STATUSES, STATUS_LABELS, type ResolutionStatus } from "@/lib/domain";
 import { CatalogAdminPanel } from "@/components/catalog-admin-panel";
+import { UsersAdminPanel } from "@/components/users-admin-panel";
+import { AnalyticsPanel } from "@/components/analytics-panel";
 
 const filters: Array<{ key: "all" | ConversationStatus; label: string }> = [
   { key: "all", label: "Todas" },
@@ -31,6 +35,25 @@ const filters: Array<{ key: "all" | ConversationStatus; label: string }> = [
   { key: "bot_active", label: "Bot" },
   { key: "closed", label: "Cerradas" },
 ];
+
+const resolutionFilters: Array<{ key: "all" | ResolutionStatus; label: string }> = [
+  { key: "all", label: "Todas" },
+  ...RESOLUTION_STATUSES.map((status) => ({ key: status as ResolutionStatus, label: RESOLUTION_LABELS[status] })),
+];
+
+function resolutionClasses(status?: ResolutionStatus | null) {
+  if (status === "pendiente") return "bg-amber-100 text-amber-800 border-amber-200";
+  if (status === "resuelta") return "bg-emerald-100 text-emerald-800 border-emerald-200";
+  return "bg-zinc-100 text-zinc-600 border-zinc-200";
+}
+
+function toLocalIso(dateString: string, endOfDay: boolean) {
+  if (!dateString) return null;
+  const [year, month, day] = dateString.split("-").map(Number);
+  if (!year || !month || !day) return null;
+  const date = endOfDay ? new Date(year, month - 1, day, 23, 59, 59, 999) : new Date(year, month - 1, day, 0, 0, 0, 0);
+  return date.toISOString();
+}
 
 function timeLabel(value?: string | null) {
   if (!value) return "";
@@ -124,6 +147,9 @@ export function DashboardApp() {
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
   const [filter, setFilter] = useState<"all" | ConversationStatus>("all");
+  const [resolutionFilter, setResolutionFilter] = useState<"all" | ResolutionStatus>("all");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [query, setQuery] = useState("");
   const [conversations, setConversations] = useState<ConversationListItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -132,7 +158,8 @@ export function DashboardApp() {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [nowMs, setNowMs] = useState(0);
-  const [view, setView] = useState<"conversations" | "catalog">("conversations");
+  const [view, setView] = useState<"conversations" | "catalog" | "users" | "analytics">("conversations");
+  const [confirmClose, setConfirmClose] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const accessToken = session?.access_token || "";
 
@@ -170,11 +197,16 @@ export function DashboardApp() {
     if (!accessToken) return;
     const params = new URLSearchParams();
     if (filter !== "all") params.set("status", filter);
+    if (resolutionFilter !== "all") params.set("resolution", resolutionFilter);
+    const fromIso = toLocalIso(fromDate, false);
+    const toIso = toLocalIso(toDate, true);
+    if (fromIso) params.set("from", fromIso);
+    if (toIso) params.set("to", toIso);
     if (query.trim()) params.set("q", query.trim());
     const data = await apiFetch(`/api/conversations?${params.toString()}`);
     setConversations(data.conversations || []);
     if (!selectedId && data.conversations?.[0]?.id) setSelectedId(data.conversations[0].id);
-  }, [accessToken, apiFetch, filter, query, selectedId]);
+  }, [accessToken, apiFetch, filter, resolutionFilter, fromDate, toDate, query, selectedId]);
 
   const loadMessages = useCallback(
     async (id: string) => {
@@ -243,6 +275,14 @@ export function DashboardApp() {
     return () => window.clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (!accessToken) return;
+    const ping = () => apiFetch("/api/presence", { method: "POST" }).catch(() => undefined);
+    void ping();
+    const timer = window.setInterval(() => void ping(), 30000);
+    return () => window.clearInterval(timer);
+  }, [accessToken, apiFetch]);
+
   async function login(event: FormEvent) {
     event.preventDefault();
     setAuthError("");
@@ -275,6 +315,39 @@ export function DashboardApp() {
       if (selectedId) {
         await Promise.all([loadConversations(), loadMessages(selectedId)]).catch(() => undefined);
       }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function closeConversation(markResolved: boolean) {
+    if (!selectedId) return;
+    setBusy(true);
+    setConfirmClose(false);
+    try {
+      await apiFetch(`/api/conversations/${selectedId}/close`, {
+        method: "POST",
+        body: JSON.stringify({ mark_resolved: markResolved }),
+      });
+      await Promise.all([loadConversations(), loadMessages(selectedId)]);
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function setResolution(resolutionStatus: ResolutionStatus) {
+    if (!selectedId) return;
+    setBusy(true);
+    try {
+      await apiFetch(`/api/conversations/${selectedId}/resolution`, {
+        method: "POST",
+        body: JSON.stringify({ resolution_status: resolutionStatus }),
+      });
+      await Promise.all([loadConversations(), loadMessages(selectedId)]);
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : "Error");
     } finally {
       setBusy(false);
     }
@@ -375,6 +448,14 @@ export function DashboardApp() {
     return <CatalogAdminPanel apiFetch={apiFetch} onBack={() => setView("conversations")} />;
   }
 
+  if (view === "users" && operator.role === "admin") {
+    return <UsersAdminPanel apiFetch={apiFetch} onBack={() => setView("conversations")} />;
+  }
+
+  if (view === "analytics" && operator.role === "admin") {
+    return <AnalyticsPanel apiFetch={apiFetch} onBack={() => setView("conversations")} />;
+  }
+
   return (
     <main className="dashboard-shell grid h-screen grid-cols-1 overflow-hidden text-zinc-900 lg:grid-cols-[330px_minmax(0,1fr)_310px]">
       <aside className={`${selectedId ? "hidden" : "flex"} min-h-0 flex-col border-r border-zinc-200/80 bg-white/95 backdrop-blur lg:flex`}>
@@ -405,9 +486,17 @@ export function DashboardApp() {
             </div>
           </div>
           {operator.role === "admin" ? (
-            <button onClick={() => setView("catalog")} className="mb-3 flex h-10 w-full items-center gap-2 rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]">
-              <Database size={16} /> Banco de respuestas
-            </button>
+            <div className="mb-3 grid gap-1">
+              <button onClick={() => setView("catalog")} className="flex h-10 w-full items-center gap-2 rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]">
+                <Database size={16} /> Banco de respuestas
+              </button>
+              <button onClick={() => setView("users")} className="flex h-10 w-full items-center gap-2 rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]">
+                <Users size={16} /> Usuarios
+              </button>
+              <button onClick={() => setView("analytics")} className="flex h-10 w-full items-center gap-2 rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]">
+                <BarChart3 size={16} /> Panel de datos
+              </button>
+            </div>
           ) : null}
           <div className="mb-3 flex h-10 items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3 transition focus-within:border-[#176b5a] focus-within:bg-white focus-within:ring-4 focus-within:ring-emerald-50">
             <Search size={16} className="text-zinc-400" />
@@ -433,6 +522,52 @@ export function DashboardApp() {
               </button>
             ))}
           </div>
+          <div className="mt-3 grid grid-cols-4 gap-1 rounded-xl bg-zinc-100 p-1">
+            {resolutionFilters.map((item) => (
+              <button
+                key={item.key}
+                onClick={() => setResolutionFilter(item.key)}
+                className={`h-8 rounded-lg text-[11px] font-semibold transition ${
+                  resolutionFilter === item.key
+                    ? "bg-white text-[#176b5a] shadow-sm"
+                    : "text-zinc-500 hover:text-zinc-800"
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <label className="block">
+              <span className="text-[11px] font-semibold text-zinc-500">Desde</span>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(event) => setFromDate(event.target.value)}
+                className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-white px-2 text-xs outline-none focus:border-[#176b5a]"
+              />
+            </label>
+            <label className="block">
+              <span className="text-[11px] font-semibold text-zinc-500">Hasta</span>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(event) => setToDate(event.target.value)}
+                className="mt-1 h-9 w-full rounded-lg border border-zinc-200 bg-white px-2 text-xs outline-none focus:border-[#176b5a]"
+              />
+            </label>
+          </div>
+          {fromDate || toDate ? (
+            <button
+              onClick={() => {
+                setFromDate("");
+                setToDate("");
+              }}
+              className="mt-2 text-[11px] font-semibold text-zinc-500 underline-offset-2 hover:underline"
+            >
+              Limpiar fechas
+            </button>
+          ) : null}
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
@@ -512,7 +647,13 @@ export function DashboardApp() {
               <button
                 title="Cerrar conversación"
                 disabled={busy || selected.status === "closed"}
-                onClick={() => action("close")}
+                onClick={() => {
+                  if (selected.resolution_status && selected.resolution_status !== "resuelta") {
+                    setConfirmClose(true);
+                  } else {
+                    void closeConversation(selected.resolution_status === "resuelta");
+                  }
+                }}
                 className="grid h-9 w-9 place-items-center rounded-xl border border-zinc-200 text-zinc-700 transition hover:bg-rose-50 hover:text-rose-700"
               >
                 <CheckCircle2 size={17} />
@@ -621,6 +762,29 @@ export function DashboardApp() {
             </div>
 
             <div className="mb-5">
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-400">Resolución</p>
+              <span className={`inline-block rounded-full border px-2.5 py-1 text-xs font-semibold ${resolutionClasses(selected.resolution_status)}`}>
+                {RESOLUTION_LABELS[selected.resolution_status || "abierta"]}
+              </span>
+              <div className="mt-2 grid grid-cols-3 gap-1">
+                {RESOLUTION_STATUSES.map((status) => (
+                  <button
+                    key={status}
+                    disabled={busy}
+                    onClick={() => setResolution(status)}
+                    className={`rounded-lg px-2 py-1.5 text-[11px] font-semibold transition ${
+                      (selected.resolution_status || "abierta") === status
+                        ? "bg-[#176b5a] text-white"
+                        : "border border-zinc-200 text-zinc-600 hover:bg-zinc-50"
+                    }`}
+                  >
+                    {RESOLUTION_LABELS[status]}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-5">
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-400">Gestión</p>
               {detail?.case ? (
                 <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white">
@@ -651,6 +815,38 @@ export function DashboardApp() {
           <p className="p-4 text-sm text-zinc-500">Sin conversación seleccionada</p>
         )}
       </aside>
+
+      {confirmClose ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl">
+            <p className="text-sm font-bold text-zinc-800">Cerrar conversación</p>
+            <p className="mt-1 text-sm text-zinc-500">¿Querés marcarla como resuelta antes de cerrarla?</p>
+            <div className="mt-4 grid gap-2">
+              <button
+                disabled={busy}
+                onClick={() => closeConversation(true)}
+                className="h-11 rounded-xl bg-[#176b5a] px-4 text-sm font-semibold text-white transition hover:bg-[#125747]"
+              >
+                Marcar resuelta y cerrar
+              </button>
+              <button
+                disabled={busy}
+                onClick={() => closeConversation(false)}
+                className="h-11 rounded-xl border border-zinc-200 px-4 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
+              >
+                Solo cerrar
+              </button>
+              <button
+                disabled={busy}
+                onClick={() => setConfirmClose(false)}
+                className="h-9 text-sm font-semibold text-zinc-500 hover:text-zinc-700"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

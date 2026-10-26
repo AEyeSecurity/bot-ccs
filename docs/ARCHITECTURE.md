@@ -46,6 +46,14 @@ Estados de caso:
 - `closed`
 - `cancelled`
 
+Estado de resolución humano (`conversations.resolution_status`, migración 006), independiente del estado técnico:
+
+- `abierta`: por defecto.
+- `pendiente`: el caso sigue sin resolverse.
+- `resuelta`: registra `resolved_at` y `resolved_by`.
+
+Cerrar no cambia la resolución salvo que el operador elija "marcar resuelta y cerrar"; el cierre automático por abandono (24 h sin respuesta) deja `pendiente`.
+
 Los pasos y datos requeridos se almacenan en el caso. La detección puede reclasificar un mensaje mientras existe una solicitud abierta sin perder información ya capturada.
 
 ## Catálogo Productivo
@@ -60,7 +68,10 @@ No existe fallback productivo al XLSX ni a datos TypeScript. Si el proceso inici
 - `src/lib/areas.ts` resuelve las claves del turno (intent de especialidad, estudio o profesional) y deriva `area_ids`. Si el paciente nombra un profesional con regla propia para su especialidad, solo cuentan esas áreas; un profesional sin regla no deriva a nadie.
 - La regla de cada turno: intents no derivables (saludo, OTRAS_CONSULTAS) no modifican `area_ids`.
 - Permisos (`canViewConversation`, `canTakeConversation`, `canOperateConversation`): ver por área; tomar por cualquier operador del área; liberar y cerrar por dueño o sin dueño dentro del área; admin sin restricción.
-- La carga inicial vive en la migración 004 y se valida contra el catálogo en `tests/unit/areas.test.ts`. Gamma queda sin área hasta definirla.
+- La carga inicial vive en la migración 004 y se valida contra el catálogo en `tests/unit/areas.test.ts`. Gamma es área de contacto (sin reglas de derivación); la migración 005 agrega Gamma y los profesionales faltantes.
+- Presencia: `operators.last_seen_at` (migración 007), actualizada por `POST /api/presence` desde el panel; "conectado" = latido en los últimos 90 s.
+- Usuarios desde la web: `GET/POST/PATCH /api/admin/operators` (admin) gestiona cuentas, áreas, activación y contraseñas; `scripts/create-operator.mjs` sigue disponible por CLI.
+- Panel de datos: `GET /api/admin/analytics` (admin) agrega en servidor mediante `src/lib/analytics.ts` (volumen, resolución, casos atendidos por participación con desglose de intervenciones y mensajes, tiempos de primera respuesta/resolución/cola y derivación).
 
 ## Seguridad Y Privacidad
 

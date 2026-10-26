@@ -46,6 +46,7 @@ describe("conversation release expiration", () => {
     expect(result.closed).toBe(true);
     expect(client.table("conversations")[0]).toMatchObject({
       status: "closed", current_intent: null, current_step: null, assigned_operator_id: null, unanswered_release_at: null,
+      resolution_status: "pendiente",
     });
     expect(client.table("cases")[0]).toMatchObject({ status: "cancelled", current_step: null });
     expect(client.table("conversation_events").filter((event) => event.event_type === "conversation_closed_after_unanswered_release")).toHaveLength(1);

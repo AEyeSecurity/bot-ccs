@@ -106,10 +106,12 @@ Registro de requerimientos del cliente y soluciones propuestas. Se amplía a med
 | Pasaje | Nefrología; Cirugía (Cardoso Atilio, Cardoso Martin, Heredia); Diabetología (Carrizo); Neurología (Paolini, Álvarez Czernik); Nutrición (Santana); Traumatología (Vargas, Núñez Gaspar) |
 | Anexo | Cirugía (del Carpio, Luján del Bueno, Soulergues); Oncología; Reumatología; Traumatología (Longo, Castro); Diabetología (Sedán); Dermatología; Urología; Infectología; Ecografías (abdominal, Doppler, renal) |
 | DMO | Mamografía, Psicología, Densitometría ósea, Nutrición |
-| CEMI | Cirugía (Francalancia); Ginecología y Obstetricia; Neurología (Álvarez Czernik); Pediatría; Psiquiatría; Ecografía ginecológica/obstétrica/mamaria |
+| CEMI | Cirugía (Francalancia); Ginecología y Obstetricia; Neurología (Albiño); Pediatría; Psiquiatría; Ecografía ginecológica/obstétrica/mamaria |
 | Patología | Biopsias |
 | Laboratorio | Laboratorio clínico |
-| Gamma | (sin asignación) |
+| Gamma | Área de contacto para Medicina nuclear (sin derivación de casos; ver NOTAS-CLIENTE) |
+
+Migraciones: `004_roles_areas.sql` (carga inicial) y `005_gamma_contacto_profesionales.sql` (Gamma, profesionales Goldenberg, Juárez, Catullo, Albiño y Jara; Álvarez Czernik solo en Pasaje).
 
 **Lo que ya existe en el sistema:**
 
@@ -152,7 +154,7 @@ Registro de requerimientos del cliente y soluciones propuestas. Se amplía a med
 
 - Cada área de la hoja "Usuarios" es una **cuenta** que puede tener varios accesos simultáneos (varias computadoras del mismo consultorio ven lo mismo).
 - La derivación se decide por intent, especialidad, estudio o profesional nombrado (por ejemplo, "electrocardiograma" o "Dr. Segovia" → Cardiología; "Nefrología" → Pasaje).
-- Gamma queda pendiente, sin regla de derivación.
+- Gamma es área de contacto: Medicina nuclear se responde con número y vCard, sin derivar casos. El estudio no está publicado hasta aprobar el texto (pendiente con el cliente).
 - Un operador de la misma área puede tomar una conversación que otro compañero estaba atendiendo. Operadores de otras áreas no.
 - Los pendientes y en curso de días anteriores siguen visibles para el área hasta marcarse `resuelto`.
 - Un paciente que vuelve después de 24 h abre una solicitud nueva; el caso anterior se conserva.

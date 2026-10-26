@@ -22,7 +22,7 @@ async function closeExpiredRelease(
     .in("status", ["in_progress", "waiting_operator"]);
   if (casesError) throw new Error(casesError.message);
 
-  const { data, error } = await supabase
+    const { data, error } = await supabase
     .from("conversations")
     .update({
       status: "closed",
@@ -31,6 +31,7 @@ async function closeExpiredRelease(
       assigned_operator_id: null,
       bot_paused_until: null,
       unanswered_release_at: null,
+      resolution_status: "pendiente",
       unread_count: 0,
       updated_at: now,
     })

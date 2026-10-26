@@ -3,11 +3,13 @@ import { apiError, getOperatorFromRequest } from "@/lib/auth";
 import { expireTakeovers } from "@/lib/api-helpers";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import type { Contact, Conversation, Message, Operator } from "@/lib/domain";
+import { RESOLUTION_STATUSES } from "@/lib/domain";
 import { isAdmin } from "@/lib/areas";
 
 export const dynamic = "force-dynamic";
 
 const allowedStatuses = new Set(["bot_active", "waiting_operator", "human_takeover", "takeover_expired", "closed"]);
+const allowedResolutions = new Set<string>(RESOLUTION_STATUSES);
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,6 +19,9 @@ export async function GET(request: NextRequest) {
 
     const url = new URL(request.url);
     const status = url.searchParams.get("status");
+    const resolution = url.searchParams.get("resolution");
+    const from = url.searchParams.get("from");
+    const to = url.searchParams.get("to");
     const search = (url.searchParams.get("q") || "").trim().toLowerCase();
 
     let query = supabase
@@ -27,6 +32,17 @@ export async function GET(request: NextRequest) {
 
     if (status && allowedStatuses.has(status)) {
       query = query.eq("status", status);
+    }
+
+    if (resolution && allowedResolutions.has(resolution)) {
+      query = query.eq("resolution_status", resolution);
+    }
+
+    if (from && !Number.isNaN(Date.parse(from))) {
+      query = query.gte("last_activity_at", from);
+    }
+    if (to && !Number.isNaN(Date.parse(to))) {
+      query = query.lte("last_activity_at", to);
     }
 
     // Operadores de área: solo las conversaciones derivadas a sus áreas. Admin ve todas.

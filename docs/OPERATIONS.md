@@ -14,7 +14,7 @@ Se creó la cuenta temporal `admindev@bot-ccs.local`, operador activo con rol `a
 - Requiere `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` o en el entorno. Ejecutar dentro del servicio Compose `tools` con las variables inyectadas.
 - Crea la cuenta en Supabase Auth con email `<usuario>@bot-ccs.local` (el login acepta solo el usuario), la registra en `operators` y asigna las áreas en `operator_areas`. Si ya existe, actualiza nombre, áreas y reactiva la cuenta, sin cambiar la contraseña.
 - La contraseña temporal se imprime una sola vez. Entregarla en persona y pedir el cambio en el primer acceso. No registrarla en logs ni en Git.
-- Los nombres de área deben existir en la tabla `areas` (migración 004).
+- Los nombres de área deben existir en la tabla `areas` (migración 004). Aplicar las migraciones pendientes (005, 006, 007) con `npm run db:apply` en el entorno de prueba antes de usar resolución de casos, presencia o alta desde la web.
 
 ## Requisitos y configuración
 

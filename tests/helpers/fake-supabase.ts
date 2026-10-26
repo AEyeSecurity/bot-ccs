@@ -5,6 +5,7 @@ type Filter =
   | { type: "neq"; field: string; value: unknown }
   | { type: "in"; field: string; values: unknown[] }
   | { type: "gt"; field: string; value: unknown }
+  | { type: "gte"; field: string; value: unknown }
   | { type: "lte"; field: string; value: unknown }
   | { type: "overlaps"; field: string; values: unknown[] };
 
@@ -12,6 +13,7 @@ type Operation =
   | { type: "select" }
   | { type: "insert"; payload: Record<string, unknown>[] }
   | { type: "update"; patch: Record<string, unknown> }
+  | { type: "delete" }
   | { type: "upsert"; payload: Record<string, unknown>; onConflict: string };
 
 type Tables = Record<string, Array<Record<string, unknown>>>;
@@ -62,6 +64,11 @@ class FakeQuery implements PromiseLike<QueryResult> {
     return this;
   }
 
+  delete() {
+    this.operation = { type: "delete" };
+    return this;
+  }
+
   eq(field: string, value: unknown) {
     this.filters.push({ type: "eq", field, value });
     return this;
@@ -89,6 +96,11 @@ class FakeQuery implements PromiseLike<QueryResult> {
 
   gt(field: string, value: unknown) {
     this.filters.push({ type: "gt", field, value });
+    return this;
+  }
+
+  gte(field: string, value: unknown) {
+    this.filters.push({ type: "gte", field, value });
     return this;
   }
 
@@ -142,6 +154,8 @@ class FakeQuery implements PromiseLike<QueryResult> {
             return Array.isArray(current) && current.some((item) => filter.values.includes(item));
           case "gt":
             return compareValues(current, filter.value) > 0;
+          case "gte":
+            return compareValues(current, filter.value) >= 0;
           default:
             return false;
         }
@@ -222,6 +236,14 @@ class FakeQuery implements PromiseLike<QueryResult> {
         rows.forEach((row) => Object.assign(row, operation.patch));
         return this.buildReturn(rows);
       }
+      case "delete": {
+        const rows = this.applyFilters(table);
+        rows.forEach((row) => {
+          const index = table.indexOf(row);
+          if (index >= 0) table.splice(index, 1);
+        });
+        return this.buildReturn(rows);
+      }
       default:
         return { data: null, error: { message: `Unsupported operation on ${this.tableName}` } };
     }
@@ -232,6 +254,20 @@ export class FakeSupabaseClient {
   public readonly tables: Tables;
   public readonly auth = {
     getUser: async () => ({ data: { user: null }, error: null }),
+    admin: {
+      createUser: async ({ email, password }: { email: string; password: string }) => {
+        const users = this.table("auth_users");
+        const id = crypto.randomUUID();
+        users.push({ id, email, password });
+        return { data: { user: { id, email } }, error: null };
+      },
+      updateUserById: async (id: string, attrs: Record<string, unknown>) => {
+        const user = this.table("auth_users").find((row) => row.id === id);
+        if (!user) return { data: { user: null }, error: { message: "User not found" } };
+        Object.assign(user, attrs);
+        return { data: { user }, error: null };
+      },
+    },
   };
 
   constructor(initial?: Partial<Tables>) {
@@ -243,6 +279,9 @@ export class FakeSupabaseClient {
       conversation_events: [],
       twilio_callbacks: [],
       operators: [],
+      areas: [],
+      operator_areas: [],
+      auth_users: [],
       ...initial,
     };
   }
