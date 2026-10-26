@@ -2,6 +2,12 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Despliegue del 26 de octubre de 2026 — fe5f0ff
+
+Pull fast-forward e imágenes web/maintenance/tools reconstruidas en Compose. 365 pruebas sin fallos ni omisiones, lint y build aprobados; matriz aislada con transporte mock: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. El ensayo comparte Supabase productivo; workflow temporal retirado e instancia detenida, reportes conservados en su volumen.
+
+Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout de 10 s, sin seeds ni repetir migraciones anteriores; verificadas las cuatro columnas nuevas de resolución y presencia. Web y maintenance recreados saludables; readiness local/público (ok=true, testInstance=false), inicio y vCard de laboratorio HTTP200. Cloudflared continúa activo. La imagen previa tenía contenido Docker faltante y no pudo etiquetarse ni copiarse; para recuperarla se requiere reconstruir el commit previo 91325bf. No se reinició Windows ni se probó WhatsApp real; validación manual de operadores pendiente.
+
 ## Iteración 1, Entrega 3: panel de datos
 
 - `src/lib/analytics.ts` (`buildAnalyticsReport`): agregación pura de volumen, resolución, actividad (casos atendidos = conversaciones en las que participó, con desglose de intervenciones y mensajes), tiempos (primera respuesta, resolución, cola) y derivación (top gestiones y top áreas).
