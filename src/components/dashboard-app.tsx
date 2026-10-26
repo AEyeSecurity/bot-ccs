@@ -6,7 +6,6 @@ import {
   Bot,
   ChevronLeft,
   CheckCircle2,
-  CirclePause,
   ClipboardList,
   Database,
   LogOut,
@@ -22,19 +21,11 @@ import {
 } from "lucide-react";
 import type { Session } from "@supabase/supabase-js";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
-import type { CaseRecord, ConversationListItem, ConversationStatus, Message, Operator } from "@/lib/domain";
-import { RESOLUTION_LABELS, RESOLUTION_STATUSES, STATUS_LABELS, type ResolutionStatus } from "@/lib/domain";
+import type { CaseRecord, ConversationListItem, Message, Operator } from "@/lib/domain";
+import { RESOLUTION_LABELS, RESOLUTION_STATUSES, type ResolutionStatus } from "@/lib/domain";
 import { CatalogAdminPanel } from "@/components/catalog-admin-panel";
 import { UsersAdminPanel } from "@/components/users-admin-panel";
 import { AnalyticsPanel } from "@/components/analytics-panel";
-
-const filters: Array<{ key: "all" | ConversationStatus; label: string }> = [
-  { key: "all", label: "Todas" },
-  { key: "waiting_operator", label: "Esperando" },
-  { key: "human_takeover", label: "Control" },
-  { key: "bot_active", label: "Bot" },
-  { key: "closed", label: "Cerradas" },
-];
 
 const resolutionFilters: Array<{ key: "all" | ResolutionStatus; label: string }> = [
   { key: "all", label: "Todas" },
@@ -63,14 +54,6 @@ function timeLabel(value?: string | null) {
     day: "2-digit",
     month: "2-digit",
   }).format(new Date(value));
-}
-
-function statusClasses(status: ConversationStatus) {
-  if (status === "waiting_operator") return "bg-amber-100 text-amber-800 border-amber-200";
-  if (status === "human_takeover") return "bg-sky-100 text-sky-800 border-sky-200";
-  if (status === "closed") return "bg-zinc-100 text-zinc-600 border-zinc-200";
-  if (status === "takeover_expired") return "bg-rose-100 text-rose-800 border-rose-200";
-  return "bg-emerald-100 text-emerald-800 border-emerald-200";
 }
 
 function previewMessage(message: Message | null) {
@@ -146,7 +129,6 @@ export function DashboardApp() {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
-  const [filter, setFilter] = useState<"all" | ConversationStatus>("all");
   const [resolutionFilter, setResolutionFilter] = useState<"all" | ResolutionStatus>("all");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -196,7 +178,6 @@ export function DashboardApp() {
   const loadConversations = useCallback(async () => {
     if (!accessToken) return;
     const params = new URLSearchParams();
-    if (filter !== "all") params.set("status", filter);
     if (resolutionFilter !== "all") params.set("resolution", resolutionFilter);
     const fromIso = toLocalIso(fromDate, false);
     const toIso = toLocalIso(toDate, true);
@@ -206,7 +187,7 @@ export function DashboardApp() {
     const data = await apiFetch(`/api/conversations?${params.toString()}`);
     setConversations(data.conversations || []);
     if (!selectedId && data.conversations?.[0]?.id) setSelectedId(data.conversations[0].id);
-  }, [accessToken, apiFetch, filter, resolutionFilter, fromDate, toDate, query, selectedId]);
+  }, [accessToken, apiFetch, resolutionFilter, fromDate, toDate, query, selectedId]);
 
   const loadMessages = useCallback(
     async (id: string) => {
@@ -507,22 +488,8 @@ export function DashboardApp() {
               className="h-full min-w-0 flex-1 outline-none"
             />
           </div>
-          <div className="grid grid-cols-3 gap-1 rounded-xl bg-zinc-100 p-1">
-            {filters.map((item) => (
-              <button
-                key={item.key}
-                onClick={() => setFilter(item.key)}
-                className={`h-8 rounded-lg text-xs font-semibold transition ${
-                  filter === item.key
-                    ? "bg-white text-[#176b5a] shadow-sm"
-                    : "text-zinc-500 hover:text-zinc-800"
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-          <div className="mt-3 grid grid-cols-4 gap-1 rounded-xl bg-zinc-100 p-1">
+          <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.12em] text-zinc-400">Resolución</p>
+          <div className="mt-1 grid grid-cols-4 gap-1 rounded-xl bg-zinc-100 p-1">
             {resolutionFilters.map((item) => (
               <button
                 key={item.key}
@@ -592,8 +559,8 @@ export function DashboardApp() {
               </div>
               <p className="mb-3 line-clamp-2 text-sm leading-5 text-zinc-600">{previewMessage(conversation.latest_message)}</p>
               <div className="flex items-center justify-between gap-2">
-                <span className={`truncate border px-2 py-0.5 text-[11px] ${statusClasses(conversation.status)}`}>
-                  {STATUS_LABELS[conversation.status]}
+                <span className={`truncate border px-2 py-0.5 text-[11px] ${resolutionClasses(conversation.resolution_status)}`}>
+                  {RESOLUTION_LABELS[conversation.resolution_status || "abierta"]}
                 </span>
                 {conversation.unread_count > 0 ? (
                   <span className="grid h-5 min-w-5 place-items-center rounded-full bg-[#176b5a] px-1 text-xs font-bold text-white">
@@ -622,7 +589,7 @@ export function DashboardApp() {
                 {selected?.contact?.display_name || selected?.contact?.patient_full_name || selected?.contact?.whatsapp_number || "Seleccione una conversación"}
               </p>
               <p className="truncate text-xs text-zinc-500">
-                {selected ? `${STATUS_LABELS[selected.status]} · ${displayIntent(selected.current_intent)}` : ""}
+                {selected ? `${RESOLUTION_LABELS[selected.resolution_status || "abierta"]} · ${displayIntent(selected.current_intent)}` : ""}
               </p>
             </div>
           </div>
@@ -741,24 +708,6 @@ export function DashboardApp() {
                 <p className="mb-1 text-xs text-zinc-500">Cobertura</p>
                 <p className="font-semibold text-zinc-800">{selected.contact?.insurance_card_received ? "Recibida" : "Pendiente"}</p>
               </div>
-            </div>
-
-            <div className="mb-5">
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-400">Estado</p>
-              <span className={`inline-block rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClasses(selected.status)}`}>
-                {STATUS_LABELS[selected.status]}
-              </span>
-              {selected.bot_paused_until ? (
-                <p className="mt-2 flex items-center gap-2 text-xs text-zinc-600">
-                  <CirclePause size={14} />
-                  {timeLabel(selected.bot_paused_until)}
-                </p>
-              ) : selected.status === "human_takeover" ? (
-                <p className="mt-2 flex items-center gap-2 text-xs text-zinc-600">
-                  <CirclePause size={14} />
-                  El timer empieza al enviar
-                </p>
-              ) : null}
             </div>
 
             <div className="mb-5">

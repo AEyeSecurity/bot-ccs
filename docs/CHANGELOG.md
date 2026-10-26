@@ -2,11 +2,24 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Actualización d7b6782 aplicada en servidor — 26 de octubre de 2026
+
+Integrados los cambios de GitHub preservando la documentación local del despliegue anterior. Panel actualizado a estados de resolución. Medicina Nuclear corregida como estudio mediante pg en transacción con bloqueo: publicado v6 rev3 y borrador rev65, 18 especialidades y 20 estudios, sin publicar las otras ediciones del borrador. Se corrigió el script para agregar el estudio desactivado con revisión aprobada en el publicado y pendiente en el borrador: el ensayo detectó que pending invalida el arranque del publicado; corregido y validado con requireReviewed=true antes del reinicio productivo.
+
+Verificado el estado real de 005/006/007 (cuatro columnas, cinco reglas nuevas, Gamma, eliminación de la regla anterior y función de cierre pendiente); no existen migraciones SQL nuevas y no se repitieron migraciones ni seeds. Build, lint y 365 pruebas aprobados en Docker; comprobación del transform confirma estados de revisión, disponibilidad, preservación e idempotencia. Matriz final 19:21 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero fallos/omisiones/incidentes. Workflow temporal retirado y ensayo detenido; reportes conservados en volumen. El ensayo comparte la base productiva y usa transporte mock.
+
+Web y maintenance recreados saludables; readiness local/público (ok=true, testInstance=false), inicio y vCard HTTP200; túnel activo. Imagen anterior conservada como bot-ccs-web:before-d7b6782-20261026. Medicina Nuclear permanece desactivada; texto, revisión del borrador y habilitación pendientes. Sin WhatsApp real ni reinicio Windows.
+
 ## Despliegue del 26 de octubre de 2026 — fe5f0ff
 
 Pull fast-forward e imágenes web/maintenance/tools reconstruidas en Compose. 365 pruebas sin fallos ni omisiones, lint y build aprobados; matriz aislada con transporte mock: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. El ensayo comparte Supabase productivo; workflow temporal retirado e instancia detenida, reportes conservados en su volumen.
 
 Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout de 10 s, sin seeds ni repetir migraciones anteriores; verificadas las cuatro columnas nuevas de resolución y presencia. Web y maintenance recreados saludables; readiness local/público (ok=true, testInstance=false), inicio y vCard de laboratorio HTTP200. Cloudflared continúa activo. La imagen previa tenía contenido Docker faltante y no pudo etiquetarse ni copiarse; para recuperarla se requiere reconstruir el commit previo 91325bf. No se reinició Windows ni se probó WhatsApp real; validación manual de operadores pendiente.
+
+## 2026-10-26
+
+- Corrección de modelo: Medicina Nuclear es un **estudio** (`IMAGENES_MEDICINA_NUCLEAR`), no una especialidad. Se agrega `scripts/fix-medicina-nuclear-as-study.mjs` para eliminar la especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` y agregar el estudio (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). Pendiente de ejecutar con `--apply` en el servidor.
+- El panel ya no expone el estado técnico del bot: se quitó el filtro de "Estado" y las etiquetas técnicas se reemplazaron por el estado de resolución (Abierta/Pendiente/Resuelta).
 
 ## Iteración 1, Entrega 3: panel de datos
 
