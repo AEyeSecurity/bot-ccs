@@ -2,6 +2,10 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Pull de 41b1774 — 26 de octubre de 2026
+
+Integrado origin/main con los cambios locales previos. Conflicto de MEMORY.MD resuelto conservando el historial real del servidor y las nuevas decisiones de permisos y balanceo. 374 pruebas herméticas, lint y build aprobados en Compose, con imágenes etiquetadas pull-41b1774. Alcance de esta sesión: actualización del checkout; no se recrearon servicios ni se modificaron Supabase o runtime.env. Producción continúa con d7b6782 y la corrección local del catálogo. Matriz HTTP/n8n y despliegue del nuevo código pendientes.
+
 ## Actualización d7b6782 aplicada en servidor — 26 de octubre de 2026
 
 Integrados los cambios de GitHub preservando la documentación local del despliegue anterior. Panel actualizado a estados de resolución. Medicina Nuclear corregida como estudio mediante pg en transacción con bloqueo: publicado v6 rev3 y borrador rev65, 18 especialidades y 20 estudios, sin publicar las otras ediciones del borrador. Se corrigió el script para agregar el estudio desactivado con revisión aprobada en el publicado y pendiente en el borrador: el ensayo detectó que pending invalida el arranque del publicado; corregido y validado con requireReviewed=true antes del reinicio productivo.
@@ -20,6 +24,8 @@ Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout d
 
 - Corrección de modelo: Medicina Nuclear es un **estudio** (`IMAGENES_MEDICINA_NUCLEAR`), no una especialidad. Se agrega `scripts/fix-medicina-nuclear-as-study.mjs` para eliminar la especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` y agregar el estudio (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). Pendiente de ejecutar con `--apply` en el servidor.
 - El panel ya no expone el estado técnico del bot: se quitó el filtro de "Estado" y las etiquetas técnicas se reemplazaron por el estado de resolución (Abierta/Pendiente/Resuelta).
+- Paneles admin restringidos a las cuentas listadas en `BOT_CCS_ADMIN_USERS` (default `admin,admindev`): Banco de respuestas, Usuarios y Panel de datos. `/api/me` expone `permissions.admin`; las rutas `/api/admin/*` exigen `requireAdminPanels`.
+- Derivación automática al área menos ocupada: cuando un intent cae en varias áreas, se asigna a la de menor ocupación (conversaciones abiertas con resolución `abierta`); empate al azar.
 
 ## Iteración 1, Entrega 3: panel de datos
 

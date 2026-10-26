@@ -126,6 +126,7 @@ export function DashboardApp() {
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [session, setSession] = useState<Session | null>(null);
   const [operator, setOperator] = useState<Operator | null>(null);
+  const [canAdmin, setCanAdmin] = useState(false);
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
@@ -171,6 +172,7 @@ export function DashboardApp() {
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || "No autorizado");
       setOperator(data.operator);
+      setCanAdmin(Boolean(data.permissions?.admin));
     },
     [],
   );
@@ -215,6 +217,7 @@ export function DashboardApp() {
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
       setOperator(null);
+      setCanAdmin(false);
       if (nextSession) {
         loadMe(nextSession).catch((error) =>
           setAuthError(error instanceof Error ? error.message : "No autorizado"),
@@ -281,6 +284,7 @@ export function DashboardApp() {
     await supabase.auth.signOut();
     setSession(null);
     setOperator(null);
+    setCanAdmin(false);
     setDetail(null);
     setSelectedId(null);
   }
@@ -425,15 +429,15 @@ export function DashboardApp() {
         ? "Tomá control para responder"
         : "Responder";
 
-  if (view === "catalog" && operator.role === "admin") {
+  if (view === "catalog" && canAdmin) {
     return <CatalogAdminPanel apiFetch={apiFetch} onBack={() => setView("conversations")} />;
   }
 
-  if (view === "users" && operator.role === "admin") {
+  if (view === "users" && canAdmin) {
     return <UsersAdminPanel apiFetch={apiFetch} onBack={() => setView("conversations")} />;
   }
 
-  if (view === "analytics" && operator.role === "admin") {
+  if (view === "analytics" && canAdmin) {
     return <AnalyticsPanel apiFetch={apiFetch} onBack={() => setView("conversations")} />;
   }
 
@@ -466,7 +470,7 @@ export function DashboardApp() {
               </button>
             </div>
           </div>
-          {operator.role === "admin" ? (
+          {canAdmin ? (
             <div className="mb-3 grid gap-1">
               <button onClick={() => setView("catalog")} className="flex h-10 w-full items-center gap-2 rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]">
                 <Database size={16} /> Banco de respuestas

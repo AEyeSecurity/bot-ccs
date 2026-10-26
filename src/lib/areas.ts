@@ -73,6 +73,7 @@ export async function loadOperatorAreaIds(supabase: SupabaseAdmin, operatorId: s
 }
 
 // Patch de area_ids para una conversación. Vacío si el turno no tiene intent que derivar.
+// Si el intent cae en varias áreas, deriva a la menos ocupada (empate al azar).
 export async function buildAreaPatch(
   supabase: SupabaseAdmin,
   currentIntent: string | null,
@@ -83,7 +84,41 @@ export async function buildAreaPatch(
   const rules = await loadAreaRules(supabase);
   // Intents no derivables (saludo, OTRAS_CONSULTAS, etc.) no modifican la área ya asignada.
   if (!rules.some((rule) => rule.intent_key === keys.intentKey)) return {};
-  return { area_ids: deriveAreaIds(keys, rules) };
+  const candidates = deriveAreaIds(keys, rules);
+  if (candidates.length <= 1) return { area_ids: candidates };
+  const occupation = await loadAreaOccupation(supabase, candidates);
+  return { area_ids: [pickLeastBusyArea(candidates, occupation)] };
+}
+
+// Ocupación de un área = conversaciones abiertas (no cerradas) con resolución "abierta"
+// (ni resuelta ni pendiente) cuya area_ids incluye esa área.
+export async function loadAreaOccupation(supabase: SupabaseAdmin, areaIds: string[]): Promise<Map<string, number>> {
+  const counts = new Map<string, number>(areaIds.map((id) => [id, 0]));
+  if (!areaIds.length) return counts;
+
+  const { data, error } = await supabase
+    .from("conversations")
+    .select("area_ids")
+    .neq("status", "closed")
+    .eq("resolution_status", "abierta");
+  if (error) throw new Error(error.message);
+
+  for (const row of (data || []) as Array<{ area_ids?: string[] | null }>) {
+    for (const areaId of row.area_ids || []) {
+      if (counts.has(areaId)) counts.set(areaId, (counts.get(areaId) || 0) + 1);
+    }
+  }
+  return counts;
+}
+
+export function pickLeastBusyArea(
+  candidates: string[],
+  occupation: Map<string, number>,
+  random: () => number = Math.random,
+): string {
+  const min = Math.min(...candidates.map((id) => occupation.get(id) || 0));
+  const least = candidates.filter((id) => (occupation.get(id) || 0) === min);
+  return least[Math.floor(random() * least.length)];
 }
 
 type AccessSubject = Pick<Operator, "role"> & { area_ids?: string[] };

@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { apiError, getOperatorFromRequest, requireAdmin } from "@/lib/auth";
+import { apiError, getOperatorFromRequest, requireAdminPanels } from "@/lib/auth";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import type { Operator } from "@/lib/domain";
 
@@ -69,7 +69,7 @@ async function loadOperatorWithAreas(supabase: ReturnType<typeof createAdminSupa
 export async function GET(request: NextRequest) {
   try {
     const operator = await getOperatorFromRequest(request);
-    requireAdmin(operator);
+    requireAdminPanels(operator);
     const supabase = createAdminSupabaseClient();
 
     const [{ data: operators }, { data: areas }] = await Promise.all([
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const operator = await getOperatorFromRequest(request);
-    requireAdmin(operator);
+    requireAdminPanels(operator);
     const supabase = createAdminSupabaseClient();
     const input = createSchema.parse(await request.json());
 
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const operator = await getOperatorFromRequest(request);
-    requireAdmin(operator);
+    requireAdminPanels(operator);
     const supabase = createAdminSupabaseClient();
     const input = updateSchema.parse(await request.json());
 

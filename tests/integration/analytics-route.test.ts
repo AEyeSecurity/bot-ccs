@@ -16,7 +16,7 @@ function setup() {
   holder.client = createFakeSupabaseClient({
     operators: [
       { id: "op-carla", auth_user_id: "auth-carla", name: "Carla", role: "operator", is_active: true, last_seen_at: "2026-10-20T12:00:00.000Z" },
-      { id: "op-admin", auth_user_id: "auth-admin", name: "Admin", role: "admin", is_active: true },
+      { id: "op-admin", auth_user_id: "auth-admin", name: "Admin", email: "admin@bot-ccs.local", role: "admin", is_active: true },
     ],
     areas: [{ id: "area-1", name: "Cardiología", is_active: true }],
     conversations: [
@@ -49,5 +49,10 @@ describe("panel de datos (admin)", () => {
 
   test("un operador no admin recibe 403", async () => {
     expect((await GET(request("/api/admin/analytics", "token-auth-carla"))).status).toBe(403);
+  });
+
+  test("un admin que no está en la lista permitida recibe 403", async () => {
+    holder.client.table("operators").find((row) => row.id === "op-admin").email = "otroadmin@bot-ccs.local";
+    expect((await GET(request("/api/admin/analytics", "token-auth-admin"))).status).toBe(403);
   });
 });

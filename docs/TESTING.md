@@ -43,6 +43,8 @@ node scripts/verify-bot-n8n-e2e.mjs
 - `tests/integration/admin-operators-route.test.ts`: listado con áreas (403 para no admin), alta con contraseña temporal, rechazo sin áreas, reset de contraseña, desactivación y cambio a admin sin áreas.
 - `tests/unit/analytics.test.ts`: volumen, resolución, actividad, tiempos y derivación global y por usuario.
 - `tests/integration/analytics-route.test.ts`: reporte con selector sin admins y 403 para no admin.
+- `tests/unit/auth.test.ts`: `canAccessAdminPanels` según la lista `BOT_CCS_ADMIN_USERS` (default, override por env, operador y admin no listado).
+- `tests/unit/area-balancing.test.ts`: `pickLeastBusyArea` (menor ocupación y empate), `loadAreaOccupation` y `buildAreaPatch` (deriva a la menos ocupada).
 - Pendiente: validar las migraciones 005, 006 y 007 contra el Supabase actual con `npm run db:apply`.
 
 ## Casos Críticos
@@ -159,3 +161,7 @@ Integrados los cambios de GitHub preservando la documentación local del desplie
 Verificado el estado real de 005/006/007 (cuatro columnas, cinco reglas nuevas, Gamma, eliminación de la regla anterior y función de cierre pendiente); no existen migraciones SQL nuevas y no se repitieron migraciones ni seeds. Build, lint y 365 pruebas aprobados en Docker; comprobación del transform confirma estados de revisión, disponibilidad, preservación e idempotencia. Matriz final 19:21 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero fallos/omisiones/incidentes. Workflow temporal retirado y ensayo detenido; reportes conservados en volumen. El ensayo comparte la base productiva y usa transporte mock.
 
 Web y maintenance recreados saludables; readiness local/público (ok=true, testInstance=false), inicio y vCard HTTP200; túnel activo. Imagen anterior conservada como bot-ccs-web:before-d7b6782-20261026. Medicina Nuclear permanece desactivada; texto, revisión del borrador y habilitación pendientes. Sin WhatsApp real ni reinicio Windows.
+
+## Pull de 41b1774 — 26 de octubre de 2026
+
+Integrado origin/main con los cambios locales previos. Conflicto de MEMORY.MD resuelto conservando el historial real del servidor y las nuevas decisiones de permisos y balanceo. 374 pruebas herméticas, lint y build aprobados en Compose, con imágenes etiquetadas pull-41b1774. Alcance de esta sesión: actualización del checkout; no se recrearon servicios ni se modificaron Supabase o runtime.env. Producción continúa con d7b6782 y la corrección local del catálogo. Matriz HTTP/n8n y despliegue del nuevo código pendientes.
