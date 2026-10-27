@@ -45,7 +45,7 @@ node scripts/verify-bot-n8n-e2e.mjs
 - `tests/integration/analytics-route.test.ts`: reporte con selector sin admins y 403 para no admin.
 - `tests/unit/auth.test.ts`: `canAccessAdminPanels` según la lista `BOT_CCS_ADMIN_USERS` (default, override por env, operador y admin no listado).
 - `tests/unit/area-balancing.test.ts`: `pickLeastBusyArea` (menor ocupación y empate), `loadAreaOccupation` y `buildAreaPatch` (deriva a la menos ocupada).
-- Pendiente: validar las migraciones 005, 006 y 007 contra el Supabase actual con `npm run db:apply`.
+- Migraciones 005, 006 y 007 aplicadas en el Supabase productivo el 27 de octubre de 2026 (Gamma y profesionales, resolución de casos y presencia).
 
 ## Casos Críticos
 
@@ -74,14 +74,16 @@ Una versión puede darse de alta solo si:
 
 ## Línea Base
 
-Última verificación completa: 2 de septiembre de 2026.
+Última verificación completa: 27 de octubre de 2026.
 
-- 302 pruebas aprobadas.
+- 374 pruebas aprobadas.
 - 229 escenarios ejecutados.
 - 54 ramas y 23 transiciones cubiertas.
 - 17 pruebas HTTP aprobadas.
 - 9 recorridos n8n aprobados.
 - Cero incidentes y cero ramas visibles faltantes.
+
+El fixture hermético (`data/bot-catalog-initial.json`) refleja el Excel y conserva 19 estudios, sin Medicina Nuclear: ese estudio se agrega solo en Supabase mediante `fix-medicina-nuclear-as-study.mjs`. Ver CATALOG.md.
 
 Los reportes generados se conservan en el volumen Compose `test_reports`; no se versionan porque pueden contener información operativa. El proyecto de validación usa su propio volumen.
 

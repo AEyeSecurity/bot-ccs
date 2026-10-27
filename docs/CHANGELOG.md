@@ -2,6 +2,15 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## 2026-10-27
+
+- Despliegue en el servidor principal confirmado por el usuario: `git pull` + rebuild Docker de los commits de entregas 2-3, panel de datos, restricción de paneles admin y balanceo por área menos ocupada.
+- Migraciones `005`/`006`/`007` aplicadas en el Supabase productivo (antes solo `004`): Gamma y profesionales (005), `resolution_status`/`resolved_at`/`resolved_by` (006) y `operators.last_seen_at` (007).
+- `scripts/fix-medicina-nuclear-as-study.mjs --apply` ejecutado y web reiniciada; Medicina Nuclear queda como estudio y su texto se completó desde el panel. Catálogo productivo: 18 especialidades y 20 estudios.
+- `BOT_CCS_ADMIN_USERS` configurado en `runtime.env` (paneles administrativos restringidos a las cuentas listadas).
+- Documentación sincronizada: estado de Iteración 1, conteo de catálogo y estado de despliegue en README; pendientes y línea base en TESTING; sección de áreas en OPERATIONS; corrección aplicada en CATALOG; numeración de NOTAS-CLIENTE.
+- Nota: el fixture de pruebas (`data/bot-catalog-initial.json`) conserva 19 estudios (fuente Excel); Medicina Nuclear se agrega solo vía script, no por importación.
+
 ## 2026-10-26
 
 - Corrección de modelo: Medicina Nuclear es un **estudio** (`IMAGENES_MEDICINA_NUCLEAR`), no una especialidad. Se agrega `scripts/fix-medicina-nuclear-as-study.mjs` para eliminar la especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` y agregar el estudio (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). Pendiente de ejecutar con `--apply` en el servidor.

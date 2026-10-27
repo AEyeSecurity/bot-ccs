@@ -70,9 +70,11 @@ npm run catalog:seed-managed
 
 La importación se debe ejecutar únicamente cuando se modifica la estructura no editable desde el panel. Para bases existentes, publicar mediante el flujo administrativo controlado. No usar seeds como actualización o recuperación del catálogo productivo.
 
-## Corrección: Medicina Nuclear como estudio (26 de octubre de 2026)
+## Corrección: Medicina Nuclear como estudio (aplicada el 27 de octubre de 2026)
 
-Medicina Nuclear es un **estudio**, no una especialidad. La entrada agregada el 21 de octubre como especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` se corrige con `scripts/fix-medicina-nuclear-as-study.mjs`, que elimina la especialidad y agrega el estudio `IMAGENES_MEDICINA_NUCLEAR` (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). Ejecutar con `--apply` en el servicio tools y reiniciar web para recargar la caché; luego completar el texto y marcarlo revisado desde el panel antes de publicar.
+Medicina Nuclear es un **estudio**, no una especialidad. La entrada agregada el 21 de octubre como especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` se corrigió con `scripts/fix-medicina-nuclear-as-study.mjs`, que elimina la especialidad y agrega el estudio `IMAGENES_MEDICINA_NUCLEAR` (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma). La corrección se aplicó en el Supabase productivo (`--apply`), se reinició web para recargar la caché y el texto se completó desde el panel. El catálogo productivo queda con 18 especialidades y 20 estudios.
+
+El fixture de pruebas (`data/bot-catalog-initial.json`) y `src/lib/bot-2026-data.ts` reflejan el Excel y no incluyen Medicina Nuclear: el estudio se agrega únicamente con el script, no por importación. Si se reimporta el catálogo desde el Excel, re-ejecutar `fix-medicina-nuclear-as-study.mjs --apply`.
 
 ## Alta controlada: Medicina Nuclear (21 de octubre de 2026)
 

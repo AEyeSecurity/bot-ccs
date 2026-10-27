@@ -25,7 +25,7 @@ docker compose --env-file C:/ProgramData/BotCCS/deploy.env ps
 
 El perfil public requiere un túnel propio y su token en archivo. Ver docs/OPERATIONS.md para publicación, pruebas y recuperación. PM2 y las tareas Windows del bot son mecanismos retirados; no ejecutarlos en paralelo.
 
-**Estado verificado al 20 de octubre de 2026:** web y mantenimiento activos en Docker en3010, tareas nativas deshabilitadas e instancia de ensayo detenida. El túnel exclusivo Bot CSS publica ccs.aeye.com.ar hacia http://web:3010; DNS actualizado y login, readiness y vCard HTTP200. Pendientes: retirar con seguridad la ruta antigua (Cloudflare advierte que también borraría DNS), WhatsApp real y reinicio coordinado del host. [Operación y comprobaciones pendientes](docs/OPERATIONS.md#comprobaciones-pendientes).
+**Estado verificado al 27 de octubre de 2026:** Iteración 1 completa desplegada en el servidor principal (áreas y derivación, resolución, presencia y usuarios desde la web, panel de datos, paneles admin restringidos y derivación al área menos ocupada); migraciones 005/006/007 aplicadas, Medicina Nuclear modelada como estudio y `BOT_CCS_ADMIN_USERS` configurado. El túnel exclusivo Bot CSS publica ccs.aeye.com.ar hacia http://web:3010. Pendientes: retirar con seguridad la ruta antigua (Cloudflare advierte que también borraría DNS), WhatsApp real y reinicio coordinado del host. [Operación y comprobaciones pendientes](docs/OPERATIONS.md#comprobaciones-pendientes).
 
 El proyecto ya no contiene scripts de PM2, tareas Windows ni el corte inicial. Dependencias, compilación y herramientas se ejecutan dentro de Docker; los reportes quedan en un volumen de Compose. Se conservan las fuentes de importación, las pruebas y las migraciones de base de datos. Ver el mapa de carpetas en [Arquitectura](docs/ARCHITECTURE.md#organización-del-proyecto).
 
@@ -33,7 +33,7 @@ El proyecto ya no contiene scripts de PM2, tareas Windows ni el corte inicial. D
 
 El panel usa Supabase Auth y exige un operador activo. Los administradores editan el banco como borrador, guardan, revisan y publican. Publicar valida y reemplaza el catálogo en memoria sin build ni reinicio. Una única réplica web evita divergencias de caché y colas por contacto.
 
-El bot informa sobre especialidades, profesionales, estudios, servicios y coberturas; reúne datos y deriva a operadores. No confirma turnos reales. La referencia documentada del catálogo es 18 especialidades, 19 estudios, 45 profesionales y 16 obras sociales.
+El bot informa sobre especialidades, profesionales, estudios, servicios y coberturas; reúne datos y deriva a operadores. No confirma turnos reales. La referencia documentada del catálogo es 18 especialidades, 20 estudios, 45 profesionales y 16 obras sociales. Medicina Nuclear es un estudio agregado por script (no proviene del Excel); ver [Catálogo](docs/CATALOG.md).
 
 ## Documentación
 
@@ -81,7 +81,7 @@ Registro de requerimientos del cliente y soluciones propuestas. Se amplía a med
 
 ### Iteración 1 — Roles, permisos y derivación por área
 
-> **Estado: entrega 1 completada** (áreas, derivación y permisos; alta por CLI). Pendientes: entrega 2 (estado de resolución y filtro por día) y entrega 3 (alta de usuarios desde la web, presencia y métricas).
+> **Estado: completada** (entregas 1-3, panel de datos, paneles admin restringidos a `BOT_CCS_ADMIN_USERS` y derivación al área menos ocupada).
 
 **Requerimiento del cliente:**
 
