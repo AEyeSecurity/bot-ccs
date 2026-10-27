@@ -11,6 +11,16 @@ Este archivo registra cambios funcionales y operativos. A partir de la creación
 - Documentación sincronizada: estado de Iteración 1, conteo de catálogo y estado de despliegue en README; pendientes y línea base en TESTING; sección de áreas en OPERATIONS; corrección aplicada en CATALOG; numeración de NOTAS-CLIENTE.
 - Nota: el fixture de pruebas (`data/bot-catalog-initial.json`) conserva 19 estudios (fuente Excel); Medicina Nuclear se agrega solo vía script, no por importación.
 
+### Iteración 1 refinada y nuevos servicios (respuestas del cliente)
+
+- Derivación global "conectado → menos casos" (reemplaza "menos ocupado"): `src/lib/areas.ts` agrega `loadConnectedAreaIds` (operadores activos con `last_seen_at` en 90 s) y `buildAreaPatch` prioriza áreas conectadas y luego la de menor ocupación; sin conectados, deriva a la menos ocupada entre todas.
+- Migraciones `008_clinica_medica_edificios.sql` (Clínica Médica y Médicos clínicos → Pasaje + Anexo) y `009_servicios_sin_area.sql` (Medicina laboral/Hemoterapia → Pasaje; Flebología/Facturación → Anexo; Quirófanos/Terapia intensiva/Radiología/Internación → Guardia).
+- Selector de ecografía: "ecografía" genérica pregunta el tipo (mensaje `ecografiaSelector`) y deriva al estudio elegido.
+- Medicina Nuclear: soporte de vCard en estudios (`STUDY_CARD_FILES`, `InfoDefinition.vcardFile`, `ccs-medicina-nuclear.vcf`) y script `enable-medicina-nuclear.mjs` para habilitarla.
+- Siete servicios nuevos como flujos `direct` editables en el banco (placeholder), con detección en `bot-core.ts` y etiquetas en el panel.
+- Scripts de contenido: `fix-direccion-dermatologo.mjs` (dirección unificada "Pje. Dra. Elena Ibarra de Zilberberg 735" y dermatólogo "Romero") y `add-servicios-sin-area.mjs`.
+- 381 pruebas, lint OK (host). Pendiente en servidor: aplicar migraciones 008/009 y ejecutar los tres scripts con `--apply` + reiniciar web.
+
 ## 2026-10-26
 
 - Corrección de modelo: Medicina Nuclear es un **estudio** (`IMAGENES_MEDICINA_NUCLEAR`), no una especialidad. Se agrega `scripts/fix-medicina-nuclear-as-study.mjs` para eliminar la especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` y agregar el estudio (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). Pendiente de ejecutar con `--apply` en el servidor.

@@ -6,17 +6,21 @@ Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el h
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
-- Iteración 1 completa y DESPLEGADA en el servidor principal: entregas 1-3 (áreas/derivación, resolución, presencia+usuarios web), panel de datos, paneles admin restringidos a BOT_CCS_ADMIN_USERS y derivación al área menos ocupada.
-- En servidor: git pull + rebuild Docker; migraciones 005/006/007 aplicadas; BOT_CCS_ADMIN_USERS seteado; fix-medicina-nuclear-as-study.mjs --apply ejecutado, web reiniciada y texto del estudio completado desde el panel.
-- Catálogo productivo: 18 especialidades, 20 estudios, 45 profesionales, 16 obras sociales. Medicina Nuclear es ESTUDIO (agregado por script, no por importación).
-- 374 pruebas, lint y build OK (host).
+- Derivación global "conectado → menos casos" (reemplaza "menos ocupado"): areas.ts suma loadConnectedAreaIds (operators+operator_areas, last_seen_at en 90 s); buildAreaPatch prioriza conectadas y luego pickLeastBusyArea; sin conectadas → todas.
+- Migraciones 008 (Clínica Médica/Médicos clínicos → Pasaje + Anexo) y 009 (7 servicios nuevos + Internación → Guardia).
+- Selector de ecografía: "ecografía" genérica → prompt con 5 tipos (mensaje ecografiaSelector) → deriva al estudio. bot-core detectEcografiaSelection + context "ecografia".
+- Medicina Nuclear: habilitable con vCard ccs-medicina-nuclear.vcf (STUDY_CARD_FILES + InfoDefinition.vcardFile + vcards.ts studyCards). Script enable-medicina-nuclear.mjs.
+- 7 servicios nuevos como `direct` (placeholder editable en banco): Medicina laboral/Hemoterapia→Pasaje, Flebología/Facturación→Anexo, Quirófanos/Terapia intensiva/Radiología→Guardia. Flujos EXTRA_SERVICES, detección en bot-core, labels en panel.
+- Scripts de contenido: fix-direccion-dermatologo.mjs (dirección unificada "Pje. Dra. Elena Ibarra de Zilberberg 735" + dermatólogo "Romero") y add-servicios-sin-area.mjs.
+- 381 pruebas, lint OK (host).
 
 ## Decisiones tomadas (detalle en NOTAS-CLIENTE)
-- Admins: BOT_CCS_ADMIN_USERS (default admin,admindev). Menos ocupado automático por área; resolución abierta/pendiente/resuelta.
-- Fixture de pruebas (data/bot-catalog-initial.json) refleja el Excel: 19 estudios, SIN Medicina Nuclear (se agrega vía script). Ver CATALOG/TESTING.
+- Derivación multi-área: conectado primero (90 s), luego menos ocupado; fallback sin conectados → menos ocupado.
+- Internación → Guardia, pendiente de confirmar con cliente (Q31). Dermatólogo = hombre, nombre pendiente. Catullo → Pasaje (cliente revisa mensaje). Todos los psicólogos → DMO.
+- Fixture de pruebas (data/bot-catalog-initial.json) incluye los 7 servicios y ecografiaSelector, pero NO Medicina Nuclear (agregada solo en Supabase vía script).
 
 ## Pendientes y siguiente paso
-- DIFERIDO: derivación/transferencia manual entre operadores/áreas.
-- DIFERIDO: identificación de máquina (UUID + IP auxiliar). Motivo (NOTAS Q11).
-- Confirmar con cliente NOTAS-CLIENTE (1-27): Catullo, Gastro/Clínica Médica/Anexo, dirección Sector A, texto Medicina Nuclear.
-- Previo a uso real: WhatsApp real, reinicio del host, retirar admindev, rotar contraseña admin "Tareas" (ver README).
+- EN SERVIDOR: git pull + rebuild; aplicar migraciones 008/009; ejecutar add-servicios-sin-area.mjs --apply, enable-medicina-nuclear.mjs --apply y fix-direccion-dermatologo.mjs --apply; reiniciar web.
+- Confirmar con cliente (NOTAS 1-31): mensaje de Catullo, nombre del dermatólogo, área de Internación (Q31), mensajes pendientes (Q29), cierre de Medicina Clínica (Q30).
+- DIFERIDO: derivación manual entre operadores/áreas; identificación de máquina (UUID+IP).
+- Previo a uso real: WhatsApp real, reinicio del host, retirar admindev, rotar contraseña admin "Tareas".

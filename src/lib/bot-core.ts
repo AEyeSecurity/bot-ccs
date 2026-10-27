@@ -1,6 +1,7 @@
 import {
   BOT_THANK_YOU,
   CARDOSO_SELECTION_PROMPT,
+  ECOGRAFIA_SELECTION_PROMPT,
   FLOWS,
   IMAGING_STUDIES,
   INSURANCE_PLANS,
@@ -47,10 +48,17 @@ export type CoreOptions = {
 
 const GREETINGS = new Set(["hola", "buenas", "buen dia", "buenos dias", "buenas tardes", "buenas noches"]);
 
-export { CARDOSO_SELECTION_PROMPT, SURGERY_SELECTION_PROMPT } from "./bot-catalog";
+export { CARDOSO_SELECTION_PROMPT, ECOGRAFIA_SELECTION_PROMPT, SURGERY_SELECTION_PROMPT } from "./bot-catalog";
 
 const SURGERY_CHOICES = ["Cirugía general", "Cirugía maxilofacial", "Cirugías estéticas y plásticas"] as const;
 const CARDOSO_NAMES = ["Cardoso Atilio", "Cardoso Martin"] as const;
+const ECOGRAFIA_CHOICES = [
+  "Ecografía abdominal",
+  "Ecografía Doppler",
+  "Ecografía Doppler Cardíaca",
+  "Ecografía renal",
+  "Ecografía ginecológica, obstétrica y Mamaría",
+] as const;
 
 export type InsuranceDetection =
   | { kind: "none" }
@@ -356,9 +364,20 @@ function detectSurgeryContextSelection(text: string, context: string): Professio
   return subservice ? detectProfessionalSubservice(subservice) : { kind: "none" };
 }
 
+function detectEcografiaSelection(text: string) {
+  const normalized = normalizeMatchText(text);
+  if (/\b(?:cardiac|cardiaco)\b/.test(normalized)) return "Ecografía Doppler Cardíaca";
+  if (/\b(?:doppler|ecodoppler|ecodopler)\b/.test(normalized)) return "Ecografía Doppler";
+  if (/\b(?:abdominal|abdomen|panza)\b/.test(normalized)) return "Ecografía abdominal";
+  if (/\b(?:renal|rinion|riniones)\b/.test(normalized)) return "Ecografía renal";
+  if (/\b(?:ginecolog|obstetr|mamari)\b/.test(normalized)) return "Ecografía ginecológica, obstétrica y Mamaría";
+  return null;
+}
+
 function ambiguityContext(candidates: readonly string[]) {
   if (sameNormalizedValues(candidates, CARDOSO_NAMES)) return "cardoso";
   if (sameNormalizedValues(candidates, SURGERY_CHOICES)) return "surgery";
+  if (sameNormalizedValues(candidates, ECOGRAFIA_CHOICES)) return "ecografia";
   return null;
 }
 
@@ -958,6 +977,14 @@ function buildFlowMessage(flowIntent: string, options: CoreOptions, includeGreet
     return buildTextMessage(buildMaybeGreetingWith(flow.body, includeGreeting));
   }
 
+  if (flow.vcardFile) {
+    const mediaUrl = buildContactCardUrl(options.contactCardBaseUrl, flow.vcardFile);
+    return buildMediaMessage(
+      formatContactIntro(buildMaybeGreetingWith(flow.body, includeGreeting), true),
+      mediaUrl,
+    );
+  }
+
   return buildTextMessage(
     flow.intent === UNAVAILABLE_SERVICE_INTENT ? flow.body : buildMaybeGreetingWith(flow.body, includeGreeting),
   );
@@ -988,6 +1015,10 @@ export async function detectIntent(
     const city = detectCity(text);
     if (city) seededData.city = city;
     return { intent: TELEMEDICINA_INTENT, confidence: 1, seededData };
+  }
+
+  if (normalized.includes("medicina laboral")) {
+    return { intent: "MEDICINA_LABORAL", confidence: 1, seededData };
   }
 
   if (
@@ -1033,6 +1064,25 @@ export async function detectIntent(
     return { intent: "LABORATORIO_CLINICO", confidence: 1, seededData };
   }
 
+  if (normalized.includes("hemoterapia")) {
+    return { intent: "HEMOTERAPIA", confidence: 1, seededData };
+  }
+  if (normalized.includes("flebolog")) {
+    return { intent: "FLEBOLOGIA", confidence: 1, seededData };
+  }
+  if (normalized.includes("facturacion")) {
+    return { intent: "FACTURACION", confidence: 1, seededData };
+  }
+  if (normalized.includes("quirofano")) {
+    return { intent: "QUIROFANOS", confidence: 1, seededData };
+  }
+  if (normalized.includes("terapia intensiva") || normalized === "uti") {
+    return { intent: "TERAPIA_INTENSIVA", confidence: 1, seededData };
+  }
+  if (normalized.includes("radiologia")) {
+    return { intent: "RADIOLOGIA", confidence: 1, seededData };
+  }
+
   if ((normalized.includes("informe") || normalized.includes("resultado")) && (normalized.includes("patologia") || normalized.includes("biopsia"))) {
     return { intent: "INFORMES_MEDICOS_ESTUDIOS_PATOLOGIA", confidence: 1, seededData };
   }
@@ -1043,6 +1093,15 @@ export async function detectIntent(
       intent: imagingStudy.available ? imagingStudy.intent : UNAVAILABLE_SERVICE_INTENT,
       confidence: 1,
       seededData,
+    };
+  }
+
+  if (normalized.includes("ecografia")) {
+    return {
+      intent: TURNOS_MEDICOS_SELECTOR_INTENT,
+      confidence: 1,
+      seededData,
+      ambiguity: ECOGRAFIA_CHOICES,
     };
   }
 
@@ -1260,6 +1319,7 @@ function pendingPromptFor(openCase: CaseSnapshot) {
     const context = String(openCase.case_data?.selectionContext || "");
     if (context === "cardoso") return CARDOSO_SELECTION_PROMPT;
     if (context === "surgery") return SURGERY_SELECTION_PROMPT;
+    if (context === "ecografia") return ECOGRAFIA_SELECTION_PROMPT;
     return FLOWS.TURNOS_MEDICOS_SELECTOR.kind === "case"
       ? FLOWS.TURNOS_MEDICOS_SELECTOR.steps[0].prompt
       : "Indíqueme, por favor, el profesional o servicio que necesita.";
@@ -1314,6 +1374,7 @@ function buildInsuranceResult(
 function ambiguityPrompt(candidates: readonly string[]) {
   if (sameNormalizedValues(candidates, CARDOSO_NAMES)) return CARDOSO_SELECTION_PROMPT;
   if (sameNormalizedValues(candidates, SURGERY_CHOICES)) return SURGERY_SELECTION_PROMPT;
+  if (sameNormalizedValues(candidates, ECOGRAFIA_CHOICES)) return ECOGRAFIA_SELECTION_PROMPT;
   return `Encontré más de un profesional o servicio: ${candidates.join(", ")}. Indíqueme cuál necesita.`;
 }
 
@@ -1376,6 +1437,27 @@ async function handleTurnosMedicosSelectorTurn(
       const targetFlow = getFlow("TURNOS_MEDICOS_ATENCION_MEDICA");
       if (targetFlow?.kind !== "case") throw new Error("Missing medical appointment flow");
       return handleCaseTurn(targetFlow, payload, null, medicalSelectionSeed(contextualSelection), options, true, false);
+    }
+  }
+
+  if (selectionContext === "ecografia") {
+    const studyTitle = detectEcografiaSelection(payload.body);
+    if (studyTitle) {
+      const study = IMAGING_STUDIES.find((item) => item.title === studyTitle);
+      if (study) {
+        return {
+          shouldReply: true,
+          reason: "bot_reply",
+          intent: study.intent,
+          confidence: 1,
+          status: "closed",
+          currentIntent: study.intent,
+          currentStep: null,
+          reply: buildFlowMessage(study.intent, options, false),
+          caseState: selectorCaseState(openCase.case_data || {}, "closed"),
+          contactPatch: null,
+        };
+      }
     }
   }
 
@@ -1643,10 +1725,6 @@ export async function evaluateInboundTurn(args: {
     };
   }
 
-  const replyText = flow.intent === UNAVAILABLE_SERVICE_INTENT
-    ? flow.body
-    : buildMaybeGreetingWith(flow.body, includeGreeting);
-
   return {
     shouldReply: true,
     reason: "bot_reply",
@@ -1655,7 +1733,7 @@ export async function evaluateInboundTurn(args: {
     status: flow.status,
     currentIntent: flow.intent,
     currentStep: null,
-    reply: buildTextMessage(replyText),
+    reply: buildFlowMessage(flow.intent, options, includeGreeting),
     caseState: null,
     contactPatch: null,
   };

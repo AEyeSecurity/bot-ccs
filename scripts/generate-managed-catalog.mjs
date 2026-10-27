@@ -144,6 +144,16 @@ const direct = Object.fromEntries(
 direct.telemedicine = reviewed(data.telemedicine);
 direct.socialInsurance = reviewed("A continuación encontrará el listado de las obras sociales con convenio vigente en Clínica Cruz del Sur.");
 
+// Servicios con área asignada por el cliente (27/10/2026). El texto se completa luego desde el banco.
+for (const key of ["medicinaLaboral", "hemoterapia", "flebologia", "facturacion", "quirofanos", "terapiaIntensiva", "radiologia"]) {
+  direct[key] = {
+    body: "Estamos actualizando la información de este servicio. Disculpe las molestias.",
+    phones: [],
+    available: true,
+    reviewStatus: "reviewed",
+  };
+}
+
 const messages = Object.fromEntries(
   Object.entries({
     greetingQuestion: data.greeting,
@@ -172,6 +182,7 @@ const messages = Object.fromEntries(
     telemedicineCityPrompt: "Para orientarlo mejor, indíqueme desde qué localidad nos escribe. La telemedicina de la Dra. Estrada está pensada para pacientes que residen fuera de Caleta Olivia.",
     surgerySelector: "Muy bien, indíquenos si desea una consulta con cirugía general, maxilofacial o estética y plástica.",
     cardosoSelector: "Muy bien, para corroborar la información enviada puede indicarnos si desea una consulta con cirugía general o maxilofacial",
+    ecografiaSelector: "¿Qué tipo de ecografía necesita? Abdominal, Doppler, Doppler cardíaca, renal o ginecológica/obstétrica.",
     unknownServicePrompt: "No pude identificar el profesional o servicio. Indíqueme, por favor, el nombre del profesional, la especialidad o el estudio que necesita.",
   }).map(([key, body]) => [key, { body, reviewStatus: "reviewed" }]),
 );

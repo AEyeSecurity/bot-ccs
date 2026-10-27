@@ -44,7 +44,9 @@ node scripts/verify-bot-n8n-e2e.mjs
 - `tests/unit/analytics.test.ts`: volumen, resolución, actividad, tiempos y derivación global y por usuario.
 - `tests/integration/analytics-route.test.ts`: reporte con selector sin admins y 403 para no admin.
 - `tests/unit/auth.test.ts`: `canAccessAdminPanels` según la lista `BOT_CCS_ADMIN_USERS` (default, override por env, operador y admin no listado).
-- `tests/unit/area-balancing.test.ts`: `pickLeastBusyArea` (menor ocupación y empate), `loadAreaOccupation` y `buildAreaPatch` (deriva a la menos ocupada).
+- `tests/unit/area-balancing.test.ts`: `pickLeastBusyArea` (menor ocupación y empate), `loadAreaOccupation`, `loadConnectedAreaIds` y `buildAreaPatch` (prioriza conectadas y deriva a la menos ocupada).
+- `tests/unit/bot-core.test.ts`: selector de ecografía (genérico → tipo → estudio) y detección de los servicios nuevos.
+- Migraciones 008 (Clínica Médica → Pasaje + Anexo) y 009 (servicios nuevos + Internación) validadas en `tests/unit/areas.test.ts`.
 - Migraciones 005, 006 y 007 aplicadas en el Supabase productivo el 27 de octubre de 2026 (Gamma y profesionales, resolución de casos y presencia).
 
 ## Casos Críticos

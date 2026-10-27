@@ -174,6 +174,54 @@ describe("bot core detection", () => {
     }
   });
 
+  test("ecografía genérica abre el selector de tipo y deriva al estudio elegido", async () => {
+    const initial = await evaluateInboundTurn({
+      payload: payload("necesito una ecografía"),
+      conversation: conversation(),
+      openCase: null,
+      options: { contactCardBaseUrl: "https://vcards.aeye.com.ar" },
+    });
+    expect(initial.intent).toBe("TURNOS_MEDICOS_SELECTOR");
+    expect(initial.reply?.text).toContain("¿Qué tipo de ecografía necesita?");
+
+    const selectorCase = {
+      intent_key: "TURNOS_MEDICOS_SELECTOR",
+      status: "in_progress" as const,
+      current_step: "professional_or_service",
+      required_fields_status: { professional_or_service: false },
+      case_data: { selectionContext: "ecografia" },
+    };
+    const resolved = await evaluateInboundTurn({
+      payload: payload("abdominal"),
+      conversation: conversation({ current_intent: "TURNOS_MEDICOS_SELECTOR", current_step: "professional_or_service" }),
+      openCase: selectorCase,
+      options: { contactCardBaseUrl: "https://vcards.aeye.com.ar" },
+    });
+    expect(resolved.intent).toBe("IMAGENES_ECOGRAFIA_ABDOMINAL");
+    expect(resolved.status).toBe("closed");
+  });
+
+  test("detecta los servicios nuevos con su intención", async () => {
+    const cases = [
+      ["medicina laboral", "MEDICINA_LABORAL"],
+      ["hemoterapia", "HEMOTERAPIA"],
+      ["flebología", "FLEBOLOGIA"],
+      ["facturación", "FACTURACION"],
+      ["quirófano", "QUIROFANOS"],
+      ["terapia intensiva", "TERAPIA_INTENSIVA"],
+      ["radiología", "RADIOLOGIA"],
+    ] as const;
+    for (const [text, intent] of cases) {
+      const result = await evaluateInboundTurn({
+        payload: payload(text),
+        conversation: conversation(),
+        openCase: null,
+        options: { contactCardBaseUrl: "https://vcards.aeye.com.ar" },
+      });
+      expect(result.intent).toBe(intent);
+    }
+  });
+
   test("routes every declared profession variant to the full specialty response", async () => {
     for (const [specialtyTitle, aliases] of Object.entries(PROFESSION_ALIASES)) {
       if (specialtyTitle === "Cirugía") continue;

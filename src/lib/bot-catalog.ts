@@ -5,6 +5,7 @@ export let BOT_GREETING = "";
 export let BOT_THANK_YOU = "";
 export let SURGERY_SELECTION_PROMPT = "";
 export let CARDOSO_SELECTION_PROMPT = "";
+export let ECOGRAFIA_SELECTION_PROMPT = "";
 export let UNKNOWN_SERVICE_PROMPT = "";
 
 export const OPENING_INTENT = "OPENING";
@@ -124,6 +125,7 @@ export type InfoDefinition = {
   title: string;
   body: string;
   status: "bot_active" | "closed" | "waiting_operator";
+  vcardFile?: string;
 };
 
 export type CaseDefinition = {
@@ -144,6 +146,20 @@ export const CONTACT_CARD_FILES = {
   RECETAS_MEDICAS: "ccs-recetas-medicas.vcf",
   TELEMEDICINA_DRA_ESTRADA: "ccs-telemedicina-dra-estrada.vcf",
 } as const;
+
+export const STUDY_CARD_FILES = {
+  IMAGENES_MEDICINA_NUCLEAR: "ccs-medicina-nuclear.vcf",
+} as const;
+
+const EXTRA_SERVICES = [
+  { intent: "MEDICINA_LABORAL", directKey: "medicinaLaboral", title: "Medicina laboral" },
+  { intent: "HEMOTERAPIA", directKey: "hemoterapia", title: "Hemoterapia" },
+  { intent: "FLEBOLOGIA", directKey: "flebologia", title: "Flebología" },
+  { intent: "FACTURACION", directKey: "facturacion", title: "Facturación" },
+  { intent: "QUIROFANOS", directKey: "quirofanos", title: "Quirófanos" },
+  { intent: "TERAPIA_INTENSIVA", directKey: "terapiaIntensiva", title: "Terapia intensiva" },
+  { intent: "RADIOLOGIA", directKey: "radiologia", title: "Radiología" },
+] as const;
 
 export function buildOpeningMessage(): string {
   return BOT_GREETING;
@@ -460,6 +476,19 @@ function buildFlows(catalog: ManagedCatalog): Record<string, FlowDefinition> {
         title: study.title,
         body: study.body,
         status: "closed",
+        vcardFile: STUDY_CARD_FILES[study.intent as keyof typeof STUDY_CARD_FILES],
+      } satisfies InfoDefinition,
+    ]),
+  ),
+  ...Object.fromEntries(
+    EXTRA_SERVICES.map((service) => [
+      service.intent,
+      {
+        intent: service.intent,
+        kind: "info",
+        title: service.title,
+        body: catalog.direct[service.directKey]?.body || "",
+        status: "bot_active",
       } satisfies InfoDefinition,
     ]),
   ),
@@ -473,6 +502,7 @@ export function activateCatalog(catalog: ManagedCatalog) {
   BOT_THANK_YOU = catalog.messages.greetingThanks.body;
   SURGERY_SELECTION_PROMPT = catalog.messages.surgerySelector.body;
   CARDOSO_SELECTION_PROMPT = catalog.messages.cardosoSelector.body;
+  ECOGRAFIA_SELECTION_PROMPT = catalog.messages.ecografiaSelector.body;
   UNKNOWN_SERVICE_PROMPT = catalog.messages.unknownServicePrompt.body;
   PROFESSIONALS = catalog.professionals;
   PROFESSIONAL_RESPONSE_GROUPS = catalog.professionalResponseGroups.map((group) => ({

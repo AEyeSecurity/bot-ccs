@@ -89,7 +89,7 @@ export const REQUIRED_MESSAGE_KEYS = [
   "outOfScope", "turnServicePrompt", "patientIdentityPrompt", "insurancePrompt",
   "availabilityPrompt", "imagingStudyPrompt", "reportsPatientPrompt", "reportsDniPrompt",
   "reportsStudyDatePrompt", "insuranceReasonPrompt", "otherConsultPrompt", "telemedicineIntro",
-  "telemedicineCityPrompt", "surgerySelector", "cardosoSelector", "unknownServicePrompt",
+  "telemedicineCityPrompt", "surgerySelector", "cardosoSelector", "ecografiaSelector", "unknownServicePrompt",
 ] as const;
 
 export const REQUIRED_DIRECT_KEYS = [

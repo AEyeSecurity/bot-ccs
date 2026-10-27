@@ -74,7 +74,13 @@ La importación se debe ejecutar únicamente cuando se modifica la estructura no
 
 Medicina Nuclear es un **estudio**, no una especialidad. La entrada agregada el 21 de octubre como especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` se corrigió con `scripts/fix-medicina-nuclear-as-study.mjs`, que elimina la especialidad y agrega el estudio `IMAGENES_MEDICINA_NUCLEAR` (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma). La corrección se aplicó en el Supabase productivo (`--apply`), se reinició web para recargar la caché y el texto se completó desde el panel. El catálogo productivo queda con 18 especialidades y 20 estudios.
 
+El estudio responde con texto + vCard `ccs-medicina-nuclear.vcf` (como Patología); el soporte de vCard en estudios está en `STUDY_CARD_FILES` y `vcards.ts`. Para habilitarlo (disponible + revisado) ejecutar `scripts/enable-medicina-nuclear.mjs --apply`.
+
 El fixture de pruebas (`data/bot-catalog-initial.json`) y `src/lib/bot-2026-data.ts` reflejan el Excel y no incluyen Medicina Nuclear: el estudio se agrega únicamente con el script, no por importación. Si se reimporta el catálogo desde el Excel, re-ejecutar `fix-medicina-nuclear-as-study.mjs --apply`.
+
+## Servicios nuevos con área (27 de octubre de 2026)
+
+Medicina laboral, Hemoterapia, Flebología, Facturación, Quirófanos, Terapia intensiva y Radiología se agregan como servicios directos (`direct`) con texto placeholder editable en el banco de respuestas; su área está en la migración 009. El texto definitivo se completa luego desde el banco. El script `scripts/add-servicios-sin-area.mjs` los agrega al catálogo productivo.
 
 ## Alta controlada: Medicina Nuclear (21 de octubre de 2026)
 

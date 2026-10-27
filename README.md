@@ -25,7 +25,7 @@ docker compose --env-file C:/ProgramData/BotCCS/deploy.env ps
 
 El perfil public requiere un túnel propio y su token en archivo. Ver docs/OPERATIONS.md para publicación, pruebas y recuperación. PM2 y las tareas Windows del bot son mecanismos retirados; no ejecutarlos en paralelo.
 
-**Estado verificado al 27 de octubre de 2026:** Iteración 1 completa desplegada en el servidor principal (áreas y derivación, resolución, presencia y usuarios desde la web, panel de datos, paneles admin restringidos y derivación al área menos ocupada); migraciones 005/006/007 aplicadas, Medicina Nuclear modelada como estudio y `BOT_CCS_ADMIN_USERS` configurado. El túnel exclusivo Bot CSS publica ccs.aeye.com.ar hacia http://web:3010. Pendientes: retirar con seguridad la ruta antigua (Cloudflare advierte que también borraría DNS), WhatsApp real y reinicio coordinado del host. [Operación y comprobaciones pendientes](docs/OPERATIONS.md#comprobaciones-pendientes).
+**Estado verificado al 27 de octubre de 2026:** Iteración 1 completa desplegada en el servidor principal (áreas y derivación, resolución, presencia y usuarios desde la web, panel de datos, paneles admin restringidos y derivación conectado → menos casos); migraciones 005/006/007 aplicadas, Medicina Nuclear modelada como estudio y `BOT_CCS_ADMIN_USERS` configurado. El túnel exclusivo Bot CSS publica ccs.aeye.com.ar hacia http://web:3010. Pendientes: retirar con seguridad la ruta antigua (Cloudflare advierte que también borraría DNS), WhatsApp real y reinicio coordinado del host. [Operación y comprobaciones pendientes](docs/OPERATIONS.md#comprobaciones-pendientes).
 
 El proyecto ya no contiene scripts de PM2, tareas Windows ni el corte inicial. Dependencias, compilación y herramientas se ejecutan dentro de Docker; los reportes quedan en un volumen de Compose. Se conservan las fuentes de importación, las pruebas y las migraciones de base de datos. Ver el mapa de carpetas en [Arquitectura](docs/ARCHITECTURE.md#organización-del-proyecto).
 
@@ -81,7 +81,7 @@ Registro de requerimientos del cliente y soluciones propuestas. Se amplía a med
 
 ### Iteración 1 — Roles, permisos y derivación por área
 
-> **Estado: completada** (entregas 1-3, panel de datos, paneles admin restringidos a `BOT_CCS_ADMIN_USERS` y derivación al área menos ocupada).
+> **Estado: completada** (entregas 1-3, panel de datos, paneles admin restringidos a `BOT_CCS_ADMIN_USERS` y derivación conectado → menos casos).
 
 **Requerimiento del cliente:**
 
@@ -154,7 +154,7 @@ Migraciones: `004_roles_areas.sql` (carga inicial) y `005_gamma_contacto_profesi
 
 - Cada área de la hoja "Usuarios" es una **cuenta** que puede tener varios accesos simultáneos (varias computadoras del mismo consultorio ven lo mismo).
 - La derivación se decide por intent, especialidad, estudio o profesional nombrado (por ejemplo, "electrocardiograma" o "Dr. Segovia" → Cardiología; "Nefrología" → Pasaje).
-- Gamma es área de contacto: Medicina nuclear se responde con número y vCard, sin derivar casos. El estudio no está publicado hasta aprobar el texto (pendiente con el cliente).
+- Gamma es área de contacto: Medicina nuclear se responde con número y vCard (como Patología), sin derivar casos.
 - Un operador de la misma área puede tomar una conversación que otro compañero estaba atendiendo. Operadores de otras áreas no.
 - Los pendientes y en curso de días anteriores siguen visibles para el área hasta marcarse `resuelto`.
 - Un paciente que vuelve después de 24 h abre una solicitud nueva; el caso anterior se conserva.
