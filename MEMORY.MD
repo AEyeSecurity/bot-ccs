@@ -1,11 +1,12 @@
 # Memoria de continuidad de BOT CCS
-Actualizada: 2026-10-26. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
+Actualizada: 2026-10-27. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
 Actualizar con cada cambio/trabajo y en su mismo commit; máximo 50 líneas, comprimir y reemplazar lo obsoleto.
 Guardar decisiones, recorrido reciente, validación y próximo paso; nunca contraseñas, tokens, pacientes ni logs.
 Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el historial en docs/CHANGELOG.md.
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- 27/10: BOT_CCS_ADMIN_USERS=admin,admindev definido explícitamente en runtime.env privado; web recreada healthy y variable cotejada en contenedor. Readiness público HTTP200, ok=true/testInstance=false. 374 pruebas, lint/build OK en tools; mismo acceso efectivo anterior.
 - DESPLEGADO 41b1774 el 26/10: imagen pull-41b1774 aplicada como docker-migration, web/maintenance recreados saludables. 374 pruebas, lint/build OK; matriz 22:29 UTC: 229 escenarios, 17 HTTP/9 n8n, cero incidentes. Readiness local/público/inicio/vCard HTTP200. Admins efectivos admin,admindev por default; ensayo detenido/workflow temporal retirado. Imagen anterior before-41b1774-20261026.
 - SERVIDOR 2026-10-26: integrado origin/main d7b6782 con documentos locales; panel por resolución y Medicina Nuclear como estudio. Build/lint/365 pruebas OK; matriz 19:21 UTC: 229 escenarios, 17 HTTP/9 n8n, cero incidentes. Web/maintenance recreados saludables, readiness local/público/inicio/vCard HTTP200. Ensayo detenido/workflow temporal retirado; imagen anterior etiquetada before-d7b6782-20261026.
 - Entrega 2 (resolución): migración 006 (resolution_status abierta/pendiente/resuelta + resolved_at/by; cierre auto 24h → pendiente). Close con mark_resolved; /api/conversations/[id]/resolution; filtros resolution/from/to. Confirm "Marcar resuelta y cerrar"/"Solo cerrar".

@@ -2,6 +2,10 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## 27 de octubre de 2026: administradores explícitos en runtime
+
+Definida BOT_CCS_ADMIN_USERS=admin,admindev en el runtime.env privado externo a Git. Web recreada para inyectar la variable y valor verificado dentro del contenedor activo. Conserva el acceso efectivo que antes daba el valor predeterminado. Web saludable y readiness público HTTP200 (ok=true, testInstance=false). 374 pruebas, lint y build aprobados en tools; sin cambios de código ni del catálogo.
+
 ## Despliegue Docker de 41b1774 — 26 de octubre de 2026
 
 Aplicada la imagen pull-41b1774 ya validada (374 pruebas, lint y build) con etiqueta productiva docker-migration. Matriz previa al despliegue finalizada a las 22:29 UTC: 374 pruebas sin fallos ni omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n aprobados, cero incidentes. Ensayo con transporte mock sobre el Supabase compartido; workflow temporal retirado e instancia detenida, reportes conservados en volumen.
