@@ -191,3 +191,9 @@ Aplicada como docker-migration; web y maintenance recreados saludables. Imagen w
 ## Pull de c941712 — 28 de octubre de 2026
 
 Integrada la corrección del embed de operators en el detalle de conversación desde origin/main. Conflictos de MEMORY y CHANGELOG resueltos preservando despliegues locales. 381 pruebas herméticas, lint y build aprobados en Compose; imágenes pull-c941712. Solo se actualizó el checkout: producción sigue en 0a6e502, sin reinicios, migraciones ni cambios de catálogo en esta sesión. Despliegue y matriz HTTP/n8n de la corrección pendientes.
+
+## Despliegue de c941712 — 28 de octubre de 2026
+
+Aplicada la corrección del embed de operators en el detalle de conversación. Consulta exacta verificada contra Supabase con limit(0), sin recuperar registros. Imagen pull-c941712 ya validada con 381 pruebas, lint y build; matriz terminada a las 16:11 UTC: 381 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. Ensayo mock sobre Supabase compartido; workflow temporal retirado e instancia detenida, reportes conservados en volumen.
+
+Web recreada con imagen docker-migration cotejada con pull-c941712 y saludable. Readiness local/público (ok=true, testInstance=false), inicio y vCard de Medicina Nuclear HTTP200; mantenimiento saludable y túnel activo. Imagen previa before-c941712-20261028 conservada. Sin migraciones, cambios de catálogo, reinicio Windows ni WhatsApp real. No se realizó prueba manual de apertura desde el panel con sesión de operador.
