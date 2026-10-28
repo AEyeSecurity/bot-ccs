@@ -1,11 +1,12 @@
 # Memoria de continuidad de BOT CCS
-Actualizada: 2026-10-27. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
+Actualizada: 2026-10-28. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
 Actualizar con cada cambio/trabajo y en su mismo commit; máximo 50 líneas, comprimir y reemplazar lo obsoleto.
 Guardar decisiones, recorrido reciente, validación y próximo paso; nunca contraseñas, tokens, pacientes ni logs.
 Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el historial en docs/CHANGELOG.md.
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- Fix mensaje "more than one relationship ... 'conversations' and 'operators'" en detalle de conversación: messages/route.ts desambigua el embed con la FK (`operators!conversations_assigned_operator_id_fkey`); desde migración 006 hay 2 FK a operators (assigned_operator_id + resolved_by).
 - Derivación global "conectado → menos casos" (reemplaza "menos ocupado"): areas.ts suma loadConnectedAreaIds (operators+operator_areas, last_seen_at en 90 s); buildAreaPatch prioriza conectadas y luego pickLeastBusyArea; sin conectadas → todas.
 - Migraciones 008 (Clínica Médica/Médicos clínicos → Pasaje + Anexo) y 009 (7 servicios nuevos + Internación → Guardia).
 - Selector de ecografía: "ecografía" genérica → prompt con 5 tipos (mensaje ecografiaSelector) → deriva al estudio. bot-core detectEcografiaSelection + context "ecografia".

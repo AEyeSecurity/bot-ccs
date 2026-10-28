@@ -2,6 +2,10 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## 2026-10-28
+
+- Corrección: `GET /api/conversations/[id]/messages` fallaba con "Could not embed because more than one relationship was found for 'conversations' and 'operators'" desde la migración 006 (segunda FK `resolved_by` hacia `operators`). Se desambiguó el embed con el nombre de la FK: `assigned_operator:operators!conversations_assigned_operator_id_fkey(...)`.
+
 ## 2026-10-27
 
 - Despliegue en el servidor principal confirmado por el usuario: `git pull` + rebuild Docker de los commits de entregas 2-3, panel de datos, restricción de paneles admin y balanceo por área menos ocupada.
