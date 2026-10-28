@@ -14,7 +14,7 @@ Se creó la cuenta temporal `admindev@bot-ccs.local`, operador activo con rol `a
 - Requiere `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` o en el entorno. Ejecutar dentro del servicio Compose `tools` con las variables inyectadas.
 - Crea la cuenta en Supabase Auth con email `<usuario>@bot-ccs.local` (el login acepta solo el usuario), la registra en `operators` y asigna las áreas en `operator_areas`. Si ya existe, actualiza nombre, áreas y reactiva la cuenta, sin cambiar la contraseña.
 - La contraseña temporal se imprime una sola vez. Entregarla en persona y pedir el cambio en el primer acceso. No registrarla en logs ni en Git.
-- Los nombres de área deben existir en la tabla `areas` (migración 004). Aplicar las migraciones pendientes (005, 006, 007) con `npm run db:apply` en el entorno de prueba antes de usar resolución de casos, presencia o alta desde la web.
+- Los nombres de área deben existir en la tabla `areas` (migraciones 004 y 005). Las migraciones 005, 006 y 007 ya están aplicadas en el Supabase productivo (resolución de casos, presencia y alta desde la web operativas).
 
 ## Requisitos y configuración
 
@@ -117,6 +117,10 @@ Coordinar una ventana con los responsables de los servicios compartidos. Despué
 
 La retirada segura de la ruta compartida antigua y la eliminación del administrador temporal también siguen pendientes según los apartados anteriores. Registrar el resultado en TESTING y CHANGELOG después de cada comprobación.
 
-## Áreas: migración aplicada el 21 de octubre de 2026
+## Áreas: migraciones aplicadas
 
-El servidor dispone de un único proyecto Supabase externo. Los archivos test.env y validation-tools.env apuntan al mismo proyecto que runtime.env; el transporte mock no aísla la base de datos. El usuario autorizó expresamente aplicar 004_roles_areas.sql en ese proyecto actual. Se ejecutó únicamente esa migración mediante pg dentro de tools, en transacción y con lock_timeout de 10s, sin repetir las migraciones anteriores ni ejecutar seeds. Resultado: 13 áreas, 63 reglas y ninguna asociación de operador. RLS habilitado en las tres tablas nuevas; conversations.area_ids es uuid[] NOT NULL. Los operadores comunes necesitan asignación explícita antes de acceder a las conversaciones de sus áreas. La creación/asignación de usuarios sigue el procedimiento CLI de este documento; no se crearon cuentas automáticamente.
+El servidor dispone de un único proyecto Supabase externo. Los archivos test.env y validation-tools.env apuntan al mismo proyecto que runtime.env; el transporte mock no aísla la base de datos. El usuario autorizó expresamente aplicar `004_roles_areas.sql` en ese proyecto actual. Se ejecutó únicamente esa migración mediante pg dentro de tools, en transacción y con lock_timeout de 10s, sin repetir las migraciones anteriores ni ejecutar seeds. Resultado: 13 áreas, 63 reglas y ninguna asociación de operador. RLS habilitado en las tres tablas nuevas; conversations.area_ids es uuid[] NOT NULL. Los operadores comunes necesitan asignación explícita antes de acceder a las conversaciones de sus áreas. La creación/asignación de usuarios sigue el procedimiento CLI de este documento; no se crearon cuentas automáticamente.
+
+El 27 de octubre de 2026 se completó la puesta al día del servidor principal: `git pull` + rebuild Docker de las entregas 2-3 y el panel de datos, y aplicación de las migraciones `005_gamma_contacto_profesionales.sql`, `006_resolution_status.sql` y `007_presence.sql` (resolución de casos, presencia y alta de usuarios desde la web operativas). También se ejecutó `fix-medicina-nuclear-as-study.mjs --apply`, se reinició web y se completó el texto del estudio desde el panel, y se configuró `BOT_CCS_ADMIN_USERS` en runtime.env.
+
+Pendiente de aplicar en el servidor (mismo commit): migraciones `008_clinica_medica_edificios.sql` y `009_servicios_sin_area.sql`; y los scripts `add-servicios-sin-area.mjs --apply`, `enable-medicina-nuclear.mjs --apply` y `fix-direccion-dermatologo.mjs --apply` (todos dentro del servicio tools, con `SUPABASE_SERVICE_ROLE_KEY`), seguido de reinicio de web para recargar la caché.

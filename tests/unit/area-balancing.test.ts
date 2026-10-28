@@ -15,7 +15,11 @@ beforeAll(async () => {
   await getPublishedCatalog();
 });
 
-function seed(rows: Array<{ id: string; area_ids: string[]; status: string; resolution_status: string }>) {
+function seed(
+  rows: Array<{ id: string; area_ids: string[]; status: string; resolution_status: string }>,
+  operators: Array<{ id: string; is_active: boolean; last_seen_at: string | null }> = [],
+  operatorAreas: Array<{ operator_id: string; area_id: string }> = [],
+) {
   holder.client = createFakeSupabaseClient({
     areas: [
       { id: PASAJE, name: "Pasaje", is_active: true },
@@ -26,6 +30,8 @@ function seed(rows: Array<{ id: string; area_ids: string[]; status: string; reso
       { area_id: ANEXO, intent_key: "ATENCION_MEDICA_TRAUMATOLOGIA", response_group_id: null, is_active: true },
     ],
     conversations: rows,
+    operators,
+    operator_areas: operatorAreas,
   });
 }
 
@@ -62,6 +68,49 @@ describe("buildAreaPatch", () => {
       { id: "c1", area_ids: [PASAJE], status: "human_takeover", resolution_status: "abierta" },
       { id: "c2", area_ids: [PASAJE], status: "waiting_operator", resolution_status: "abierta" },
     ]);
+    const patch = await buildAreaPatch(holder.client, "ATENCION_MEDICA_TRAUMATOLOGIA", null);
+    expect(patch.area_ids).toEqual([ANEXO]);
+  });
+
+  test("prioriza el área con operador conectado aunque esté más ocupada", async () => {
+    const now = new Date().toISOString();
+    seed(
+      [{ id: "c1", area_ids: [PASAJE], status: "human_takeover", resolution_status: "abierta" }],
+      [{ id: "op-anexo", is_active: true, last_seen_at: now }],
+      [{ operator_id: "op-anexo", area_id: ANEXO }],
+    );
+    const patch = await buildAreaPatch(holder.client, "ATENCION_MEDICA_TRAUMATOLOGIA", null);
+    expect(patch.area_ids).toEqual([ANEXO]);
+  });
+
+  test("operador conectado hace más de 90 s no cuenta como conectado", async () => {
+    const stale = new Date(Date.now() - 100_000).toISOString();
+    seed(
+      [{ id: "c1", area_ids: [ANEXO], status: "human_takeover", resolution_status: "abierta" }],
+      [{ id: "op-anexo", is_active: true, last_seen_at: stale }],
+      [{ operator_id: "op-anexo", area_id: ANEXO }],
+    );
+    const patch = await buildAreaPatch(holder.client, "ATENCION_MEDICA_TRAUMATOLOGIA", null);
+    expect(patch.area_ids).toEqual([PASAJE]);
+  });
+
+  test("entre áreas conectadas elige la menos ocupada", async () => {
+    const now = new Date().toISOString();
+    seed(
+      [
+        { id: "c1", area_ids: [PASAJE], status: "human_takeover", resolution_status: "abierta" },
+        { id: "c2", area_ids: [PASAJE], status: "waiting_operator", resolution_status: "abierta" },
+        { id: "c3", area_ids: [ANEXO], status: "human_takeover", resolution_status: "abierta" },
+      ],
+      [
+        { id: "op-pasaje", is_active: true, last_seen_at: now },
+        { id: "op-anexo", is_active: true, last_seen_at: now },
+      ],
+      [
+        { operator_id: "op-pasaje", area_id: PASAJE },
+        { operator_id: "op-anexo", area_id: ANEXO },
+      ],
+    );
     const patch = await buildAreaPatch(holder.client, "ATENCION_MEDICA_TRAUMATOLOGIA", null);
     expect(patch.area_ids).toEqual([ANEXO]);
   });

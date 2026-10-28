@@ -44,8 +44,10 @@ node scripts/verify-bot-n8n-e2e.mjs
 - `tests/unit/analytics.test.ts`: volumen, resolución, actividad, tiempos y derivación global y por usuario.
 - `tests/integration/analytics-route.test.ts`: reporte con selector sin admins y 403 para no admin.
 - `tests/unit/auth.test.ts`: `canAccessAdminPanels` según la lista `BOT_CCS_ADMIN_USERS` (default, override por env, operador y admin no listado).
-- `tests/unit/area-balancing.test.ts`: `pickLeastBusyArea` (menor ocupación y empate), `loadAreaOccupation` y `buildAreaPatch` (deriva a la menos ocupada).
-- Pendiente: validar las migraciones 005, 006 y 007 contra el Supabase actual con `npm run db:apply`.
+- `tests/unit/area-balancing.test.ts`: `pickLeastBusyArea` (menor ocupación y empate), `loadAreaOccupation`, `loadConnectedAreaIds` y `buildAreaPatch` (prioriza conectadas y deriva a la menos ocupada).
+- `tests/unit/bot-core.test.ts`: selector de ecografía (genérico → tipo → estudio) y detección de los servicios nuevos.
+- Migraciones 008 (Clínica Médica → Pasaje + Anexo) y 009 (servicios nuevos + Internación) validadas en `tests/unit/areas.test.ts`.
+- Migraciones 005, 006 y 007 aplicadas en el Supabase productivo el 27 de octubre de 2026 (Gamma y profesionales, resolución de casos y presencia).
 
 ## Casos Críticos
 
@@ -74,14 +76,16 @@ Una versión puede darse de alta solo si:
 
 ## Línea Base
 
-Última verificación completa: 2 de septiembre de 2026.
+Última verificación completa: 27 de octubre de 2026.
 
-- 302 pruebas aprobadas.
+- 374 pruebas aprobadas.
 - 229 escenarios ejecutados.
 - 54 ramas y 23 transiciones cubiertas.
 - 17 pruebas HTTP aprobadas.
 - 9 recorridos n8n aprobados.
 - Cero incidentes y cero ramas visibles faltantes.
+
+El fixture hermético (`data/bot-catalog-initial.json`) refleja el Excel y conserva 19 estudios, sin Medicina Nuclear: ese estudio se agrega solo en Supabase mediante `fix-medicina-nuclear-as-study.mjs`. Ver CATALOG.md.
 
 Los reportes generados se conservan en el volumen Compose `test_reports`; no se versionan porque pueden contener información operativa. El proyecto de validación usa su propio volumen.
 
@@ -171,3 +175,7 @@ Integrado origin/main con los cambios locales previos. Conflicto de MEMORY.MD re
 Aplicada la imagen pull-41b1774 ya validada (374 pruebas, lint y build) con etiqueta productiva docker-migration. Matriz previa al despliegue finalizada a las 22:29 UTC: 374 pruebas sin fallos ni omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n aprobados, cero incidentes. Ensayo con transporte mock sobre el Supabase compartido; workflow temporal retirado e instancia detenida, reportes conservados en volumen.
 
 Web y maintenance recreados y saludables; identificador de imagen web cotejado con pull-41b1774. Readiness local y público (ok=true, testInstance=false), inicio y vCard de laboratorio HTTP200; túnel activo. Paneles admin con lista predeterminada admin,admindev, verificada sin modificar runtime.env. Imagen anterior etiquetada before-41b1774-20261026. Sin migraciones nuevas, reinicio Windows ni WhatsApp real.
+
+## Pull de 0a6e502 — 28 de octubre de 2026
+
+Integrados los commits nuevos de origin/main conservando los cambios locales del servidor. Conflictos documentales en MEMORY, CATALOG y CHANGELOG resueltos con el historial local y las novedades remotas. 381 pruebas herméticas, lint y build aprobados en Compose; imágenes pull-0a6e502. Esta sesión actualiza únicamente el checkout: producción continúa en 41b1774 con BOT_CCS_ADMIN_USERS explícita. Pendientes despliegue, migraciones 008/009, revisión/aplicación de scripts de catálogo y matriz HTTP/n8n. No se modificaron Supabase ni runtime.env ni se reiniciaron servicios.

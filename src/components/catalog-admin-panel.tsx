@@ -104,6 +104,13 @@ const directLabels: Record<string, string> = {
   clinicalMedicine: "Médicos clínicos",
   telemedicine: "Telemedicina",
   socialInsurance: "Introducción de obras sociales",
+  medicinaLaboral: "Medicina laboral",
+  hemoterapia: "Hemoterapia",
+  flebologia: "Flebología",
+  facturacion: "Facturación",
+  quirofanos: "Quirófanos",
+  terapiaIntensiva: "Terapia intensiva",
+  radiologia: "Radiología",
 };
 
 const messageLabels: Record<string, string> = {

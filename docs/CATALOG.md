@@ -70,11 +70,19 @@ npm run catalog:seed-managed
 
 La importación se debe ejecutar únicamente cuando se modifica la estructura no editable desde el panel. Para bases existentes, publicar mediante el flujo administrativo controlado. No usar seeds como actualización o recuperación del catálogo productivo.
 
-## Corrección: Medicina Nuclear como estudio (26 de octubre de 2026)
+## Corrección: Medicina Nuclear como estudio (aplicada el 26 de octubre de 2026)
 
 Medicina Nuclear es un **estudio**, no una especialidad. La entrada agregada el 21 de octubre como especialidad `ATENCION_MEDICA_MEDICINA_NUCLEAR` se corrige con `scripts/fix-medicina-nuclear-as-study.mjs`, que elimina la especialidad y agrega el estudio `IMAGENES_MEDICINA_NUCLEAR` (matchers "Medicina Nuclear", "Cámara Gamma", "SPECT"; teléfono de Cámara Gamma; `available=false` y pendiente de texto). El publicado debe conservar `reviewStatus=reviewed`, aun desactivado, porque la carga del runtime exige cero pendientes; el borrador conserva `pending`. Ejecutar con `--apply` en el servicio tools y reiniciar web para recargar la caché; luego completar el texto y marcarlo revisado desde el panel antes de publicar.
 
 Aplicada en el servidor el 26 de octubre: transformación equivalente al script mediante pg, en una transacción con bloqueo de catálogo, preservando el resto de ambos payloads. Publicación 6, revisión 3; borrador revisión 65. Ambos contienen 18 especialidades y 20 estudios. Se validó el publicado con `requireReviewed=true`; estudio desactivado en ambos, revisado solo en el publicado.
+
+El estudio responde con texto + vCard `ccs-medicina-nuclear.vcf` (como Patología); el soporte de vCard en estudios está en `STUDY_CARD_FILES` y `vcards.ts`. Para habilitarlo (disponible + revisado) ejecutar `scripts/enable-medicina-nuclear.mjs --apply`.
+
+El fixture de pruebas (`data/bot-catalog-initial.json`) y `src/lib/bot-2026-data.ts` reflejan el Excel y no incluyen Medicina Nuclear: el estudio se agrega únicamente con el script, no por importación. Si se reimporta el catálogo desde el Excel, re-ejecutar `fix-medicina-nuclear-as-study.mjs --apply`.
+
+## Servicios nuevos con área (27 de octubre de 2026)
+
+Medicina laboral, Hemoterapia, Flebología, Facturación, Quirófanos, Terapia intensiva y Radiología se agregan como servicios directos (`direct`) con texto placeholder editable en el banco de respuestas; su área está en la migración 009. El texto definitivo se completa luego desde el banco. El script `scripts/add-servicios-sin-area.mjs` los agrega al catálogo productivo.
 
 ## Alta controlada: Medicina Nuclear (21 de octubre de 2026)
 

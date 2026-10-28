@@ -39,7 +39,9 @@ El login admite los alias `admin` y `admindev`, además del email completo; perm
 - Alta y edición de usuarios desde la web (admin): crear, activar/desactivar, asignar áreas y resetear contraseña con temporal mostrada una sola vez.
 - Presencia: latido del panel cada 30 s; el listado de usuarios muestra "conectado" según el último latido (90 s).
 - Panel de datos (admin): análisis global o por usuario con rango de fechas — volumen, resolución, casos atendidos (participación + intervenciones + mensajes), tiempos de primera respuesta/resolución/cola, conectados y derivación por gestión y área.
-- Derivación automática al área menos ocupada: si una consulta cae en varias áreas, se asigna a la de menor ocupación (conversaciones abiertas con resolución `abierta`); empate al azar.
+- Derivación conectado → menos casos: si una consulta cae en varias áreas, se asigna priorizando las áreas con operador conectado (último latido en 90 s) y, entre ellas, la de menor ocupación (conversaciones abiertas con resolución `abierta`); empate al azar. Sin conectados, deriva a la menos ocupada.
+- Selector de ecografía: "ecografía" genérica pregunta el tipo (abdominal, Doppler, Doppler cardíaca, renal o ginecológica/obstétrica) y deriva al estudio elegido.
+- Servicios directos con área (Medicina laboral, Hemoterapia, Flebología, Facturación, Quirófanos, Terapia intensiva y Radiología): textos editables en el banco, derivación por área.
 - Los paneles administrativos (Banco de respuestas, Usuarios, Panel de datos) están restringidos a las cuentas de `BOT_CCS_ADMIN_USERS`; el resto de las cuentas solo ve los chats.
 
 ## Panel De Conversaciones

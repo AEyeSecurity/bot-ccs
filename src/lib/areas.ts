@@ -72,8 +72,41 @@ export async function loadOperatorAreaIds(supabase: SupabaseAdmin, operatorId: s
   return (data || []).map((row) => String(row.area_id));
 }
 
+const PRESENCE_WINDOW_MS = 90_000;
+
+// Áreas con al menos un operador activo conectado (último latido en 90 s).
+export async function loadConnectedAreaIds(supabase: SupabaseAdmin, areaIds: string[]): Promise<Set<string>> {
+  const connected = new Set<string>();
+  if (!areaIds.length) return connected;
+
+  const { data: operatorAreas, error } = await supabase
+    .from("operator_areas")
+    .select("operator_id,area_id")
+    .in("area_id", areaIds);
+  if (error) throw new Error(error.message);
+
+  const operatorIds = [...new Set((operatorAreas || []).map((row) => String(row.operator_id)))];
+  if (!operatorIds.length) return connected;
+
+  const threshold = new Date(Date.now() - PRESENCE_WINDOW_MS).toISOString();
+  const { data: operators, error: operatorError } = await supabase
+    .from("operators")
+    .select("id")
+    .eq("is_active", true)
+    .gte("last_seen_at", threshold)
+    .in("id", operatorIds);
+  if (operatorError) throw new Error(operatorError.message);
+
+  const activeOperatorIds = new Set((operators || []).map((row) => String(row.id)));
+  for (const row of (operatorAreas || []) as Array<{ operator_id: string; area_id: string }>) {
+    if (activeOperatorIds.has(String(row.operator_id))) connected.add(String(row.area_id));
+  }
+  return connected;
+}
+
 // Patch de area_ids para una conversación. Vacío si el turno no tiene intent que derivar.
-// Si el intent cae en varias áreas, deriva a la menos ocupada (empate al azar).
+// Si el intent cae en varias áreas, prioriza las áreas con operador conectado y deriva a la
+// menos ocupada (empate al azar). Sin conectados, deriva a la menos ocupada entre todas.
 export async function buildAreaPatch(
   supabase: SupabaseAdmin,
   currentIntent: string | null,
@@ -86,8 +119,10 @@ export async function buildAreaPatch(
   if (!rules.some((rule) => rule.intent_key === keys.intentKey)) return {};
   const candidates = deriveAreaIds(keys, rules);
   if (candidates.length <= 1) return { area_ids: candidates };
-  const occupation = await loadAreaOccupation(supabase, candidates);
-  return { area_ids: [pickLeastBusyArea(candidates, occupation)] };
+  const connected = await loadConnectedAreaIds(supabase, candidates);
+  const pool = connected.size ? candidates.filter((id) => connected.has(id)) : candidates;
+  const occupation = await loadAreaOccupation(supabase, pool);
+  return { area_ids: [pickLeastBusyArea(pool, occupation)] };
 }
 
 // Ocupación de un área = conversaciones abiertas (no cerradas) con resolución "abierta"

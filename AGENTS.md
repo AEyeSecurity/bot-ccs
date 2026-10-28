@@ -11,6 +11,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - MEMORY.MD must never exceed **50 lines**. Keep it as compact as possible: rewrite, merge and replace stale entries as work advances instead of appending an unlimited diary. Keep durable history in docs/CHANGELOG.md and detailed procedures in canonical docs.
 - Every functional, operational, data-model, workflow, deployment, or user-interface change must include its corresponding documentation update in the same commit.
 - Update `docs/CHANGELOG.md` for every completed change. Also update the relevant canonical document: `docs/ARCHITECTURE.md`, `docs/FEATURES.md`, `docs/CATALOG.md`, `docs/OPERATIONS.md`, or `docs/TESTING.md`.
+- `docs/ROADMAP.md` holds future work (planned changes and new features). The `README.md` documents only implemented behavior. Add planned work to ROADMAP before implementing it, and move it into `docs/CHANGELOG.md` and the canonical docs once implemented.
 - Do not commit secrets, patient data, runtime logs, generated test evidence, or local backups. Keep `.env.local` and credentials outside Git.
 - Before completing a change, run the relevant tests plus `npm run lint` and `npm run build`. For production behavior, also run `npm run test:bot:report`.
 - The published Supabase catalog is the only production content source. Do not introduce runtime fallbacks to XLSX or static TypeScript data.

@@ -2,6 +2,10 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Pull de 0a6e502 — 28 de octubre de 2026
+
+Integrados los commits nuevos de origin/main conservando los cambios locales del servidor. Conflictos documentales en MEMORY, CATALOG y CHANGELOG resueltos con el historial local y las novedades remotas. 381 pruebas herméticas, lint y build aprobados en Compose; imágenes pull-0a6e502. Esta sesión actualiza únicamente el checkout: producción continúa en 41b1774 con BOT_CCS_ADMIN_USERS explícita. Pendientes despliegue, migraciones 008/009, revisión/aplicación de scripts de catálogo y matriz HTTP/n8n. No se modificaron Supabase ni runtime.env ni se reiniciaron servicios.
+
 ## 27 de octubre de 2026: administradores explícitos en runtime
 
 Definida BOT_CCS_ADMIN_USERS=admin,admindev en el runtime.env privado externo a Git. Web recreada para inyectar la variable y valor verificado dentro del contenedor activo. Conserva el acceso efectivo que antes daba el valor predeterminado. Web saludable y readiness público HTTP200 (ok=true, testInstance=false). 374 pruebas, lint y build aprobados en tools; sin cambios de código ni del catálogo.
@@ -29,6 +33,25 @@ Web y maintenance recreados saludables; readiness local/público (ok=true, testI
 Pull fast-forward e imágenes web/maintenance/tools reconstruidas en Compose. 365 pruebas sin fallos ni omisiones, lint y build aprobados; matriz aislada con transporte mock: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. El ensayo comparte Supabase productivo; workflow temporal retirado e instancia detenida, reportes conservados en su volumen.
 
 Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout de 10 s, sin seeds ni repetir migraciones anteriores; verificadas las cuatro columnas nuevas de resolución y presencia. Web y maintenance recreados saludables; readiness local/público (ok=true, testInstance=false), inicio y vCard de laboratorio HTTP200. Cloudflared continúa activo. La imagen previa tenía contenido Docker faltante y no pudo etiquetarse ni copiarse; para recuperarla se requiere reconstruir el commit previo 91325bf. No se reinició Windows ni se probó WhatsApp real; validación manual de operadores pendiente.
+
+## 2026-10-27
+
+- Despliegue en el servidor principal confirmado por el usuario: `git pull` + rebuild Docker de los commits de entregas 2-3, panel de datos, restricción de paneles admin y balanceo por área menos ocupada.
+- Migraciones `005`/`006`/`007` aplicadas en el Supabase productivo (antes solo `004`): Gamma y profesionales (005), `resolution_status`/`resolved_at`/`resolved_by` (006) y `operators.last_seen_at` (007).
+- `scripts/fix-medicina-nuclear-as-study.mjs --apply` ejecutado y web reiniciada; Medicina Nuclear queda como estudio y su texto se completó desde el panel. Catálogo productivo: 18 especialidades y 20 estudios.
+- `BOT_CCS_ADMIN_USERS` configurado en `runtime.env` (paneles administrativos restringidos a las cuentas listadas).
+- Documentación sincronizada: estado de Iteración 1, conteo de catálogo y estado de despliegue en README; pendientes y línea base en TESTING; sección de áreas en OPERATIONS; corrección aplicada en CATALOG; numeración de NOTAS-CLIENTE.
+- Nota: el fixture de pruebas (`data/bot-catalog-initial.json`) conserva 19 estudios (fuente Excel); Medicina Nuclear se agrega solo vía script, no por importación.
+
+### Iteración 1 refinada y nuevos servicios (respuestas del cliente)
+
+- Derivación global "conectado → menos casos" (reemplaza "menos ocupado"): `src/lib/areas.ts` agrega `loadConnectedAreaIds` (operadores activos con `last_seen_at` en 90 s) y `buildAreaPatch` prioriza áreas conectadas y luego la de menor ocupación; sin conectados, deriva a la menos ocupada entre todas.
+- Migraciones `008_clinica_medica_edificios.sql` (Clínica Médica y Médicos clínicos → Pasaje + Anexo) y `009_servicios_sin_area.sql` (Medicina laboral/Hemoterapia → Pasaje; Flebología/Facturación → Anexo; Quirófanos/Terapia intensiva/Radiología/Internación → Guardia).
+- Selector de ecografía: "ecografía" genérica pregunta el tipo (mensaje `ecografiaSelector`) y deriva al estudio elegido.
+- Medicina Nuclear: soporte de vCard en estudios (`STUDY_CARD_FILES`, `InfoDefinition.vcardFile`, `ccs-medicina-nuclear.vcf`) y script `enable-medicina-nuclear.mjs` para habilitarla.
+- Siete servicios nuevos como flujos `direct` editables en el banco (placeholder), con detección en `bot-core.ts` y etiquetas en el panel.
+- Scripts de contenido: `fix-direccion-dermatologo.mjs` (dirección unificada "Pje. Dra. Elena Ibarra de Zilberberg 735" y dermatólogo "Romero") y `add-servicios-sin-area.mjs`.
+- 381 pruebas, lint OK (host). Pendiente en servidor: aplicar migraciones 008/009 y ejecutar los tres scripts con `--apply` + reiniciar web.
 
 ## 2026-10-26
 

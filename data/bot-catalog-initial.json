@@ -105,6 +105,10 @@
       "body": "Muy bien, para corroborar la información enviada puede indicarnos si desea una consulta con cirugía general o maxilofacial",
       "reviewStatus": "reviewed"
     },
+    "ecografiaSelector": {
+      "body": "¿Qué tipo de ecografía necesita? Abdominal, Doppler, Doppler cardíaca, renal o ginecológica/obstétrica.",
+      "reviewStatus": "reviewed"
+    },
     "unknownServicePrompt": {
       "body": "No pude identificar el profesional o servicio. Indíqueme, por favor, el nombre del profesional, la especialidad o el estudio que necesita.",
       "reviewStatus": "reviewed"
@@ -199,6 +203,48 @@
       "phones": [],
       "available": true,
       "reviewStatus": "reviewed"
+    },
+    "medicinaLaboral": {
+      "body": "Estamos actualizando la información de este servicio. Disculpe las molestias.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "hemoterapia": {
+      "body": "Estamos actualizando la información de este servicio. Disculpe las molestias.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "flebologia": {
+      "body": "Estamos actualizando la información de este servicio. Disculpe las molestias.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "facturacion": {
+      "body": "Estamos actualizando la información de este servicio. Disculpe las molestias.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "quirofanos": {
+      "body": "Estamos actualizando la información de este servicio. Disculpe las molestias.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "terapiaIntensiva": {
+      "body": "Estamos actualizando la información de este servicio. Disculpe las molestias.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
+    },
+    "radiologia": {
+      "body": "Estamos actualizando la información de este servicio. Disculpe las molestias.",
+      "phones": [],
+      "available": true,
+      "reviewStatus": "reviewed"
     }
   },
   "medicalServices": [
@@ -211,6 +257,7 @@
         "cardióloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A6",
       "available": true,
@@ -225,6 +272,7 @@
         "cirujana"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A7",
       "available": true,
@@ -240,6 +288,7 @@
         "generalista"
       ],
       "generalBody": "La atención de médicos clínicos se realiza por orden de llegada, de lunes a viernes, a partir de las 09 hs por la mañana y a partir de las 15 hs por la tarde, en los Edificios B y C.",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A8",
       "available": true,
@@ -254,6 +303,7 @@
         "dermatóloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A9",
       "available": true,
@@ -268,6 +318,7 @@
         "diabetóloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A10",
       "available": true,
@@ -282,6 +333,7 @@
         "gastroenteróloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A11",
       "available": true,
@@ -299,6 +351,7 @@
         "obstetra"
       ],
       "generalBody": "Puede comunicarse con el Centro Materno Infantil para turnos enviando un mensaje por WhatsApp al +5492974290998.",
+      "customBody": "",
       "phones": [
         "+5492974290998"
       ],
@@ -315,6 +368,7 @@
         "nefróloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A13",
       "available": true,
@@ -329,6 +383,7 @@
         "neuróloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A14",
       "available": true,
@@ -342,6 +397,7 @@
         "nutricionista"
       ],
       "generalBody": "Nuestro equipo de nutricionistas maneja sus agendas de forma personal. Para consultas y agendar turnos, debe comunicarse directamente con los profesionales:",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A15",
       "available": true,
@@ -356,6 +412,7 @@
         "oncóloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A16",
       "available": true,
@@ -369,6 +426,7 @@
         "pediatra"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A17",
       "available": true,
@@ -383,6 +441,7 @@
         "psicóloga"
       ],
       "generalBody": "Nuestro equipo de psicólogos maneja sus agendas de forma personal. Para consultas y agendar turnos, debe comunicarse directamente con los profesionales:",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A18",
       "available": true,
@@ -396,6 +455,7 @@
         "psiquiatra"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A19",
       "available": true,
@@ -410,6 +470,7 @@
         "reumatóloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A20",
       "available": true,
@@ -424,6 +485,7 @@
         "traumatóloga"
       ],
       "generalBody": "Nuestro equipo de traumatología y ortopedía atiende con turnos previos, en los sectores B y C. Puede solicitar una consulta de manera presencial o enviando un mensaje por WhatsApp al +5492974017474.",
+      "customBody": "",
       "phones": [
         "+5492974017474"
       ],
@@ -440,6 +502,7 @@
         "uróloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A22",
       "available": true,
@@ -454,6 +517,7 @@
         "infectóloga"
       ],
       "generalBody": "",
+      "customBody": "",
       "phones": [],
       "sourceCell": "A23",
       "available": true,
