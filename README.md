@@ -153,7 +153,11 @@ Migraciones: `004_roles_areas.sql` (carga inicial) y `005_gamma_contacto_profesi
 **Decisiones de diseño acordadas:**
 
 - Cada área de la hoja "Usuarios" es una **cuenta** que puede tener varios accesos simultáneos (varias computadoras del mismo consultorio ven lo mismo).
-- La derivación se decide por intent, especialidad, estudio o profesional nombrado (por ejemplo, "electrocardiograma" o "Dr. Segovia" → Cardiología; "Nefrología" → Pasaje).
+- La derivación funciona en dos etapas. **Etapa 1 — por intent o profesional nombrado:** cada turno resuelve a qué área va según su intent (especialidad o estudio) o el profesional nombrado. Por ejemplo, "electrocardiograma" o "Dr. Segovia" → Cardiología; "Nefrología" → Pasaje; un profesional con regla propia va solo a su área, aunque la especialidad figure en otras. **Etapa 2 — desempate "conectado → menos casos":** si la consulta cae en varias áreas (por ejemplo, "Cirugía" genérica → Pasaje, Anexo y CEMI), se priorizan las áreas con operador conectado (último latido en 90 s) y, entre ellas, la de menor ocupación; sin conectados, la menos ocupada; empate al azar.
+- Reglas de derivación confirmadas con el cliente: Clínica Médica y "Médicos clínicos" → Pasaje + Anexo (no Guardia); Gastroenterología → Admisión; Psicología → DMO; Medicina laboral y Hemoterapia → Pasaje; Flebología y Facturación → Anexo; Quirófanos, Terapia intensiva y Radiología → Guardia (Sector A).
+- Anexo = Sector C (Consultorios Externos); las secretarías prefieren llamarlo "Anexo".
+- "Ecografía" genérica abre un selector de tipo (abdominal, Doppler, Doppler cardíaca, renal o ginecológica/obstétrica) antes de derivar.
+- Dirección del Sector A unificada en "Pje. Dra. Elena Ibarra de Zilberberg 735".
 - Gamma es área de contacto: Medicina nuclear se responde con número y vCard (como Patología), sin derivar casos.
 - Un operador de la misma área puede tomar una conversación que otro compañero estaba atendiendo. Operadores de otras áreas no.
 - Los pendientes y en curso de días anteriores siguen visibles para el área hasta marcarse `resuelto`.
