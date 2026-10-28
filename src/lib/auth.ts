@@ -21,7 +21,7 @@ export async function getOperatorFromRequest(request: NextRequest): Promise<Oper
 
   const { data, error } = await supabase
     .from("operators")
-    .select("id,auth_user_id,name,email,role,is_active")
+    .select("id,auth_user_id,name,email,role,is_active,password_change_required")
     .eq("auth_user_id", userData.user.id)
     .eq("is_active", true)
     .maybeSingle();

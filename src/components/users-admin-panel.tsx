@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, KeyRound, LoaderCircle, UserPlus } from "lucide-react";
+import { ArrowLeft, KeyRound, LoaderCircle, RefreshCw, UserPlus } from "lucide-react";
+import { isPasswordStrong, PASSWORD_RULES } from "@/lib/password";
 
 type ApiFetch = (path: string, init?: RequestInit) => Promise<Record<string, unknown>>;
 
@@ -21,7 +22,10 @@ type FormState = {
   mode: "create" | "edit";
   id?: string;
   username: string;
-  name: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  confirmPassword: string;
   role: "admin" | "operator";
   areas: string[];
   is_active: boolean;
@@ -31,7 +35,10 @@ type FormState = {
 const emptyForm: FormState = {
   mode: "create",
   username: "",
-  name: "",
+  firstName: "",
+  lastName: "",
+  password: "",
+  confirmPassword: "",
   role: "operator",
   areas: [],
   is_active: true,
@@ -42,6 +49,31 @@ function areaName(areas: AreaRow[], id: string) {
   return areas.find((area) => area.id === id)?.name || id;
 }
 
+function splitName(name: string) {
+  const parts = name.trim().split(/\s+/);
+  const lastName = parts.length > 1 ? parts.pop() || "" : "";
+  const firstName = parts.join(" ");
+  return { firstName, lastName };
+}
+
+function generatePassword() {
+  const lower = "abcdefghjkmnpqrstuvwxyz";
+  const upper = "ABCDEFGHJKMNPQRSTUVWXYZ";
+  const digits = "23456789";
+  const all = lower + upper + digits;
+  const chars = [
+    lower[Math.floor(Math.random() * lower.length)],
+    upper[Math.floor(Math.random() * upper.length)],
+    digits[Math.floor(Math.random() * digits.length)],
+  ];
+  while (chars.length < 12) chars.push(all[Math.floor(Math.random() * all.length)]);
+  for (let index = chars.length - 1; index > 0; index--) {
+    const swap = Math.floor(Math.random() * (index + 1));
+    [chars[index], chars[swap]] = [chars[swap], chars[index]];
+  }
+  return chars.join("");
+}
+
 export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBack: () => void }) {
   const [operators, setOperators] = useState<OperatorRow[]>([]);
   const [areas, setAreas] = useState<AreaRow[]>([]);
@@ -50,7 +82,6 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [form, setForm] = useState<FormState | null>(null);
-  const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState(0);
 
   const load = useCallback(async () => {
@@ -82,19 +113,21 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
   }, [nowMs]);
 
   function openCreate() {
-    setTemporaryPassword(null);
     setNotice("");
     setForm({ ...emptyForm });
   }
 
   function openEdit(operator: OperatorRow) {
-    setTemporaryPassword(null);
     setNotice("");
+    const { firstName, lastName } = splitName(operator.name);
     setForm({
       mode: "edit",
       id: operator.id,
       username: operator.email.replace("@bot-ccs.local", ""),
-      name: operator.name,
+      firstName,
+      lastName,
+      password: "",
+      confirmPassword: "",
       role: operator.role,
       areas: operator.area_ids || [],
       is_active: operator.is_active,
@@ -111,22 +144,34 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
     );
   }
 
+  const needsPassword = form ? form.mode === "create" || form.reset_password : false;
+  const passwordValid = form && needsPassword
+    ? isPasswordStrong(form.password) && form.password === form.confirmPassword
+    : true;
+
   async function save() {
     if (!form) return;
     setBusy(true);
     setError("");
     setNotice("");
-    setTemporaryPassword(null);
     try {
+      const name = `${form.firstName.trim()} ${form.lastName.trim()}`.trim();
       const body =
         form.mode === "create"
-          ? { username: form.username, name: form.name, role: form.role, areas: form.areas }
-          : { id: form.id, name: form.name, role: form.role, areas: form.areas, is_active: form.is_active, reset_password: form.reset_password };
-      const data = await apiFetch("/api/admin/operators", {
+          ? { username: form.username, name, password: form.password, role: form.role, areas: form.areas }
+          : {
+              id: form.id,
+              name,
+              role: form.role,
+              areas: form.areas,
+              is_active: form.is_active,
+              reset_password: form.reset_password,
+              ...(form.reset_password ? { password: form.password } : {}),
+            };
+      await apiFetch("/api/admin/operators", {
         method: form.mode === "create" ? "POST" : "PATCH",
         body: JSON.stringify(body),
       });
-      if (data.temporaryPassword) setTemporaryPassword(String(data.temporaryPassword));
       setForm(null);
       setNotice(form.mode === "create" ? "Usuario creado" : "Usuario actualizado");
       await load();
@@ -162,13 +207,6 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
       <div className="mx-auto max-w-[1100px] px-4 py-5">
         {error ? <p className="mb-4 rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p> : null}
         {notice ? <p className="mb-4 rounded-xl bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{notice}</p> : null}
-        {temporaryPassword ? (
-          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm">
-            <p className="font-bold text-amber-900">Contraseña temporal (mostrar una sola vez):</p>
-            <p className="mt-1 font-mono text-base text-amber-900">{temporaryPassword}</p>
-            <p className="mt-1 text-xs text-amber-700">Entregarla en persona; el usuario debe cambiarla en el primer acceso.</p>
-          </div>
-        ) : null}
 
         {loading ? (
           <div className="grid h-40 place-items-center text-zinc-500"><LoaderCircle className="animate-spin" /></div>
@@ -216,14 +254,75 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
                   <span className="mt-1 block text-xs text-zinc-400">Se crea como {form.username || "usuario"}@bot-ccs.local</span>
                 </label>
               ) : null}
-              <label className="block text-sm">
-                <span className="font-semibold text-zinc-700">Nombre</span>
-                <input
-                  value={form.name}
-                  onChange={(event) => setForm({ ...form, name: event.target.value })}
-                  className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 outline-none focus:border-[#176b5a]"
-                />
-              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <label className="block text-sm">
+                  <span className="font-semibold text-zinc-700">Nombre</span>
+                  <input
+                    value={form.firstName}
+                    onChange={(event) => setForm({ ...form, firstName: event.target.value })}
+                    className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 outline-none focus:border-[#176b5a]"
+                    placeholder="María"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="font-semibold text-zinc-700">Apellido</span>
+                  <input
+                    value={form.lastName}
+                    onChange={(event) => setForm({ ...form, lastName: event.target.value })}
+                    className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 outline-none focus:border-[#176b5a]"
+                    placeholder="García"
+                  />
+                </label>
+              </div>
+
+              {needsPassword ? (
+                <>
+                  <div>
+                    <span className="font-semibold text-zinc-700">Contraseña</span>
+                    <div className="mt-1 flex gap-2">
+                      <input
+                        value={form.password}
+                        onChange={(event) => setForm({ ...form, password: event.target.value })}
+                        type="password"
+                        autoComplete="new-password"
+                        className="h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 outline-none focus:border-[#176b5a]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => { const generated = generatePassword(); setForm({ ...form, password: generated, confirmPassword: generated }); }}
+                        className="flex shrink-0 items-center gap-1 rounded-xl border border-zinc-200 px-3 text-xs font-semibold text-zinc-600 transition hover:bg-zinc-50"
+                        title="Generar contraseña segura"
+                      >
+                        <RefreshCw size={14} /> Generar
+                      </button>
+                    </div>
+                  </div>
+                  <label className="block text-sm">
+                    <span className="font-semibold text-zinc-700">Confirmar contraseña</span>
+                    <input
+                      value={form.confirmPassword}
+                      onChange={(event) => setForm({ ...form, confirmPassword: event.target.value })}
+                      type="password"
+                      autoComplete="new-password"
+                      className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 outline-none focus:border-[#176b5a]"
+                    />
+                  </label>
+                  <ul className="space-y-1 text-xs">
+                    {PASSWORD_RULES.map((rule) => {
+                      const ok = rule.test(form.password);
+                      return (
+                        <li key={rule.label} className={ok ? "text-emerald-700" : "text-zinc-400"}>
+                          {ok ? "✓" : "○"} {rule.label}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {form.password && form.confirmPassword && form.password !== form.confirmPassword ? (
+                    <p className="text-xs text-rose-600">Las contraseñas no coinciden</p>
+                  ) : null}
+                </>
+              ) : null}
+
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setForm({ ...form, role: "operator" })}
@@ -269,7 +368,14 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
             </div>
             <div className="mt-5 grid gap-2">
               <button
-                disabled={busy || (form.mode === "create" && !form.username.trim()) || !form.name.trim() || (form.role === "operator" && !form.areas.length)}
+                disabled={
+                  busy ||
+                  (form.mode === "create" && !form.username.trim()) ||
+                  !form.firstName.trim() ||
+                  !form.lastName.trim() ||
+                  !passwordValid ||
+                  (form.role === "operator" && !form.areas.length)
+                }
                 onClick={() => void save()}
                 className="h-11 rounded-xl bg-[#176b5a] px-4 text-sm font-semibold text-white transition hover:bg-[#125747] disabled:opacity-40"
               >

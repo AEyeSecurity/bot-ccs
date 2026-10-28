@@ -26,6 +26,7 @@ export type Operator = {
   is_active: boolean;
   area_ids?: string[];
   last_seen_at?: string | null;
+  password_change_required?: boolean;
 };
 
 export type Contact = {

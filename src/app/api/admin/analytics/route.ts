@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     };
 
     const [{ data: operators }, { data: areas }, { data: conversations }, { data: messages }, { data: events }] = await Promise.all([
-      supabase.from("operators").select("id,name,role,is_active,last_seen_at").order("name", { ascending: true }),
+      supabase.from("operators").select("id,name,email,role,is_active,last_seen_at").order("name", { ascending: true }),
       supabase.from("areas").select("id,name"),
       supabase
         .from("conversations")
@@ -62,9 +62,9 @@ export async function GET(request: NextRequest) {
       operatorId: operatorId || null,
     });
 
-    const selector = ((operators || []) as Array<{ id: string; name: string; role: string; is_active: boolean; last_seen_at: string | null }>)
+    const selector = ((operators || []) as Array<{ id: string; name: string; email: string; role: string; is_active: boolean; last_seen_at: string | null }>)
       .filter((row) => row.role !== "admin")
-      .map((row) => ({ id: row.id, name: row.name, last_seen_at: row.last_seen_at }));
+      .map((row) => ({ id: row.id, name: row.name, email: row.email, last_seen_at: row.last_seen_at }));
 
     return Response.json({ report, operators: selector });
   } catch (error) {

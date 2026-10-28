@@ -2,6 +2,14 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Pull y despliegue de 78001f2 — 28 de octubre de 2026
+
+Integrado origin/main preservando el historial local en MEMORY. Aplicada únicamente 010_password_change_required.sql en transacción con lock_timeout de 10 s; verificada operators.password_change_required boolean NOT NULL DEFAULT false. No se modificaron contraseñas reales ni se forzó el cambio a cuentas existentes; el flujo lo activa en altas y resets. Sin seeds ni cambios de catálogo.
+
+Build, lint y 387 pruebas aprobados en Compose. Matriz final 18:15 UTC: 387 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. Ensayo mock con Supabase compartido; workflow temporal retirado e instancia detenida, reportes conservados en volumen.
+
+Web recreada con pull-78001f2 aplicada como docker-migration, imagen cotejada y estado healthy. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. POST /api/me/password sin sesión devuelve 401; BOT_CCS_ADMIN_USERS preservada. Mantenimiento saludable y túnel activo. Imagen anterior before-78001f2-20261028 conservada. Pendiente prueba manual del flujo de usuario con cuenta autorizada; sin WhatsApp real ni reinicio Windows.
+
 ## Despliegue de c941712 — 28 de octubre de 2026
 
 Aplicada la corrección del embed de operators en el detalle de conversación. Consulta exacta verificada contra Supabase con limit(0), sin recuperar registros. Imagen pull-c941712 ya validada con 381 pruebas, lint y build; matriz terminada a las 16:11 UTC: 381 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. Ensayo mock sobre Supabase compartido; workflow temporal retirado e instancia detenida, reportes conservados en volumen.
@@ -54,6 +62,7 @@ Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout d
 
 ## 2026-10-28
 
+- Alta de usuarios desde la web con contraseña segura y cambio forzado: el panel "Usuarios" ahora pide Nombre y Apellido por separado y una contraseña escrita por el admin (mín 8 caracteres, mayúscula, minúscula y número, con confirmación y generador opcional); el login (username) es único y se rechaza con `409` si se repite. Migración `010_password_change_required.sql` agrega `operators.password_change_required`; el primer acceso y los resets exigen elegir una contraseña nueva (`POST /api/me/password`). El login acepta solo el username (sin dominio). El selector del panel de datos muestra `Nombre (username)` para identificar sin ambigüedad. Pruebas: `admin-operators-route.test.ts` ampliado y `change-password-route.test.ts` nuevo; 387 pruebas y lint OK.
 - Corrección: `GET /api/conversations/[id]/messages` fallaba con "Could not embed because more than one relationship was found for 'conversations' and 'operators'" desde la migración 006 (segunda FK `resolved_by` hacia `operators`). Se desambiguó el embed con el nombre de la FK: `assigned_operator:operators!conversations_assigned_operator_id_fkey(...)`.
 
 ## 2026-10-27

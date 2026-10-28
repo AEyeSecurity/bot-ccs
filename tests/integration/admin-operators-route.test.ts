@@ -25,11 +25,11 @@ function setup() {
       { id: TAC, name: "TAC", is_active: true },
     ],
     operators: [
-      { id: "op-carla", auth_user_id: "auth-carla", name: "Carla", email: "cardiologia@bot-ccs.local", role: "operator", is_active: true },
+      { id: "op-carla", auth_user_id: "auth-carla", name: "Carla", email: "cardiologia@bot-ccs.local", role: "operator", is_active: true, password_change_required: false },
       { id: "op-admin", auth_user_id: "auth-admin", name: "Admin", email: "admin@bot-ccs.local", role: "admin", is_active: true },
     ],
     operator_areas: [{ operator_id: "op-carla", area_id: CARDIOLOGIA }],
-    auth_users: [{ id: "auth-carla", email: "cardiologia@bot-ccs.local" }],
+    auth_users: [{ id: "auth-carla", email: "cardiologia@bot-ccs.local", password: "Vieja1234" }],
   });
   holder.client.auth.getUser = async (token: string) => ({
     data: { user: { id: token.replace("token-", "") } },
@@ -55,42 +55,72 @@ describe("listado de usuarios (admin)", () => {
 });
 
 describe("alta y edición de usuarios", () => {
-  test("crea un operador con contraseña temporal y áreas", async () => {
+  test("crea un operador con contraseña y áreas", async () => {
     const response = await POST(
       request("/api/admin/operators", "token-auth-admin", {
         method: "POST",
-        body: JSON.stringify({ username: "nueva", name: "Nueva", role: "operator", areas: ["Cardiología", "TAC"] }),
+        body: JSON.stringify({ username: "nueva", name: "Nueva Operadora", password: "Nueva1234", role: "operator", areas: ["Cardiología", "TAC"] }),
       }),
     );
     expect(response.status).toBe(200);
-    const body = (await response.json()) as { operator: { id: string; email: string; area_ids: string[] }; temporaryPassword: string };
+    const body = (await response.json()) as { operator: { id: string; email: string; area_ids: string[] } };
     expect(body.operator.email).toBe("nueva@bot-ccs.local");
     expect(body.operator.area_ids).toEqual(expect.arrayContaining([CARDIOLOGIA, TAC]));
-    expect(body.temporaryPassword).toBeTruthy();
-    expect(holder.client.table("auth_users").some((user) => user.email === "nueva@bot-ccs.local")).toBe(true);
+    const createdAuth = holder.client.table("auth_users").find((user) => user.email === "nueva@bot-ccs.local");
+    expect(createdAuth?.password).toBe("Nueva1234");
+    expect(holder.client.table("operators").find((row) => row.id === body.operator.id)?.password_change_required).toBe(true);
+  });
+
+  test("rechaza una contraseña débil", async () => {
+    const response = await POST(
+      request("/api/admin/operators", "token-auth-admin", {
+        method: "POST",
+        body: JSON.stringify({ username: "debil", name: "Contraseña Débil", password: "abc", role: "operator", areas: ["Cardiología"] }),
+      }),
+    );
+    expect(response.status).toBe(400);
+  });
+
+  test("rechaza un nombre de usuario duplicado", async () => {
+    const response = await POST(
+      request("/api/admin/operators", "token-auth-admin", {
+        method: "POST",
+        body: JSON.stringify({ username: "cardiologia", name: "Otra Persona", password: "Nueva1234", role: "operator", areas: ["Cardiología"] }),
+      }),
+    );
+    expect(response.status).toBe(409);
   });
 
   test("rechaza un operador sin áreas", async () => {
     const response = await POST(
       request("/api/admin/operators", "token-auth-admin", {
         method: "POST",
-        body: JSON.stringify({ username: "sinarea", name: "Sin área", role: "operator", areas: [] }),
+        body: JSON.stringify({ username: "sinarea", name: "Sin área", password: "Nueva1234", role: "operator", areas: [] }),
       }),
     );
     expect(response.status).toBe(400);
   });
 
-  test("resetea la contraseña y devuelve la temporal", async () => {
+  test("resetea la contraseña con una nueva y marca cambio requerido", async () => {
+    const response = await PATCH(
+      request("/api/admin/operators", "token-auth-admin", {
+        method: "PATCH",
+        body: JSON.stringify({ id: "op-carla", name: "Carla", role: "operator", areas: ["Cardiología"], is_active: true, reset_password: true, password: "Nueva1234" }),
+      }),
+    );
+    expect(response.status).toBe(200);
+    expect(holder.client.table("auth_users").find((user) => user.id === "auth-carla")?.password).toBe("Nueva1234");
+    expect(holder.client.table("operators").find((row) => row.id === "op-carla")?.password_change_required).toBe(true);
+  });
+
+  test("rechaza el reset sin contraseña nueva", async () => {
     const response = await PATCH(
       request("/api/admin/operators", "token-auth-admin", {
         method: "PATCH",
         body: JSON.stringify({ id: "op-carla", name: "Carla", role: "operator", areas: ["Cardiología"], is_active: true, reset_password: true }),
       }),
     );
-    expect(response.status).toBe(200);
-    const body = (await response.json()) as { temporaryPassword: string };
-    expect(body.temporaryPassword).toBeTruthy();
-    expect(holder.client.table("auth_users").find((user) => user.id === "auth-carla")?.password).toBe(body.temporaryPassword);
+    expect(response.status).toBe(400);
   });
 
   test("desactiva una cuenta", async () => {
