@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, KeyRound, LoaderCircle, RefreshCw, UserPlus } from "lucide-react";
+import { ArrowLeft, ChevronDown, KeyRound, LoaderCircle, RefreshCw, UserPlus } from "lucide-react";
 import { isPasswordStrong, PASSWORD_RULES } from "@/lib/password";
 
 type ApiFetch = (path: string, init?: RequestInit) => Promise<Record<string, unknown>>;
@@ -82,6 +82,7 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [form, setForm] = useState<FormState | null>(null);
+  const [areasOpen, setAreasOpen] = useState(false);
   const [nowMs, setNowMs] = useState(0);
 
   const load = useCallback(async () => {
@@ -114,11 +115,13 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
 
   function openCreate() {
     setNotice("");
+    setAreasOpen(false);
     setForm({ ...emptyForm });
   }
 
   function openEdit(operator: OperatorRow) {
     setNotice("");
+    setAreasOpen(false);
     const { firstName, lastName } = splitName(operator.name);
     setForm({
       mode: "edit",
@@ -239,7 +242,7 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
 
       {form ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl">
+          <div className="max-h-[calc(100vh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl">
             <p className="text-sm font-bold text-zinc-800">{form.mode === "create" ? "Nuevo usuario" : "Editar usuario"}</p>
             <div className="mt-4 grid gap-3">
               {form.mode === "create" ? (
@@ -339,16 +342,25 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
               </div>
 
               {form.role === "operator" ? (
-                <div className="rounded-xl border border-zinc-200 p-3">
-                  <p className="mb-2 text-xs font-semibold text-zinc-700">Áreas</p>
-                  <div className="grid max-h-44 grid-cols-2 gap-1 overflow-y-auto">
-                    {areas.map((area) => (
-                      <label key={area.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50">
-                        <input type="checkbox" checked={form.areas.includes(area.id)} onChange={() => toggleArea(area.id)} />
-                        {area.name}
-                      </label>
-                    ))}
-                  </div>
+                <div className="overflow-hidden rounded-xl border border-zinc-200">
+                  <button
+                    type="button"
+                    onClick={() => setAreasOpen((value) => !value)}
+                    className="flex h-11 w-full items-center justify-between px-3 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
+                  >
+                    <span>Áreas {form.areas.length ? `(${form.areas.length})` : ""}</span>
+                    <ChevronDown size={16} className={`text-zinc-400 transition-transform ${areasOpen ? "rotate-180" : ""}`} />
+                  </button>
+                  {areasOpen ? (
+                    <div className="grid max-h-44 grid-cols-2 gap-1 overflow-y-auto border-t border-zinc-100 p-2">
+                      {areas.map((area) => (
+                        <label key={area.id} className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-zinc-700 hover:bg-zinc-50">
+                          <input type="checkbox" checked={form.areas.includes(area.id)} onChange={() => toggleArea(area.id)} />
+                          {area.name}
+                        </label>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
               ) : null}
 

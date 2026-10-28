@@ -6,6 +6,8 @@ Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el h
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- Restauración de versiones restringida a admindev (BOT_CCS_RESTORE_USERS): historial + endpoint restore solo para ese usuario; /api/me expone permissions.restore.
+- UI panel: accesos de administración agrupados en desplegable "Administración"; selector de áreas del alta/edición de usuarios desplegable; modal con scroll interno adaptado a la altura de pantalla.
 - Panel Usuarios: contraseña escrita por admin (mín 8, mayúscula, minúscula, número; sin símbolo), Nombre+Apellido separados, username único (409 si se repite), cambio forzado en primer acceso y tras reset. Migración 010 (`operators.password_change_required`), ruta `POST /api/me/password`, login acepta solo username, selector de datos muestra "Nombre (username)". 387 pruebas + lint OK.
 - Fix mensaje "more than one relationship ... 'conversations' and 'operators'" en detalle de conversación: messages/route.ts desambigua el embed con la FK (`operators!conversations_assigned_operator_id_fkey`); desde migración 006 hay 2 FK a operators (assigned_operator_id + resolved_by).
 - Derivación global "conectado → menos casos" (reemplaza "menos ocupado"): areas.ts suma loadConnectedAreaIds (operators+operator_areas, last_seen_at en 90 s); buildAreaPatch prioriza conectadas y luego pickLeastBusyArea; sin conectadas → todas.

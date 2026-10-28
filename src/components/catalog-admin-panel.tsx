@@ -332,7 +332,7 @@ function editorItems(category: Category, catalog: ManagedCatalog): EditorItem[] 
   return [...directItems, ...messageItems];
 }
 
-export function CatalogAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBack: () => void }) {
+export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: ApiFetch; onBack: () => void; canRestore: boolean }) {
   const [state, setState] = useState<AdminState | null>(null);
   const [catalog, setCatalog] = useState<ManagedCatalog | null>(null);
   const [category, setCategory] = useState<Category>("specialties");
@@ -627,10 +627,12 @@ export function CatalogAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; on
               <li><strong className="text-zinc-800">4. Publicá.</strong> Recién entonces el bot usa el contenido nuevo.</li>
             </ol>
           </div>
-          <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
-            <p className="mb-3 flex items-center gap-2 text-sm font-bold text-[#173b35]"><History size={16} />Historial</p>
-            <div className="space-y-2">{state?.history.filter((version) => version.status !== "draft").slice(0, 6).map((version) => <div key={version.id} className="flex items-center justify-between gap-2 rounded-xl bg-zinc-50 p-2.5"><div><p className="text-sm font-bold">Versión {version.version}</p><p className="text-[11px] text-zinc-500">{new Date(version.published_at || version.updated_at).toLocaleString("es-AR")}</p></div>{version.status === "archived" ? <button disabled={busy} onClick={() => restore(version.id)} className="rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs font-bold text-[#176b5a]">Restaurar</button> : <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700"><Send size={12} />Activa</span>}</div>)}</div>
-          </div>
+          {canRestore ? (
+            <div className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+              <p className="mb-3 flex items-center gap-2 text-sm font-bold text-[#173b35]"><History size={16} />Historial</p>
+              <div className="space-y-2">{state?.history.filter((version) => version.status !== "draft").slice(0, 6).map((version) => <div key={version.id} className="flex items-center justify-between gap-2 rounded-xl bg-zinc-50 p-2.5"><div><p className="text-sm font-bold">Versión {version.version}</p><p className="text-[11px] text-zinc-500">{new Date(version.published_at || version.updated_at).toLocaleString("es-AR")}</p></div>{version.status === "archived" ? <button disabled={busy} onClick={() => restore(version.id)} className="rounded-lg border border-zinc-200 bg-white px-2 py-1 text-xs font-bold text-[#176b5a]">Restaurar</button> : <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-700"><Send size={12} />Activa</span>}</div>)}</div>
+            </div>
+          ) : null}
         </aside>
       </div>
     </main>
