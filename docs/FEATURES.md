@@ -67,7 +67,7 @@ El login admite el nombre de usuario (sin dominio) o el email completo: si no tr
 - Teléfonos detectados y mostrados junto al bloque propietario.
 - Estados claros: cambios sin guardar, borrador guardado, pendiente de revisión y publicado.
 - Revisión persistida inmediatamente cuando el borrador está guardado.
-- Historial y restauración de versiones.
+- Historial y restauración de versiones, exclusivo para `admindev` (configurable con `BOT_CCS_RESTORE_USERS`).
 - Publicación sin build ni reinicio.
 
 ## Límites Actuales

@@ -27,6 +27,8 @@ Las variables NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY se usan d
 
 `BOT_CCS_ADMIN_USERS` (default `admin,admindev`) define qué cuentas admin acceden a los paneles de administración (Banco de respuestas, Usuarios, Panel de datos); los usernames se separan con coma. Para rotar o agregar administradores, editar esta variable en runtime.env y recrear web con `docker compose --env-file C:/ProgramData/BotCCS/deploy.env up -d --no-build --force-recreate --wait web`; un simple restart no vuelve a leer env_file. Desde el 27/10/2026 está definida explícitamente como `admin,admindev` en el archivo privado y verificada en el contenedor.
 
+`BOT_CCS_RESTORE_USERS` (default `admindev`) define qué cuentas pueden ver el historial y restaurar versiones del Banco de respuestas.
+
 ## Construcción y ejecución
 
 ~~~powershell

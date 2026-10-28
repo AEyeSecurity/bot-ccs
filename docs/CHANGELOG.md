@@ -2,6 +2,14 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Pull y despliegue de 02227fc — 28 de octubre de 2026
+
+Integrados paneles administrativos desplegables y restricción del historial/restauración del catálogo a BOT_CCS_RESTORE_USERS (valor efectivo admindev por default). Conflictos documentales resueltos conservando historial del servidor e instrucciones de recreación para env_file. Sin migraciones ni cambios de catálogo o credenciales.
+
+391 pruebas, lint y build aprobados en Compose. Primer ensayo: 16/17 HTTP, un timeout Cloudflare 522 de Supabase en telemedicina. Repetición completa aprobada a las 18:33 UTC: 391 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes en el ensayo final. Transporte mock sobre Supabase compartido; workflow temporal retirado e instancia detenida, reportes en volumen.
+
+Web recreada con pull-02227fc aplicada como docker-migration, imagen cotejada y healthy. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. BOT_CCS_ADMIN_USERS preservada; restore sin sesión HTTP401, sin restaurar versiones reales. Mantenimiento saludable y túnel activo. Imagen anterior before-02227fc-20261028 conservada. Validación visual manual con sesión pendiente; sin WhatsApp real ni reinicio Windows.
+
 ## Pull y despliegue de 78001f2 — 28 de octubre de 2026
 
 Integrado origin/main preservando el historial local en MEMORY. Aplicada únicamente 010_password_change_required.sql en transacción con lock_timeout de 10 s; verificada operators.password_change_required boolean NOT NULL DEFAULT false. No se modificaron contraseñas reales ni se forzó el cambio a cuentas existentes; el flujo lo activa en altas y resets. Sin seeds ni cambios de catálogo.
@@ -62,6 +70,8 @@ Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout d
 
 ## 2026-10-28
 
+- Restauración de versiones restringida a `admindev` (configurable con `BOT_CCS_RESTORE_USERS`): el "Historial" del Banco de respuestas y el endpoint `POST /api/admin/catalog/restore` solo están disponibles para ese usuario; `/api/me` expone `permissions.restore`. Pruebas: `catalog-restore-route.test.ts` (2) y `auth.test.ts` ampliado; 391 pruebas y lint OK.
+- Panel: los accesos de administración (Banco de respuestas, Usuarios, Panel de datos) se agrupan en un desplegable "Administración"; en el alta/edición de usuarios el selector de áreas también es desplegable; y el modal se adapta a la altura de pantalla con scroll interno para no perder el botón de guardar.
 - Alta de usuarios desde la web con contraseña segura y cambio forzado: el panel "Usuarios" ahora pide Nombre y Apellido por separado y una contraseña escrita por el admin (mín 8 caracteres, mayúscula, minúscula y número, con confirmación y generador opcional); el login (username) es único y se rechaza con `409` si se repite. Migración `010_password_change_required.sql` agrega `operators.password_change_required`; el primer acceso y los resets exigen elegir una contraseña nueva (`POST /api/me/password`). El login acepta solo el username (sin dominio). El selector del panel de datos muestra `Nombre (username)` para identificar sin ambigüedad. Pruebas: `admin-operators-route.test.ts` ampliado y `change-password-route.test.ts` nuevo; 387 pruebas y lint OK.
 - Corrección: `GET /api/conversations/[id]/messages` fallaba con "Could not embed because more than one relationship was found for 'conversations' and 'operators'" desde la migración 006 (segunda FK `resolved_by` hacia `operators`). Se desambiguó el embed con el nombre de la FK: `assigned_operator:operators!conversations_assigned_operator_id_fkey(...)`.
 

@@ -34,6 +34,13 @@ export function getPanelAdminUsernames() {
     .filter(Boolean);
 }
 
+export function getRestoreUsernames() {
+  return (optional("BOT_CCS_RESTORE_USERS") || "admindev")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+}
+
 export function getServerEnv() {
   return {
     supabaseUrl: requiredEnv("NEXT_PUBLIC_SUPABASE_URL"),

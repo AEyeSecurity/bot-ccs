@@ -1,4 +1,4 @@
-import { canAccessAdminPanels } from "@/lib/auth";
+import { canAccessAdminPanels, canRestoreVersions } from "@/lib/auth";
 import type { Operator } from "@/lib/domain";
 
 function operator(overrides: Partial<Operator> = {}): Operator {
@@ -14,10 +14,13 @@ function operator(overrides: Partial<Operator> = {}): Operator {
 }
 
 const original = process.env.BOT_CCS_ADMIN_USERS;
+const originalRestore = process.env.BOT_CCS_RESTORE_USERS;
 
 afterEach(() => {
   if (original === undefined) delete process.env.BOT_CCS_ADMIN_USERS;
   else process.env.BOT_CCS_ADMIN_USERS = original;
+  if (originalRestore === undefined) delete process.env.BOT_CCS_RESTORE_USERS;
+  else process.env.BOT_CCS_RESTORE_USERS = originalRestore;
 });
 
 describe("canAccessAdminPanels", () => {
@@ -38,5 +41,18 @@ describe("canAccessAdminPanels", () => {
     process.env.BOT_CCS_ADMIN_USERS = "foo,bar";
     expect(canAccessAdminPanels(operator({ email: "foo@bot-ccs.local" }))).toBe(true);
     expect(canAccessAdminPanels(operator({ email: "admin@bot-ccs.local" }))).toBe(false);
+  });
+});
+
+describe("canRestoreVersions", () => {
+  test("permite solo a admindev por defecto", () => {
+    expect(canRestoreVersions(operator({ email: "admindev@bot-ccs.local" }))).toBe(true);
+    expect(canRestoreVersions(operator({ email: "admin@bot-ccs.local" }))).toBe(false);
+  });
+
+  test("respeta la lista configurada por env", () => {
+    process.env.BOT_CCS_RESTORE_USERS = "admin";
+    expect(canRestoreVersions(operator({ email: "admin@bot-ccs.local" }))).toBe(true);
+    expect(canRestoreVersions(operator({ email: "admindev@bot-ccs.local" }))).toBe(false);
   });
 });

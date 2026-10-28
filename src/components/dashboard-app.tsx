@@ -4,6 +4,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "re
 import {
   BarChart3,
   Bot,
+  ChevronDown,
   ChevronLeft,
   CheckCircle2,
   ClipboardList,
@@ -128,6 +129,7 @@ export function DashboardApp() {
   const [session, setSession] = useState<Session | null>(null);
   const [operator, setOperator] = useState<Operator | null>(null);
   const [canAdmin, setCanAdmin] = useState(false);
+  const [canRestore, setCanRestore] = useState(false);
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
@@ -146,6 +148,7 @@ export function DashboardApp() {
   const [loading, setLoading] = useState(true);
   const [nowMs, setNowMs] = useState(0);
   const [view, setView] = useState<"conversations" | "catalog" | "users" | "analytics">("conversations");
+  const [adminOpen, setAdminOpen] = useState(false);
   const [confirmClose, setConfirmClose] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const accessToken = session?.access_token || "";
@@ -177,6 +180,7 @@ export function DashboardApp() {
       if (!response.ok) throw new Error(data.error || "No autorizado");
       setOperator(data.operator);
       setCanAdmin(Boolean(data.permissions?.admin));
+      setCanRestore(Boolean(data.permissions?.restore));
     },
     [],
   );
@@ -222,6 +226,7 @@ export function DashboardApp() {
       setSession(nextSession);
       setOperator(null);
       setCanAdmin(false);
+      setCanRestore(false);
       if (nextSession) {
         loadMe(nextSession).catch((error) =>
           setAuthError(error instanceof Error ? error.message : "No autorizado"),
@@ -514,7 +519,7 @@ export function DashboardApp() {
         : "Responder";
 
   if (view === "catalog" && canAdmin) {
-    return <CatalogAdminPanel apiFetch={apiFetch} onBack={() => setView("conversations")} />;
+    return <CatalogAdminPanel apiFetch={apiFetch} onBack={() => setView("conversations")} canRestore={canRestore} />;
   }
 
   if (view === "users" && canAdmin) {
@@ -556,15 +561,26 @@ export function DashboardApp() {
           </div>
           {canAdmin ? (
             <div className="mb-3 grid gap-1">
-              <button onClick={() => setView("catalog")} className="flex h-10 w-full items-center gap-2 rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]">
-                <Database size={16} /> Banco de respuestas
+              <button
+                onClick={() => setAdminOpen((value) => !value)}
+                className="flex h-10 w-full items-center justify-between rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]"
+              >
+                <span className="flex items-center gap-2"><ShieldCheck size={16} /> Administración</span>
+                <ChevronDown size={16} className={`transition-transform ${adminOpen ? "rotate-180" : ""}`} />
               </button>
-              <button onClick={() => setView("users")} className="flex h-10 w-full items-center gap-2 rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]">
-                <Users size={16} /> Usuarios
-              </button>
-              <button onClick={() => setView("analytics")} className="flex h-10 w-full items-center gap-2 rounded-xl bg-[#173b35] px-3 text-sm font-semibold text-white transition hover:bg-[#176b5a]">
-                <BarChart3 size={16} /> Panel de datos
-              </button>
+              {adminOpen ? (
+                <div className="grid gap-1 rounded-xl border border-zinc-200 bg-zinc-50 p-1">
+                  <button onClick={() => setView("catalog")} className="flex h-10 w-full items-center gap-2 rounded-lg px-3 text-sm font-semibold text-zinc-700 transition hover:bg-white hover:text-[#176b5a]">
+                    <Database size={16} /> Banco de respuestas
+                  </button>
+                  <button onClick={() => setView("users")} className="flex h-10 w-full items-center gap-2 rounded-lg px-3 text-sm font-semibold text-zinc-700 transition hover:bg-white hover:text-[#176b5a]">
+                    <Users size={16} /> Usuarios
+                  </button>
+                  <button onClick={() => setView("analytics")} className="flex h-10 w-full items-center gap-2 rounded-lg px-3 text-sm font-semibold text-zinc-700 transition hover:bg-white hover:text-[#176b5a]">
+                    <BarChart3 size={16} /> Panel de datos
+                  </button>
+                </div>
+              ) : null}
             </div>
           ) : null}
           <div className="mb-3 flex h-10 items-center gap-2 rounded-xl border border-zinc-200 bg-zinc-50 px-3 transition focus-within:border-[#176b5a] focus-within:bg-white focus-within:ring-4 focus-within:ring-emerald-50">

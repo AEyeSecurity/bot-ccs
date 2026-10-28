@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { createAdminSupabaseClient } from "./supabase";
-import { getPanelAdminUsernames } from "./env";
+import { getPanelAdminUsernames, getRestoreUsernames } from "./env";
 import type { Operator } from "./domain";
 import { loadOperatorAreaIds } from "./areas";
 
@@ -55,6 +55,18 @@ export function canAccessAdminPanels(operator: Operator) {
 export function requireAdminPanels(operator: Operator) {
   if (!canAccessAdminPanels(operator)) {
     throw Object.assign(new Error("Administrator access required"), { status: 403 });
+  }
+  return operator;
+}
+
+export function canRestoreVersions(operator: Operator) {
+  const username = (operator.email || "").split("@")[0].toLowerCase();
+  return getRestoreUsernames().includes(username);
+}
+
+export function requireRestoreVersions(operator: Operator) {
+  if (!canRestoreVersions(operator)) {
+    throw Object.assign(new Error("Solo el administrador autorizado puede restaurar versiones"), { status: 403 });
   }
   return operator;
 }

@@ -205,3 +205,11 @@ Integrado origin/main preservando el historial local en MEMORY. Aplicada únicam
 Build, lint y 387 pruebas aprobados en Compose. Matriz final 18:15 UTC: 387 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. Ensayo mock con Supabase compartido; workflow temporal retirado e instancia detenida, reportes conservados en volumen.
 
 Web recreada con pull-78001f2 aplicada como docker-migration, imagen cotejada y estado healthy. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. POST /api/me/password sin sesión devuelve 401; BOT_CCS_ADMIN_USERS preservada. Mantenimiento saludable y túnel activo. Imagen anterior before-78001f2-20261028 conservada. Pendiente prueba manual del flujo de usuario con cuenta autorizada; sin WhatsApp real ni reinicio Windows.
+
+## Pull y despliegue de 02227fc — 28 de octubre de 2026
+
+Integrados paneles administrativos desplegables y restricción del historial/restauración del catálogo a BOT_CCS_RESTORE_USERS (valor efectivo admindev por default). Conflictos documentales resueltos conservando historial del servidor e instrucciones de recreación para env_file. Sin migraciones ni cambios de catálogo o credenciales.
+
+391 pruebas, lint y build aprobados en Compose. Primer ensayo: 16/17 HTTP, un timeout Cloudflare 522 de Supabase en telemedicina. Repetición completa aprobada a las 18:33 UTC: 391 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes en el ensayo final. Transporte mock sobre Supabase compartido; workflow temporal retirado e instancia detenida, reportes en volumen.
+
+Web recreada con pull-02227fc aplicada como docker-migration, imagen cotejada y healthy. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. BOT_CCS_ADMIN_USERS preservada; restore sin sesión HTTP401, sin restaurar versiones reales. Mantenimiento saludable y túnel activo. Imagen anterior before-02227fc-20261028 conservada. Validación visual manual con sesión pendiente; sin WhatsApp real ni reinicio Windows.
