@@ -6,6 +6,7 @@ Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el h
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- Panel Usuarios: contraseña escrita por admin (mín 8, mayúscula, minúscula, número; sin símbolo), Nombre+Apellido separados, username único (409 si se repite), cambio forzado en primer acceso y tras reset. Migración 010 (`operators.password_change_required`), ruta `POST /api/me/password`, login acepta solo username, selector de datos muestra "Nombre (username)". 387 pruebas + lint OK.
 - Fix mensaje "more than one relationship ... 'conversations' and 'operators'" en detalle de conversación: messages/route.ts desambigua el embed con la FK (`operators!conversations_assigned_operator_id_fkey`); desde migración 006 hay 2 FK a operators (assigned_operator_id + resolved_by).
 - Derivación global "conectado → menos casos" (reemplaza "menos ocupado"): areas.ts suma loadConnectedAreaIds (operators+operator_areas, last_seen_at en 90 s); buildAreaPatch prioriza conectadas y luego pickLeastBusyArea; sin conectadas → todas.
 - Migraciones 008 (Clínica Médica/Médicos clínicos → Pasaje + Anexo) y 009 (7 servicios nuevos + Internación → Guardia).
@@ -21,7 +22,7 @@ Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado po
 - Fixture de pruebas (data/bot-catalog-initial.json) incluye los 7 servicios y ecografiaSelector, pero NO Medicina Nuclear (agregada solo en Supabase vía script).
 
 ## Pendientes y siguiente paso
-- EN SERVIDOR: git pull + rebuild; aplicar migraciones 008/009; ejecutar add-servicios-sin-area.mjs --apply, enable-medicina-nuclear.mjs --apply y fix-direccion-dermatologo.mjs --apply; reiniciar web.
+- EN SERVIDOR: git pull + rebuild; aplicar migraciones 008/009/010; ejecutar add-servicios-sin-area.mjs --apply, enable-medicina-nuclear.mjs --apply y fix-direccion-dermatologo.mjs --apply; reiniciar web.
 - Confirmar con cliente (NOTAS 1-31): mensaje de Catullo, nombre del dermatólogo, área de Internación (Q31), mensajes pendientes (Q29), cierre de Medicina Clínica (Q30).
 - DIFERIDO: derivación manual entre operadores/áreas; identificación de máquina (UUID+IP).
 - Previo a uso real: WhatsApp real, reinicio del host, retirar admindev, rotar contraseña admin "Tareas".

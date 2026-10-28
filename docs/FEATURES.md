@@ -1,6 +1,6 @@
 # Funcionalidades Implementadas
 
-El login admite los alias `admin` y `admindev`, además del email completo; permisos y estado activo se comprueban mediante Supabase Auth y `operators`. `admindev` es una cuenta administrativa temporal de desarrollo que debe retirarse antes del uso con usuarios reales, según OPERATIONS.md.
+El login admite el nombre de usuario (sin dominio) o el email completo: si no trae `@` se interpreta como `<usuario>@bot-ccs.local`; permisos y estado activo se comprueban mediante Supabase Auth y `operators`. `admindev` es una cuenta administrativa temporal de desarrollo que debe retirarse antes del uso con usuarios reales, según OPERATIONS.md.
 
 ## Atención Al Paciente
 
@@ -36,7 +36,8 @@ El login admite los alias `admin` y `admindev`, además del email completo; perm
 - Alta de usuarios por línea de comandos: `npm run operator:create` (ver OPERATIONS).
 - Estado de resolución por conversación: `abierta`, `pendiente` o `resuelta`, con botón de cambio y filtro propio (entrega 2).
 - Filtro por rango de fechas (desde/hasta) en la bandeja.
-- Alta y edición de usuarios desde la web (admin): crear, activar/desactivar, asignar áreas y resetear contraseña con temporal mostrada una sola vez.
+- Alta y edición de usuarios desde la web (admin): crear, activar/desactivar, asignar áreas y resetear contraseña. La contraseña la escribe el admin con requisitos (mínimo 8 caracteres, una mayúscula, una minúscula y un número); el nombre de usuario (login) es único y se rechaza si ya existe. El nombre visible se compone de "Nombre" y "Apellido".
+- Cambio de contraseña forzado en el primer acceso y tras un reset: al entrar se pide elegir una contraseña nueva antes de ver el panel.
 - Presencia: latido del panel cada 30 s; el listado de usuarios muestra "conectado" según el último latido (90 s).
 - Panel de datos (admin): análisis global o por usuario con rango de fechas — volumen, resolución, casos atendidos (participación + intervenciones + mensajes), tiempos de primera respuesta/resolución/cola, conectados y derivación por gestión y área.
 - Derivación conectado → menos casos: si una consulta cae en varias áreas, se asigna priorizando las áreas con operador conectado (último latido en 90 s) y, entre ellas, la de menor ocupación (conversaciones abiertas con resolución `abierta`); empate al azar. Sin conectados, deriva a la menos ocupada.

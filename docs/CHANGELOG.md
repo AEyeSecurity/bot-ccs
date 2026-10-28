@@ -4,6 +4,7 @@ Este archivo registra cambios funcionales y operativos. A partir de la creación
 
 ## 2026-10-28
 
+- Alta de usuarios desde la web con contraseña segura y cambio forzado: el panel "Usuarios" ahora pide Nombre y Apellido por separado y una contraseña escrita por el admin (mín 8 caracteres, mayúscula, minúscula y número, con confirmación y generador opcional); el login (username) es único y se rechaza con `409` si se repite. Migración `010_password_change_required.sql` agrega `operators.password_change_required`; el primer acceso y los resets exigen elegir una contraseña nueva (`POST /api/me/password`). El login acepta solo el username (sin dominio). El selector del panel de datos muestra `Nombre (username)` para identificar sin ambigüedad. Pruebas: `admin-operators-route.test.ts` ampliado y `change-password-route.test.ts` nuevo; 387 pruebas y lint OK.
 - Corrección: `GET /api/conversations/[id]/messages` fallaba con "Could not embed because more than one relationship was found for 'conversations' and 'operators'" desde la migración 006 (segunda FK `resolved_by` hacia `operators`). Se desambiguó el embed con el nombre de la FK: `assigned_operator:operators!conversations_assigned_operator_id_fkey(...)`.
 
 ## 2026-10-27

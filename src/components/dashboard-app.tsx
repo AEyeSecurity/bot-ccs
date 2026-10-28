@@ -23,6 +23,7 @@ import type { Session } from "@supabase/supabase-js";
 import { createBrowserSupabaseClient } from "@/lib/supabase";
 import type { CaseRecord, ConversationListItem, Message, Operator } from "@/lib/domain";
 import { RESOLUTION_LABELS, RESOLUTION_STATUSES, type ResolutionStatus } from "@/lib/domain";
+import { isPasswordStrong, PASSWORD_RULES } from "@/lib/password";
 import { CatalogAdminPanel } from "@/components/catalog-admin-panel";
 import { UsersAdminPanel } from "@/components/users-admin-panel";
 import { AnalyticsPanel } from "@/components/analytics-panel";
@@ -130,6 +131,9 @@ export function DashboardApp() {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordBusy, setPasswordBusy] = useState(false);
   const [resolutionFilter, setResolutionFilter] = useState<"all" | ResolutionStatus>("all");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -272,9 +276,7 @@ export function DashboardApp() {
     setAuthError("");
     setBusy(true);
     const normalizedLogin = loginId.trim().toLowerCase();
-    const email = ["admin", "admindev"].includes(normalizedLogin)
-      ? `${normalizedLogin}@bot-ccs.local`
-      : normalizedLogin;
+    const email = normalizedLogin.includes("@") ? normalizedLogin : `${normalizedLogin}@bot-ccs.local`;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
     if (error) setAuthError(error.message);
@@ -287,6 +289,25 @@ export function DashboardApp() {
     setCanAdmin(false);
     setDetail(null);
     setSelectedId(null);
+  }
+
+  async function changePassword(event: FormEvent) {
+    event.preventDefault();
+    setAuthError("");
+    setPasswordBusy(true);
+    try {
+      await apiFetch("/api/me/password", {
+        method: "POST",
+        body: JSON.stringify({ password: newPassword }),
+      });
+      setOperator((current) => (current ? { ...current, password_change_required: false } : current));
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (changeError) {
+      setAuthError(changeError instanceof Error ? changeError.message : "No se pudo cambiar la contraseña");
+    } finally {
+      setPasswordBusy(false);
+    }
   }
 
   async function action(path: string) {
@@ -358,6 +379,69 @@ export function DashboardApp() {
 
   if (loading) {
     return <div className="grid h-screen place-items-center text-sm text-zinc-600">Cargando</div>;
+  }
+
+  if (session && operator?.password_change_required) {
+    const valid = isPasswordStrong(newPassword) && newPassword === confirmPassword;
+    return (
+      <main className="login-shell grid h-screen place-items-center px-4">
+        <form
+          onSubmit={changePassword}
+          className="w-full max-w-[390px] rounded-3xl border border-white/70 bg-white/90 p-7 shadow-2xl shadow-teal-950/10 backdrop-blur"
+        >
+          <div className="mb-8 flex items-center gap-3">
+            <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#176b5a] text-white shadow-lg shadow-emerald-900/20">
+              <ShieldCheck size={21} />
+            </div>
+            <div>
+              <p className="text-lg font-bold tracking-tight text-[#173b35]">BOT CCS</p>
+              <p className="text-sm text-zinc-500">Clínica Cruz del Sur</p>
+            </div>
+          </div>
+          <h1 className="mb-1 text-2xl font-bold tracking-tight text-zinc-950">Cambiar contraseña</h1>
+          <p className="mb-6 text-sm leading-6 text-zinc-500">Por seguridad, debés elegir una contraseña nueva antes de continuar.</p>
+          <label className="mb-4 block text-sm font-semibold text-zinc-700">
+            Nueva contraseña
+            <input
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              type="password"
+              autoComplete="new-password"
+              className="mt-2 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 outline-none transition focus:border-[#176b5a] focus:ring-4 focus:ring-emerald-100"
+              required
+            />
+          </label>
+          <label className="mb-4 block text-sm font-semibold text-zinc-700">
+            Confirmar contraseña
+            <input
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              type="password"
+              autoComplete="new-password"
+              className="mt-2 h-11 w-full rounded-xl border border-zinc-200 bg-white px-3 outline-none transition focus:border-[#176b5a] focus:ring-4 focus:ring-emerald-100"
+              required
+            />
+          </label>
+          <ul className="mb-4 space-y-1 text-xs">
+            {PASSWORD_RULES.map((rule) => {
+              const ok = rule.test(newPassword);
+              return (
+                <li key={rule.label} className={ok ? "text-emerald-700" : "text-zinc-400"}>
+                  {ok ? "✓" : "○"} {rule.label}
+                </li>
+              );
+            })}
+          </ul>
+          {authError ? <p className="mb-4 rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">{authError}</p> : null}
+          <button
+            disabled={passwordBusy || !valid}
+            className="h-11 w-full rounded-xl bg-[#176b5a] px-4 text-sm font-semibold text-white shadow-lg shadow-emerald-900/15 transition hover:bg-[#125747] disabled:opacity-40"
+          >
+            {passwordBusy ? "Guardando" : "Guardar contraseña"}
+          </button>
+        </form>
+      </main>
+    );
   }
 
   if (!session || !operator) {

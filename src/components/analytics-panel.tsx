@@ -16,7 +16,7 @@ type Report = {
   presence: { connected: number | boolean };
 };
 
-type OperatorOption = { id: string; name: string; last_seen_at: string | null };
+type OperatorOption = { id: string; name: string; email: string; last_seen_at: string | null };
 
 function todayString() {
   const now = new Date();
@@ -121,7 +121,7 @@ export function AnalyticsPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBac
             >
               <option value="">Todos</option>
               {operators.map((operator) => (
-                <option key={operator.id} value={operator.id}>{operator.name}</option>
+                <option key={operator.id} value={operator.id}>{operator.name} ({operator.email.split("@")[0]})</option>
               ))}
             </select>
           </div>
