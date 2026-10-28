@@ -179,3 +179,11 @@ Web y maintenance recreados y saludables; identificador de imagen web cotejado c
 ## Pull de 0a6e502 — 28 de octubre de 2026
 
 Integrados los commits nuevos de origin/main conservando los cambios locales del servidor. Conflictos documentales en MEMORY, CATALOG y CHANGELOG resueltos con el historial local y las novedades remotas. 381 pruebas herméticas, lint y build aprobados en Compose; imágenes pull-0a6e502. Esta sesión actualiza únicamente el checkout: producción continúa en 41b1774 con BOT_CCS_ADMIN_USERS explícita. Pendientes despliegue, migraciones 008/009, revisión/aplicación de scripts de catálogo y matriz HTTP/n8n. No se modificaron Supabase ni runtime.env ni se reiniciaron servicios.
+
+## Despliegue de 0a6e502 — 28 de octubre de 2026
+
+Aplicadas únicamente 008 y 009 junto con las transformaciones de add-servicios-sin-area, enable-medicina-nuclear y fix-direccion-dermatologo mediante pg en una transacción con lock_timeout de 10 s y bloqueo de catálogo. Incorporado ecografiaSelector, obligatorio en el esquema nuevo, con el texto del generador; sin fallback en runtime. Publicado v6 revisión 4 y borrador revisión 66, conservando sus otras ediciones; ambos validados y publicado con requireReviewed=true. Medicina Nuclear habilitada/revisada, siete servicios con placeholder, dirección corregida y dermatólogo Romero. Verificadas las doce reglas esperadas y ausencia de derivación clínica a Guardia. Sin seeds ni repetición de migraciones anteriores.
+
+Imagen pull-0a6e502 validada con 381 pruebas, lint y build en Compose. Matriz final 13:34 UTC: 381 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. Ensayo mock con Supabase compartido, workflow temporal retirado y web de validación detenida; evidencia en volumen.
+
+Aplicada como docker-migration; web y maintenance recreados saludables. Imagen web cotejada y BOT_CCS_ADMIN_USERS=admin,admindev preservada. Readiness local/público (ok=true, testInstance=false), inicio y vCards de Medicina Nuclear/laboratorio HTTP200; túnel activo. Imagen previa before-0a6e502-20261028 conservada. Reinicio limitado a los servicios del bot, sin reiniciar Windows ni enviar WhatsApp real.
