@@ -187,3 +187,7 @@ Aplicadas únicamente 008 y 009 junto con las transformaciones de add-servicios-
 Imagen pull-0a6e502 validada con 381 pruebas, lint y build en Compose. Matriz final 13:34 UTC: 381 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. Ensayo mock con Supabase compartido, workflow temporal retirado y web de validación detenida; evidencia en volumen.
 
 Aplicada como docker-migration; web y maintenance recreados saludables. Imagen web cotejada y BOT_CCS_ADMIN_USERS=admin,admindev preservada. Readiness local/público (ok=true, testInstance=false), inicio y vCards de Medicina Nuclear/laboratorio HTTP200; túnel activo. Imagen previa before-0a6e502-20261028 conservada. Reinicio limitado a los servicios del bot, sin reiniciar Windows ni enviar WhatsApp real.
+
+## Pull de c941712 — 28 de octubre de 2026
+
+Integrada la corrección del embed de operators en el detalle de conversación desde origin/main. Conflictos de MEMORY y CHANGELOG resueltos preservando despliegues locales. 381 pruebas herméticas, lint y build aprobados en Compose; imágenes pull-c941712. Solo se actualizó el checkout: producción sigue en 0a6e502, sin reinicios, migraciones ni cambios de catálogo en esta sesión. Despliegue y matriz HTTP/n8n de la corrección pendientes.

@@ -6,12 +6,15 @@ Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el h
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- Pull c941712 integrado el 28/10: fix del detalle de conversación, conflictos documentales resueltos; 381 pruebas/lint/build OK en Compose (pull-c941712). Producción sigue en 0a6e502; despliegue y matriz pendientes.
 - DESPLEGADO 0a6e502 el 28/10: 008/009 y transformaciones de los 3 scripts aplicadas con pg en una transacción y bloqueo de catálogo; agregado ecografiaSelector obligatorio desde texto del generador. Publicado v6 rev4/borrador rev66; resto preservado. 12 reglas verificadas. 381 pruebas/lint/build OK; matriz 13:34 UTC 17 HTTP/9 n8n, cero incidentes. Web/maintenance saludables; readiness local/público/inicio/2 vCards HTTP200. Imagen previa before-0a6e502-20261028; ensayo detenido/workflow retirado.
 - 27/10: BOT_CCS_ADMIN_USERS=admin,admindev definido explícitamente en runtime.env privado; web recreada healthy y variable cotejada en contenedor. Readiness público HTTP200, ok=true/testInstance=false. 374 pruebas, lint/build OK en tools; mismo acceso efectivo anterior.
 - DESPLEGADO 41b1774 el 26/10: imagen pull-41b1774 aplicada como docker-migration, web/maintenance recreados saludables. 374 pruebas, lint/build OK; matriz 22:29 UTC: 229 escenarios, 17 HTTP/9 n8n, cero incidentes. Readiness local/público/inicio/vCard HTTP200. Admins efectivos admin,admindev por default; ensayo detenido/workflow temporal retirado. Imagen anterior before-41b1774-20261026.
 - SERVIDOR 2026-10-21: 004 aplicada al Supabase productivo (único, sin proyecto de prueba; test.env/validation-tools.env comparten la base): 13 áreas, 63 reglas, 0 asociaciones. Medicina Nuclear agregada inicialmente como especialidad, corregida a estudio el 26/10.
 - Paneles admin restringidos a BOT_CCS_ADMIN_USERS (default admin,admindev): canAccessAdminPanels/requireAdminPanels en auth; /api/me expone permissions.admin; frontend usa canAdmin. Rutas /api/admin/* con requireAdminPanels.
 - Derivación al área menos ocupada: areas.ts suma loadAreaOccupation (conversaciones abiertas con resolución abierta) y pickLeastBusyArea (empate al azar); buildAreaPatch elige una sola área cuando hay varias.
+
+- Fix mensaje "more than one relationship ... 'conversations' and 'operators'" en detalle de conversación: messages/route.ts desambigua el embed con la FK (`operators!conversations_assigned_operator_id_fkey`); desde migración 006 hay 2 FK a operators (assigned_operator_id + resolved_by).
 - Derivación global "conectado → menos casos" (reemplaza "menos ocupado"): areas.ts suma loadConnectedAreaIds (operators+operator_areas, last_seen_at en 90 s); buildAreaPatch prioriza conectadas y luego pickLeastBusyArea; sin conectadas → todas.
 - Migraciones 008 (Clínica Médica/Médicos clínicos → Pasaje + Anexo) y 009 (7 servicios nuevos + Internación → Guardia).
 - Selector de ecografía: "ecografía" genérica → prompt con 5 tipos (mensaje ecografiaSelector) → deriva al estudio. bot-core detectEcografiaSelection + context "ecografia".

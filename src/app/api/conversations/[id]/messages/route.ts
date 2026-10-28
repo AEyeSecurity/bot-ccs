@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const { data: conversation, error: conversationError } = await supabase
       .from("conversations")
-      .select("*,contact:contacts(*),assigned_operator:operators(id,auth_user_id,name,email,role,is_active)")
+      .select("*,contact:contacts(*),assigned_operator:operators!conversations_assigned_operator_id_fkey(id,auth_user_id,name,email,role,is_active)")
       .eq("id", id)
       .single();
     if (conversationError) throw new Error(conversationError.message);

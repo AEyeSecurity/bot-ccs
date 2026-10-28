@@ -2,6 +2,10 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Pull de c941712 — 28 de octubre de 2026
+
+Integrada la corrección del embed de operators en el detalle de conversación desde origin/main. Conflictos de MEMORY y CHANGELOG resueltos preservando despliegues locales. 381 pruebas herméticas, lint y build aprobados en Compose; imágenes pull-c941712. Solo se actualizó el checkout: producción sigue en 0a6e502, sin reinicios, migraciones ni cambios de catálogo en esta sesión. Despliegue y matriz HTTP/n8n de la corrección pendientes.
+
 ## Despliegue de 0a6e502 — 28 de octubre de 2026
 
 Aplicadas únicamente 008 y 009 junto con las transformaciones de add-servicios-sin-area, enable-medicina-nuclear y fix-direccion-dermatologo mediante pg en una transacción con lock_timeout de 10 s y bloqueo de catálogo. Incorporado ecografiaSelector, obligatorio en el esquema nuevo, con el texto del generador; sin fallback en runtime. Publicado v6 revisión 4 y borrador revisión 66, conservando sus otras ediciones; ambos validados y publicado con requireReviewed=true. Medicina Nuclear habilitada/revisada, siete servicios con placeholder, dirección corregida y dermatólogo Romero. Verificadas las doce reglas esperadas y ausencia de derivación clínica a Guardia. Sin seeds ni repetición de migraciones anteriores.
@@ -41,6 +45,10 @@ Web y maintenance recreados saludables; readiness local/público (ok=true, testI
 Pull fast-forward e imágenes web/maintenance/tools reconstruidas en Compose. 365 pruebas sin fallos ni omisiones, lint y build aprobados; matriz aislada con transporte mock: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes. El ensayo comparte Supabase productivo; workflow temporal retirado e instancia detenida, reportes conservados en su volumen.
 
 Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout de 10 s, sin seeds ni repetir migraciones anteriores; verificadas las cuatro columnas nuevas de resolución y presencia. Web y maintenance recreados saludables; readiness local/público (ok=true, testInstance=false), inicio y vCard de laboratorio HTTP200. Cloudflared continúa activo. La imagen previa tenía contenido Docker faltante y no pudo etiquetarse ni copiarse; para recuperarla se requiere reconstruir el commit previo 91325bf. No se reinició Windows ni se probó WhatsApp real; validación manual de operadores pendiente.
+
+## 2026-10-28
+
+- Corrección: `GET /api/conversations/[id]/messages` fallaba con "Could not embed because more than one relationship was found for 'conversations' and 'operators'" desde la migración 006 (segunda FK `resolved_by` hacia `operators`). Se desambiguó el embed con el nombre de la FK: `assigned_operator:operators!conversations_assigned_operator_id_fkey(...)`.
 
 ## 2026-10-27
 
