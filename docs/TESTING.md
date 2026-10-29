@@ -221,3 +221,9 @@ Fusionado origin/main con los 11 commits locales del servidor, sin conflictos ni
 391 pruebas herméticas, lint y build aprobados en Compose. Matriz final 16:00 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n aprobados, cero fallos/omisiones/incidentes. Transporte mock sobre Supabase compartido; workflow temporal retirado e instancia de validación detenida; reportes en volumen.
 
 Web recreada healthy con merge-8f1f249 aplicada como docker-migration; imagen cotejada. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. Mantenimiento saludable. Imagen previa before-8f1f249-20261029. Pendiente prueba manual del guardado desde el panel con sesión; sin WhatsApp real ni reinicio Windows.
+
+## Despliegue de 25acc7f — 29 de octubre de 2026
+
+Pull fast-forward del borrado de usuarios con confirmación y protección de la propia cuenta. Build, lint y 394 pruebas aprobados en Compose. Matriz aislada finalizada 16:20 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero fallos/omisiones/incidentes. Transporte mock sobre Supabase compartido; workflow temporal retirado y ensayo detenido, reportes en volumen.
+
+Web recreada con pull-25acc7f como docker-migration, healthy e imagen cotejada. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. DELETE /api/admin/operators sin sesión HTTP401; sin borrar cuentas reales. Mantenimiento saludable y túnel activo. Imagen previa before-25acc7f-20261029 conservada. Sin migraciones ni cambios de catálogo. Pendiente comprobación visual con sesión; WhatsApp real y reinicio Windows siguen pendientes.

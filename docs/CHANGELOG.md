@@ -2,6 +2,12 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Despliegue de 25acc7f — 29 de octubre de 2026
+
+Pull fast-forward del borrado de usuarios con confirmación y protección de la propia cuenta. Build, lint y 394 pruebas aprobados en Compose. Matriz aislada finalizada 16:20 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero fallos/omisiones/incidentes. Transporte mock sobre Supabase compartido; workflow temporal retirado y ensayo detenido, reportes en volumen.
+
+Web recreada con pull-25acc7f como docker-migration, healthy e imagen cotejada. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. DELETE /api/admin/operators sin sesión HTTP401; sin borrar cuentas reales. Mantenimiento saludable y túnel activo. Imagen previa before-25acc7f-20261029 conservada. Sin migraciones ni cambios de catálogo. Pendiente comprobación visual con sesión; WhatsApp real y reinicio Windows siguen pendientes.
+
 ## Eliminar usuarios — 29 de octubre de 2026
 
 - `DELETE /api/admin/operators` (body `{ id }`): elimina el usuario y su cuenta de Supabase Auth (`auth.admin.deleteUser`), con protección para no eliminarse a uno mismo (`400`) y `404` si no existe. El panel Usuarios agrega el botón "Eliminar usuario" en el modo edición, con confirmación (`window.confirm`) antes de borrar. Pruebas: `admin-operators-route.test.ts` ampliado (13); lint OK.

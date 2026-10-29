@@ -11,6 +11,7 @@ Se creó la cuenta temporal `admindev@bot-ccs.local`, operador activo con rol `a
 ## Alta de usuarios de área
 
 - Desde la web (panel "Usuarios", admin): nombre (Nombre + Apellido), usuario (login único), contraseña escrita por el admin y áreas. La contraseña debe cumplir mínimo 8 caracteres, una mayúscula, una minúscula y un número; se rechaza un usuario (login) repetido. El usuario debe cambiarla en el primer acceso (y tras un reset), antes de entrar al panel.
+- Para eliminar un usuario: abrir su edición en Usuarios y confirmar "Eliminar usuario". Requiere acceso administrativo; no permite borrar la propia cuenta. Elimina también Supabase Auth; las referencias históricas se desvinculan según las FK. No usar cuentas reales para verificar el borrado.
 - Por CLI: `npm run operator:create -- --username cardiologia --name "Cardiología" --areas "Cardiología"`. Varias áreas se separan con coma. Para un admin: `--role admin` (sin áreas).
 - Requiere `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` o en el entorno. Ejecutar dentro del servicio Compose `tools` con las variables inyectadas.
 - Crea la cuenta en Supabase Auth con email `<usuario>@bot-ccs.local` (el login acepta solo el usuario), la registra en `operators` y asigna las áreas en `operator_areas`. Si ya existe, actualiza nombre, áreas y reactiva la cuenta, sin cambiar la contraseña.
