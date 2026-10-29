@@ -36,6 +36,7 @@ El login admite el nombre de usuario (sin dominio) o el email completo: si no tr
 - Alta de usuarios por línea de comandos: `npm run operator:create` (ver OPERATIONS).
 - Estado de resolución por conversación: `abierta`, `pendiente` o `resuelta`, con botón de cambio y filtro propio (entrega 2).
 - Filtro por rango de fechas (desde/hasta) en la bandeja.
+- El selector de áreas conserva los IDs al editar y envía los nombres al guardar (POST/PATCH), como exige la API de usuarios.
 - Alta y edición de usuarios desde la web (admin): crear, activar/desactivar, asignar áreas y resetear contraseña. La contraseña la escribe el admin con requisitos (mínimo 8 caracteres, una mayúscula, una minúscula y un número); el nombre de usuario (login) es único y se rechaza si ya existe. El nombre visible se compone de "Nombre" y "Apellido".
 - Cambio de contraseña forzado en el primer acceso y tras un reset: al entrar se pide elegir una contraseña nueva antes de ver el panel.
 - Presencia: latido del panel cada 30 s; el listado de usuarios muestra "conectado" según el último latido (90 s).

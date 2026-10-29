@@ -159,14 +159,17 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
     setNotice("");
     try {
       const name = `${form.firstName.trim()} ${form.lastName.trim()}`.trim();
+      const areaNames = form.areas
+        .map((id) => areas.find((area) => area.id === id)?.name)
+        .filter((value): value is string => Boolean(value));
       const body =
         form.mode === "create"
-          ? { username: form.username, name, password: form.password, role: form.role, areas: form.areas }
+          ? { username: form.username, name, password: form.password, role: form.role, areas: areaNames }
           : {
               id: form.id,
               name,
               role: form.role,
-              areas: form.areas,
+              areas: areaNames,
               is_active: form.is_active,
               reset_password: form.reset_password,
               ...(form.reset_password ? { password: form.password } : {}),

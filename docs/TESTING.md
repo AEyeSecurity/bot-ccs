@@ -213,3 +213,11 @@ Integrados paneles administrativos desplegables y restricción del historial/res
 391 pruebas, lint y build aprobados en Compose. Primer ensayo: 16/17 HTTP, un timeout Cloudflare 522 de Supabase en telemedicina. Repetición completa aprobada a las 18:33 UTC: 391 pruebas sin fallos/omisiones, 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero incidentes en el ensayo final. Transporte mock sobre Supabase compartido; workflow temporal retirado e instancia detenida, reportes en volumen.
 
 Web recreada con pull-02227fc aplicada como docker-migration, imagen cotejada y healthy. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. BOT_CCS_ADMIN_USERS preservada; restore sin sesión HTTP401, sin restaurar versiones reales. Mantenimiento saludable y túnel activo. Imagen anterior before-02227fc-20261028 conservada. Validación visual manual con sesión pendiente; sin WhatsApp real ni reinicio Windows.
+
+## Merge y despliegue de 8f1f249 — 29 de octubre de 2026
+
+Fusionado origin/main con los 11 commits locales del servidor, sin conflictos ni reescribir historial. El panel Usuarios convierte los IDs seleccionados en nombres al guardar, conforme al contrato POST/PATCH de la API. Sin migraciones ni cambios de catálogo o credenciales.
+
+391 pruebas herméticas, lint y build aprobados en Compose. Matriz final 16:00 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n aprobados, cero fallos/omisiones/incidentes. Transporte mock sobre Supabase compartido; workflow temporal retirado e instancia de validación detenida; reportes en volumen.
+
+Web recreada healthy con merge-8f1f249 aplicada como docker-migration; imagen cotejada. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. Mantenimiento saludable. Imagen previa before-8f1f249-20261029. Pendiente prueba manual del guardado desde el panel con sesión; sin WhatsApp real ni reinicio Windows.

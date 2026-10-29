@@ -2,6 +2,14 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Merge y despliegue de 8f1f249 — 29 de octubre de 2026
+
+Fusionado origin/main con los 11 commits locales del servidor, sin conflictos ni reescribir historial. El panel Usuarios convierte los IDs seleccionados en nombres al guardar, conforme al contrato POST/PATCH de la API. Sin migraciones ni cambios de catálogo o credenciales.
+
+391 pruebas herméticas, lint y build aprobados en Compose. Matriz final 16:00 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n aprobados, cero fallos/omisiones/incidentes. Transporte mock sobre Supabase compartido; workflow temporal retirado e instancia de validación detenida; reportes en volumen.
+
+Web recreada healthy con merge-8f1f249 aplicada como docker-migration; imagen cotejada. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. Mantenimiento saludable. Imagen previa before-8f1f249-20261029. Pendiente prueba manual del guardado desde el panel con sesión; sin WhatsApp real ni reinicio Windows.
+
 ## Pull y despliegue de 02227fc — 28 de octubre de 2026
 
 Integrados paneles administrativos desplegables y restricción del historial/restauración del catálogo a BOT_CCS_RESTORE_USERS (valor efectivo admindev por default). Conflictos documentales resueltos conservando historial del servidor e instrucciones de recreación para env_file. Sin migraciones ni cambios de catálogo o credenciales.

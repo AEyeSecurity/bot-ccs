@@ -1,11 +1,12 @@
 # Memoria de continuidad de BOT CCS
-Actualizada: 2026-10-28. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
+Actualizada: 2026-10-29. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
 Actualizar con cada cambio/trabajo y en su mismo commit; máximo 50 líneas, comprimir y reemplazar lo obsoleto.
 Guardar decisiones, recorrido reciente, validación y próximo paso; nunca contraseñas, tokens, pacientes ni logs.
 Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el historial en docs/CHANGELOG.md.
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- 29/10: merge de origin/main 8f1f249 con 11 commits locales, sin conflictos; Usuarios envía nombres de áreas al guardar. DESPLEGADO merge-8f1f249 como docker-migration: web healthy/imagen cotejada, readiness local/público/inicio/vCard HTTP200. 391 pruebas/lint/build OK; matriz 16:00 UTC 229 escenarios/17 HTTP/9 n8n, cero incidentes; workflow retirado y ensayo detenido. Imagen previa before-8f1f249-20261029. Sin migraciones/catálogo; siguiente: prueba manual de guardado de usuarios.
 - DESPLEGADO 02227fc el 28/10: paneles desplegables/restauración solo admindev (default), sin migraciones. 391 pruebas/lint/build OK; primer ensayo HTTP falló por Supabase 522, repetición completa 18:33 UTC 17 HTTP/9 n8n y cero incidentes. Web healthy/imagen cotejada, readiness local/público/inicio/vCard HTTP200; restore sin sesión 401. Imagen previa before-02227fc-20261028; ensayo detenido/workflow retirado.
 - DESPLEGADO 78001f2 el 28/10: pull fusionado con historial local, solo migración 010 aplicada/verificada en transacción (boolean NOT NULL default false); cuentas existentes conservadas. 387 pruebas/lint/build OK; matriz 18:15 UTC 17 HTTP/9 n8n, cero incidentes. Web recreada healthy, imagen cotejada; readiness local/público/inicio/vCard HTTP200, password sin sesión 401. Imagen anterior before-78001f2-20261028; ensayo detenido/workflow retirado. Pendiente prueba manual del flujo de contraseña.
 - DESPLEGADO c941712 el 28/10: web recreada con pull-c941712 como docker-migration e imagen cotejada. 381 pruebas/lint/build OK; matriz 16:11 UTC: 229 escenarios, 17 HTTP/9 n8n, cero incidentes. Embed corregido verificado en Supabase con limit(0), sin recuperar conversaciones. Readiness local/público/inicio/vCard HTTP200; maintenance saludable. Imagen anterior before-c941712-20261028; ensayo detenido/workflow retirado. Sin migraciones/cambios de catálogo.
