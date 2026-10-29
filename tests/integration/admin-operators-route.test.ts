@@ -6,7 +6,7 @@ const holder = vi.hoisted(() => ({
 
 vi.mock("@/lib/supabase", () => ({ createAdminSupabaseClient: () => holder.client }));
 
-import { GET, POST, PATCH } from "@/app/api/admin/operators/route";
+import { DELETE, GET, POST, PATCH } from "@/app/api/admin/operators/route";
 
 const CARDIOLOGIA = "area-cardiologia";
 const TAC = "area-tac";
@@ -144,5 +144,39 @@ describe("alta y edición de usuarios", () => {
     expect(response.status).toBe(200);
     const body = (await response.json()) as { operator: { area_ids: string[] } };
     expect(body.operator.area_ids).toEqual([]);
+  });
+});
+
+describe("eliminación de usuarios", () => {
+  test("elimina un usuario y su cuenta de autenticación", async () => {
+    const response = await DELETE(
+      request("/api/admin/operators", "token-auth-admin", {
+        method: "DELETE",
+        body: JSON.stringify({ id: "op-carla" }),
+      }),
+    );
+    expect(response.status).toBe(200);
+    expect(holder.client.table("operators").find((row) => row.id === "op-carla")).toBeUndefined();
+    expect(holder.client.table("auth_users").find((user) => user.id === "auth-carla")).toBeUndefined();
+  });
+
+  test("no permite eliminar la propia cuenta", async () => {
+    const response = await DELETE(
+      request("/api/admin/operators", "token-auth-admin", {
+        method: "DELETE",
+        body: JSON.stringify({ id: "op-admin" }),
+      }),
+    );
+    expect(response.status).toBe(400);
+  });
+
+  test("un usuario inexistente devuelve 404", async () => {
+    const response = await DELETE(
+      request("/api/admin/operators", "token-auth-admin", {
+        method: "DELETE",
+        body: JSON.stringify({ id: "no-existe" }),
+      }),
+    );
+    expect(response.status).toBe(404);
   });
 });

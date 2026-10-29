@@ -188,6 +188,28 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
     }
   }
 
+  async function remove() {
+    if (!form || form.mode !== "edit" || !form.id) return;
+    const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`.trim();
+    if (!window.confirm(`¿Seguro que querés eliminar a ${fullName}? Esta acción no se puede deshacer.`)) return;
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try {
+      await apiFetch("/api/admin/operators", {
+        method: "DELETE",
+        body: JSON.stringify({ id: form.id }),
+      });
+      setForm(null);
+      setNotice("Usuario eliminado");
+      await load();
+    } catch (removeError) {
+      setError(removeError instanceof Error ? removeError.message : "No se pudo eliminar");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <main className="catalog-shell min-h-screen bg-[#f5f7f3] text-zinc-900">
       <header className="sticky top-0 z-20 border-b border-emerald-950/10 bg-[#173b35] text-white shadow-lg shadow-emerald-950/10">
@@ -399,6 +421,15 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
               <button onClick={() => setForm(null)} className="h-9 text-sm font-semibold text-zinc-500 hover:text-zinc-700">
                 Cancelar
               </button>
+              {form.mode === "edit" ? (
+                <button
+                  disabled={busy}
+                  onClick={() => void remove()}
+                  className="mt-2 h-10 rounded-xl border border-rose-200 bg-rose-50 px-4 text-sm font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-40"
+                >
+                  Eliminar usuario
+                </button>
+              ) : null}
             </div>
           </div>
         </div>

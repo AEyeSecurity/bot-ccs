@@ -267,6 +267,12 @@ export class FakeSupabaseClient {
         Object.assign(user, attrs);
         return { data: { user }, error: null };
       },
+      deleteUser: async (id: string) => {
+        const users = this.table("auth_users");
+        const index = users.findIndex((row) => row.id === id);
+        if (index >= 0) users.splice(index, 1);
+        return { data: null, error: null };
+      },
     },
   };
 

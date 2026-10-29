@@ -30,6 +30,8 @@ const updateSchema = z.object({
   password: passwordSchema.optional(),
 });
 
+const deleteSchema = z.object({ id: z.string().min(1) });
+
 const emailFor = (username: string) => `${username}@bot-ccs.local`;
 
 async function resolveAreaIds(supabase: ReturnType<typeof createAdminSupabaseClient>, names: string[]) {
@@ -189,6 +191,39 @@ export async function PATCH(request: NextRequest) {
     await replaceAreas(supabase, input.id, input.role, areaIds);
 
     return Response.json({ operator: await loadOperatorWithAreas(supabase, input.id) });
+  } catch (error) {
+    return apiError(error);
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const operator = await getOperatorFromRequest(request);
+    requireAdminPanels(operator);
+    const supabase = createAdminSupabaseClient();
+    const input = deleteSchema.parse(await request.json());
+
+    if (input.id === operator.id) {
+      return apiError(Object.assign(new Error("No podés eliminar tu propia cuenta"), { status: 400 }));
+    }
+
+    const { data: target, error: targetError } = await supabase
+      .from("operators")
+      .select("id,auth_user_id")
+      .eq("id", input.id)
+      .maybeSingle();
+    if (targetError) throw new Error(targetError.message);
+    if (!target) throw Object.assign(new Error("Usuario inexistente"), { status: 404 });
+
+    if (target.auth_user_id) {
+      const { error: authError } = await supabase.auth.admin.deleteUser(target.auth_user_id);
+      if (authError) throw new Error(authError.message);
+    }
+
+    const { error: deleteError } = await supabase.from("operators").delete().eq("id", input.id);
+    if (deleteError) throw new Error(deleteError.message);
+
+    return Response.json({ ok: true });
   } catch (error) {
     return apiError(error);
   }

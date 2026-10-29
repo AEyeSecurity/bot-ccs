@@ -2,6 +2,10 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Eliminar usuarios — 29 de octubre de 2026
+
+- `DELETE /api/admin/operators` (body `{ id }`): elimina el usuario y su cuenta de Supabase Auth (`auth.admin.deleteUser`), con protección para no eliminarse a uno mismo (`400`) y `404` si no existe. El panel Usuarios agrega el botón "Eliminar usuario" en el modo edición, con confirmación (`window.confirm`) antes de borrar. Pruebas: `admin-operators-route.test.ts` ampliado (13); lint OK.
+
 ## Merge y despliegue de 8f1f249 — 29 de octubre de 2026
 
 Fusionado origin/main con los 11 commits locales del servidor, sin conflictos ni reescribir historial. El panel Usuarios convierte los IDs seleccionados en nombres al guardar, conforme al contrato POST/PATCH de la API. Sin migraciones ni cambios de catálogo o credenciales.
