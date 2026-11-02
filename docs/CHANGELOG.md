@@ -2,6 +2,12 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Pendientes de aceptación del MVP Base — 2 de noviembre de 2026
+
+Revisión documental del presupuesto original: ROADMAP incorpora verificaciones de cifrado efectivo (almacenamiento, conexiones y copias), acuerdo sobre derivación por área/contacto frente a reenvío WhatsApp no implementado, aprobación final del catálogo, validación con WhatsApp real y del host, capacitación/acompañamiento y plan de backups con restauración controlada. TESTING distingue aceptación comercial de pruebas automáticas. No se implementaron funcionalidades ni se modificaron producción, datos o catálogo.
+
+El PDF comercial se corrigió fuera del repositorio para igualar el texto de comisión y las secciones 8/9; no se versionan el presupuesto ni sus archivos intermedios. Validación técnica: tools reconstruido desde el checkout; 394 pruebas herméticas con GEMINI_API_KEY vacío, lint y build aprobados en Compose. No se ejecuta matriz productiva por ser un cambio exclusivamente documental.
+
 ## Recuperación de disponibilidad — 2 de noviembre de 2026
 
 CCS devolvía HTTP530/error1033 y el túnel Bot CSS figuraba Down, sin conectores. Docker Desktop mantenía su interfaz pero no el backend ni el pipe del motor Linux; el reinicio por CLI no finalizaba. Se cerraron los procesos de interfaz/build y se relanzó el ejecutable instalado. El motor recuperó automáticamente los contenedores existentes con restart unless-stopped, sin reconstruir ni recrear producción.

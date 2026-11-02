@@ -12,6 +12,21 @@ Ya implementado (no repetir aquí; ver detalle en los documentos canónicos):
 
 Comprobaciones operativas pendientes (WhatsApp real, reinicio del host, retiro de `admindev`, ruta Cloudflare antigua) se gestionan en [OPERATIONS.md](OPERATIONS.md#comprobaciones-pendientes), no aquí.
 
+## Cierre del MVP Base — pendientes de aceptación (2 de noviembre de 2026)
+
+Revisión del alcance del presupuesto original de A-Eye: el bot, el catálogo, la captura de datos y el panel están implementados; no dar por completada la entrega hasta cerrar los puntos siguientes. Son trabajo futuro y verificaciones pendientes, no prestaciones certificadas.
+
+| Pendiente | Acción y criterio de cierre |
+|---|---|
+| Base de datos encriptada | Verificar y documentar el cifrado efectivo del almacenamiento, conexiones y backups del Supabase utilizado. Auth/RLS, hashes y la extensión `pgcrypto` no acreditan por sí solos cifrado de datos en reposo. Si falta, planificar su implementación y gestión de claves antes de aceptar este requisito. No registrar secretos ni datos de pacientes como evidencia. |
+| Derivación al número correspondiente | Acordar por escrito con la clínica si significa asignar al área del panel y entregar contacto/vCard al paciente (actual) o reenviar a otro WhatsApp (no implementado). Si exige reenvío, definir consentimiento, contenido, destinatarios, plantillas/costos y aceptación antes de desarrollar; no confundirlo con transferencia manual interna de Fase 2. |
+| Aprobación final del catálogo | Resolver los textos provisionales y las decisiones pendientes con la clínica: profesionales, contactos, áreas, horarios y mensajes de cierre. Publicar solo contenidos aprobados y revisar los caminos afectados. |
+| Validación operativa y aceptación | Completar WhatsApp real, reinicio del host y comprobaciones de acceso/usuarios de [OPERATIONS.md](OPERATIONS.md#comprobaciones-pendientes); actualizar tools y ejecutar la validación hermética antes del próximo despliegue. Registrar la aceptación conjunta de casos representativos, sin evidencia con datos sensibles en Git. |
+| Acompañamiento inicial | Acordar responsable, sesión de capacitación, duración del acompañamiento, horas y horario de soporte, y procedimiento para solicitar cambios; registrar la entrega efectiva. |
+| Copias y recuperación | Definir frecuencia, retención, ubicación, protección/cifrado, responsables y objetivos de recuperación; ensayar una restauración controlada y documentar el resultado sin volcar datos en Git. Alojamiento no implica por sí solo que este servicio esté verificado. |
+
+Siguiente paso: acordar el significado de derivación y verificar el cifrado real de la infraestructura. Los procedimientos vigentes permanecen en OPERATIONS y los criterios técnicos en [TESTING.md](TESTING.md#aceptacion-del-mvp-base).
+
 ## Fase 2 — iteraciones pendientes
 
 La migración Docker precede estas funcionalidades; no las implementa:

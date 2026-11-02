@@ -74,6 +74,12 @@ Una versión puede darse de alta solo si:
 - mantenimiento termina sus ciclos correctamente y sin superposición;
 - el cambio y sus pruebas están documentados.
 
+## Aceptacion del MVP Base
+
+La matriz automática no certifica por sí sola el alcance comercial. Antes de aceptar el MVP, cerrar la lista de [ROADMAP.md](ROADMAP.md#cierre-del-mvp-base--pendientes-de-aceptación-2-de-noviembre-de-2026): verificar cifrado del almacenamiento/conexiones/backups, acordar y probar la derivación esperada, aprobar el catálogo final, realizar WhatsApp real y las comprobaciones operativas pendientes, y documentar capacitación y acompañamiento.
+
+Verificar una restauración controlada según el plan de copias acordado. Registrar resultado, fecha y responsables sin secretos, pacientes ni logs crudos en Git. Si la clínica exige reenvío a otro número, no aprobar ese criterio con una prueba de asignación de área o envío de vCard: son comportamientos distintos y el reenvío no está implementado actualmente.
+
 ## Línea Base
 
 Última verificación completa: 27 de octubre de 2026.
