@@ -2,6 +2,14 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Recuperación de disponibilidad — 2 de noviembre de 2026
+
+CCS devolvía HTTP530/error1033 y el túnel Bot CSS figuraba Down, sin conectores. Docker Desktop mantenía su interfaz pero no el backend ni el pipe del motor Linux; el reinicio por CLI no finalizaba. Se cerraron los procesos de interfaz/build y se relanzó el ejecutable instalado. El motor recuperó automáticamente los contenedores existentes con restart unless-stopped, sin reconstruir ni recrear producción.
+
+Verificado: web y maintenance healthy; conector ejecutándose; Cloudflare Healthy con una réplica; pantalla de ingreso visible en Chrome; inicio y vCard HTTP200; readiness local y público ok=true/testInstance=false. AutoStart ya estaba habilitado. Sin cambios de código, DNS, credenciales o base de datos. No se determinó el motivo original de terminación del backend; no se probó WhatsApp real ni se reinició Windows.
+
+Validación adicional sobre la imagen tools existente (391 pruebas, anterior a las 394 documentadas para el último despliegue): primer npm test heredó Gemini del runtime y fallaron dos escenarios; repetido con GEMINI_API_KEY vacío pasó 391/391. Lint y build de esa imagen aprobados; no se reconstruyó tools ni se alteró producción. No se ejecutó la matriz HTTP/n8n, que requiere la instancia mock aislada; la recuperación se verificó con checks públicos de solo lectura.
+
 ## Despliegue de 25acc7f — 29 de octubre de 2026
 
 Pull fast-forward del borrado de usuarios con confirmación y protección de la propia cuenta. Build, lint y 394 pruebas aprobados en Compose. Matriz aislada finalizada 16:20 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero fallos/omisiones/incidentes. Transporte mock sobre Supabase compartido; workflow temporal retirado y ensayo detenido, reportes en volumen.

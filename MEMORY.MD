@@ -1,11 +1,13 @@
 # Memoria de continuidad de BOT CCS
-Actualizada: 2026-10-29. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
+Actualizada: 2026-11-02. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
 Actualizar con cada cambio/trabajo y en su mismo commit; máximo 50 líneas, comprimir y reemplazar lo obsoleto.
 Guardar decisiones, recorrido reciente, validación y próximo paso; nunca contraseñas, tokens, pacientes ni logs.
 Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el historial en docs/CHANGELOG.md.
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- 02/11: recuperada caída pública HTTP530/error1033. Docker Desktop tenía interfaz activa sin backend ni pipe del motor; reinicio CLI sin respuesta. Se cerraron procesos Docker Desktop/com.docker.build y se relanzó Docker Desktop; contenedores existentes recuperados automáticamente. Web/maintenance healthy; túnel Bot CSS Healthy con 1 conector; inicio/vCard HTTP200 y readiness local/público ok=true/testInstance=false. AutoStart ya=true. Sin cambios de aplicación, DNS, credenciales ni datos; causa de terminación del backend no determinada. No se ensayó WhatsApp real ni reinicio Windows.
+- Validación 02/11: tools existente desactualizado (391 vs 394 de último despliegue); lint/build OK. Dos escenarios fallaron con Gemini heredado; sin GEMINI_API_KEY pasan 391/391. No se ejecutó matriz HTTP/n8n ni se reconstruyeron imágenes. Próximo: aislar Gemini en pruebas y actualizar tools antes de otro despliegue; detalle en CHANGELOG.
 - DESPLEGADO 25acc7f el 29/10: borrado de usuarios con confirmación; pull fast-forward. 394 pruebas/lint/build OK; matriz 16:20 UTC 229 escenarios/17 HTTP/9 n8n, cero incidentes. Web healthy/imagen cotejada, readiness local/público/inicio/vCard HTTP200; DELETE sin sesión 401. Imagen previa before-25acc7f-20261029; workflow retirado/ensayo detenido. Sin migraciones ni borrado de cuentas reales; siguiente: comprobar UI con sesión.
 - 29/10 (sin desplegar): `DELETE /api/admin/operators` elimina usuario + cuenta Auth (bloquea autoeliminación); panel Usuarios con botón "Eliminar usuario" y confirmación. Pruebas admin-operators-route (13) + lint OK.
 - 29/10: merge de origin/main 8f1f249 con 11 commits locales, sin conflictos; Usuarios envía nombres de áreas al guardar. DESPLEGADO merge-8f1f249 como docker-migration: web healthy/imagen cotejada, readiness local/público/inicio/vCard HTTP200. 391 pruebas/lint/build OK; matriz 16:00 UTC 229 escenarios/17 HTTP/9 n8n, cero incidentes; workflow retirado y ensayo detenido. Imagen previa before-8f1f249-20261029. Sin migraciones/catálogo; siguiente: prueba manual de guardado de usuarios.

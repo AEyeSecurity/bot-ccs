@@ -66,6 +66,10 @@ Logs por stdout/stderr con rotación de 3 archivos de 10 MB. unless-stopped rein
 
 ## Herramientas, actualizaciones y recuperación
 
+### Error público 1033 con Docker Desktop abierto
+
+El 02/11/2026 se recuperó una caída donde Cloudflare mostraba Bot CSS Down (cero conectores), Docker Desktop seguía abierto pero faltaban com.docker.backend y el pipe dockerDesktopLinuxEngine. Primero comprobar `docker ps` y el backend; una interfaz abierta no acredita que el motor funcione. Intentar `docker desktop restart`. Si no responde y el backend está ausente, cerrar los procesos Docker Desktop/com.docker.build y relanzar el ejecutable instalado de Docker Desktop. Esta operación recupera el motor compartido y sus contenedores existentes; no borrar datos ni ejecutar down -v. Verificar web/maintenance healthy, conector activo, túnel Healthy y readiness local/público. AutoStart estaba habilitado y unless-stopped recuperó los servicios; no se identificó el desencadenante de la caída del backend.
+
 ~~~powershell
 docker compose --env-file C:/ProgramData/BotCCS/deploy.env --profile tools run --rm tools npm test
 docker compose --env-file C:/ProgramData/BotCCS/deploy.env --profile tools run --rm tools npm run lint
