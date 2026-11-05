@@ -1,11 +1,12 @@
 # Memoria de continuidad de BOT CCS
-Actualizada: 2026-11-02. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
+Actualizada: 2026-11-05. Lectura obligatoria al iniciar cada chat, según AGENTS.md.
 Actualizar con cada cambio/trabajo y en su mismo commit; máximo 50 líneas, comprimir y reemplazar lo obsoleto.
 Guardar decisiones, recorrido reciente, validación y próximo paso; nunca contraseñas, tokens, pacientes ni logs.
 Los procedimientos completos viven en docs/OPERATIONS.md y docs/TESTING.md; el historial en docs/CHANGELOG.md.
 Preguntas al cliente y decisiones a revisar: NOTAS-CLIENTE.local.md (ignorado por Git, no versionar).
 
 ## Último trabajo y cómo se hizo
+- 05/11: pruebas de derivación ampliadas a 14 áreas, contrato fijo de 77 reglas/profesionales, permisos cruzados, motor y n8n mock. Supabase coincide; 515 pruebas/17 HTTP/25 n8n sin fallos (12:37 Argentina), 229 escenarios, lint/build OK. Workflow temporal retirado/ensayo detenido; sin despliegue ni cambios de reglas/catálogo/operadores. Reportes en volumen; registros sintéticos en base compartida. TESTING/CHANGELOG actualizados. Pendiente ROADMAP: alias «una biopsia»/«una colonoscopia» no asignan como nombres completos en fixture.
 - 02/11: ROADMAP registra cierre del MVP Base: verificar cifrado real y copias/restauración, acordar derivación por área/contacto vs reenvío WhatsApp no implementado, aprobar catálogo, completar pruebas reales y capacitación/acompañamiento. TESTING agrega aceptación comercial; CHANGELOG actualizado. PDF corregido fuera de Git (tipografía de comisión y secciones 8/9). Tools reconstruido con checkout actual; 394 pruebas herméticas (GEMINI_API_KEY vacío), lint/build OK. Sin despliegue ni cambios de datos; siguiente: acordar derivación y acreditar cifrado. Matriz productiva no aplica a esta edición documental.
 - 02/11: recuperada caída pública HTTP530/error1033. Docker Desktop tenía interfaz activa sin backend ni pipe del motor; reinicio CLI sin respuesta. Se cerraron procesos Docker Desktop/com.docker.build y se relanzó Docker Desktop; contenedores existentes recuperados automáticamente. Web/maintenance healthy; túnel Bot CSS Healthy con 1 conector; inicio/vCard HTTP200 y readiness local/público ok=true/testInstance=false. AutoStart ya=true. Sin cambios de aplicación, DNS, credenciales ni datos; causa de terminación del backend no determinada. No se ensayó WhatsApp real ni reinicio Windows.
 - Validación 02/11: tools existente desactualizado (391 vs 394 de último despliegue); lint/build OK. Dos escenarios fallaron con Gemini heredado; sin GEMINI_API_KEY pasan 391/391. No se ejecutó matriz HTTP/n8n ni se reconstruyeron imágenes. Próximo: aislar Gemini en pruebas y actualizar tools antes de otro despliegue; detalle en CHANGELOG.

@@ -75,7 +75,7 @@ describe("buildAreaPatch", () => {
   test("prioriza el área con operador conectado aunque esté más ocupada", async () => {
     const now = new Date().toISOString();
     seed(
-      [{ id: "c1", area_ids: [PASAJE], status: "human_takeover", resolution_status: "abierta" }],
+      [{ id: "c1", area_ids: [ANEXO], status: "human_takeover", resolution_status: "abierta" }],
       [{ id: "op-anexo", is_active: true, last_seen_at: now }],
       [{ operator_id: "op-anexo", area_id: ANEXO }],
     );

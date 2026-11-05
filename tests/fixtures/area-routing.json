@@ -1,0 +1,112 @@
+[
+  {
+    "area": "Cardiología",
+    "message": "Necesito un electrocardiograma",
+    "intent": "IMAGENES_ELECTROCARDIOGRAMA_ECG",
+    "expectedAreas": [
+      "Cardiología"
+    ]
+  },
+  {
+    "area": "TAC",
+    "message": "Necesito una tomografía",
+    "intent": "IMAGENES_TOMOGRAFIA_COMPUTADA",
+    "expectedAreas": [
+      "TAC"
+    ]
+  },
+  {
+    "area": "RMN",
+    "message": "Necesito una resonancia",
+    "intent": "IMAGENES_RESONANCIA_MAGNETICA",
+    "expectedAreas": [
+      "RMN"
+    ]
+  },
+  {
+    "area": "Admisión",
+    "message": "Necesito endoscopia alta y baja (colonoscopia)",
+    "intent": "IMAGENES_ENDOSCOPIA_ALTA_Y_BAJA_COLONOSCOPIA",
+    "expectedAreas": [
+      "Admisión"
+    ]
+  },
+  {
+    "area": "Hemodinamia",
+    "message": "Necesito hemodinamia",
+    "intent": "IMAGENES_HEMODINAMIA",
+    "expectedAreas": [
+      "Hemodinamia"
+    ]
+  },
+  {
+    "area": "Call Center",
+    "message": "Necesito recetas médicas",
+    "intent": "RECETAS_MEDICAS",
+    "expectedAreas": [
+      "Call Center"
+    ]
+  },
+  {
+    "area": "Guardia",
+    "message": "Necesito una radiografía",
+    "intent": "IMAGENES_RADIOGRAFIA",
+    "expectedAreas": [
+      "Guardia"
+    ]
+  },
+  {
+    "area": "Pasaje",
+    "message": "Necesito un turno con nefrología",
+    "intent": "ATENCION_MEDICA_NEFROLOGIA",
+    "expectedAreas": [
+      "Pasaje"
+    ]
+  },
+  {
+    "area": "Anexo",
+    "message": "Necesito una ecografía abdominal",
+    "intent": "IMAGENES_ECOGRAFIA_ABDOMINAL",
+    "expectedAreas": [
+      "Anexo"
+    ]
+  },
+  {
+    "area": "DMO",
+    "message": "Necesito una mamografía",
+    "intent": "IMAGENES_MAMOGRAFIA",
+    "expectedAreas": [
+      "DMO"
+    ]
+  },
+  {
+    "area": "CEMI",
+    "message": "Necesito un turno con pediatría",
+    "intent": "ATENCION_MEDICA_PEDIATRIA",
+    "expectedAreas": [
+      "CEMI"
+    ]
+  },
+  {
+    "area": "Patología",
+    "message": "Necesito biopsias",
+    "intent": "IMAGENES_BIOPSIAS",
+    "expectedAreas": [
+      "Patología"
+    ]
+  },
+  {
+    "area": "Laboratorio",
+    "message": "Necesito laboratorio",
+    "intent": "LABORATORIO_CLINICO",
+    "expectedAreas": [
+      "Laboratorio"
+    ]
+  },
+  {
+    "area": "Gamma",
+    "message": "Necesito medicina nuclear",
+    "intent": "IMAGENES_MEDICINA_NUCLEAR",
+    "expectedAreas": []
+  }
+]

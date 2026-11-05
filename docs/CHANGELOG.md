@@ -2,6 +2,16 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Pruebas integrales de derivación — 5 de noviembre de 2026
+
+Agregada matriz explícita de mensajes/destinos para las 14 áreas y contrato versionado de las 77 reglas, incluidos profesionales y destinos múltiples. Las unitarias comparan todas las reglas de migraciones contra expectativas fijas y verifican permisos cruzados de las 14 áreas; la integración del motor procesa un mensaje por área y comprueba persistencia simulada. Corregida la prueba de prioridad de presencia para que el área conectada sea efectivamente la más ocupada.
+
+El runner n8n existente incorpora inventario de áreas, comparación exacta de reglas activas y los 14 mensajes representativos contra la instancia mock. Reporta esperado/obtenido por área en el volumen de reportes. Gamma espera cero asignaciones; la matriz no certifica reenvío de conversaciones ni entrega real de WhatsApp. Fixture hermético sin Medicina Nuclear; el ensayo n8n sí usa el catálogo publicado.
+
+Validación 05/11, 12:37 Argentina: 515 pruebas aprobadas sin omisiones, 229 escenarios, 54 ramas/23 transiciones; 17 HTTP y 25 n8n aprobados, cero incidentes; Supabase coincide en 14 áreas/77 reglas. Lint y build aprobados en tools/Compose. Workflow temporal retirado e instancia de validación detenida; reportes en volumen. Sin despliegue ni cambios de reglas, catálogo, operadores o credenciales; el ensayo crea registros sintéticos en Supabase compartido.
+
+Hallazgo pendiente: en el fixture, «una biopsia» y «una colonoscopia» no asignan el destino del estudio; la matriz usa «biopsias» y «endoscopia alta y baja (colonoscopia)», que sí se reconocen. Registrada ampliación de alias en ROADMAP; no se cambia reconocimiento en esta entrega.
+
 ## Pendientes de aceptación del MVP Base — 2 de noviembre de 2026
 
 Revisión documental del presupuesto original: ROADMAP incorpora verificaciones de cifrado efectivo (almacenamiento, conexiones y copias), acuerdo sobre derivación por área/contacto frente a reenvío WhatsApp no implementado, aprobación final del catálogo, validación con WhatsApp real y del host, capacitación/acompañamiento y plan de backups con restauración controlada. TESTING distingue aceptación comercial de pruebas automáticas. No se implementaron funcionalidades ni se modificaron producción, datos o catálogo.

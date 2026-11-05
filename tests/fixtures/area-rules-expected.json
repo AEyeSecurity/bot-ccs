@@ -1,0 +1,387 @@
+[
+  {
+    "area": "Cardiología",
+    "intent": "ATENCION_MEDICA_CARDIOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Cardiología",
+    "intent": "IMAGENES_ERGOMETRIA",
+    "group": null
+  },
+  {
+    "area": "Cardiología",
+    "intent": "IMAGENES_ELECTROCARDIOGRAMA_ECG",
+    "group": null
+  },
+  {
+    "area": "Cardiología",
+    "intent": "IMAGENES_ECOCARDIOGRAMA",
+    "group": null
+  },
+  {
+    "area": "Cardiología",
+    "intent": "IMAGENES_ECOGRAFIA_DOPPLER_CARDIACA",
+    "group": null
+  },
+  {
+    "area": "Cardiología",
+    "intent": "IMAGENES_HOLTER",
+    "group": null
+  },
+  {
+    "area": "TAC",
+    "intent": "IMAGENES_TOMOGRAFIA_COMPUTADA",
+    "group": null
+  },
+  {
+    "area": "RMN",
+    "intent": "IMAGENES_RESONANCIA_MAGNETICA",
+    "group": null
+  },
+  {
+    "area": "Admisión",
+    "intent": "ATENCION_MEDICA_GASTROENTEROLOGIA",
+    "group": null
+  },
+  {
+    "area": "Admisión",
+    "intent": "IMAGENES_ARTERIOGRAFIA",
+    "group": null
+  },
+  {
+    "area": "Admisión",
+    "intent": "IMAGENES_ENDOSCOPIA_ALTA_Y_BAJA_COLONOSCOPIA",
+    "group": null
+  },
+  {
+    "area": "Hemodinamia",
+    "intent": "IMAGENES_HEMODINAMIA",
+    "group": null
+  },
+  {
+    "area": "Call Center",
+    "intent": "OBRAS_SOCIALES",
+    "group": null
+  },
+  {
+    "area": "Call Center",
+    "intent": "RECETAS_MEDICAS",
+    "group": null
+  },
+  {
+    "area": "Guardia",
+    "intent": "IMAGENES_ESPINOGRAMA",
+    "group": null
+  },
+  {
+    "area": "Guardia",
+    "intent": "IMAGENES_RADIOGRAFIA",
+    "group": null
+  },
+  {
+    "area": "Patología",
+    "intent": "IMAGENES_BIOPSIAS",
+    "group": null
+  },
+  {
+    "area": "Laboratorio",
+    "intent": "LABORATORIO_CLINICO",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_NEFROLOGIA",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_DIABETOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_NEUROLOGIA",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": "cirugia_cardoso_atilio"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": "cirugia_cardoso_martin"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": "cirugia_heredia"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_DIABETOLOGIA",
+    "group": "diabetologia_carrizo"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_NEUROLOGIA",
+    "group": "neurologia_paolini"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_NEUROLOGIA",
+    "group": "neurologia_alvarez"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_NUTRICION",
+    "group": "nutricion_santana"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+    "group": "traumatologia_vargas"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+    "group": "traumatologia_nunes"
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_ONCOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_REUMATOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_DERMATOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_UROLOGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_INFECTOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_DIABETOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "IMAGENES_ECOGRAFIA_ABDOMINAL",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "IMAGENES_ECOGRAFIA_DOPPLER",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "IMAGENES_ECOGRAFIA_RENAL",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": "cirugia_del_carpio"
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": "cirugia_del_bueno"
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": "cirugia_soulergues"
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_DIABETOLOGIA",
+    "group": "diabetologia_sedan"
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+    "group": "traumatologia_longo"
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+    "group": "traumatologia_castro"
+  },
+  {
+    "area": "DMO",
+    "intent": "ATENCION_MEDICA_PSICOLOGIA",
+    "group": null
+  },
+  {
+    "area": "DMO",
+    "intent": "ATENCION_MEDICA_NUTRICION",
+    "group": null
+  },
+  {
+    "area": "DMO",
+    "intent": "IMAGENES_MAMOGRAFIA",
+    "group": null
+  },
+  {
+    "area": "DMO",
+    "intent": "IMAGENES_DENSITOMETRIA_OSEA",
+    "group": null
+  },
+  {
+    "area": "CEMI",
+    "intent": "ATENCION_MEDICA_GINECOLOGIA_Y_OBSTETRICIA",
+    "group": null
+  },
+  {
+    "area": "CEMI",
+    "intent": "ATENCION_MEDICA_PEDIATRIA",
+    "group": null
+  },
+  {
+    "area": "CEMI",
+    "intent": "ATENCION_MEDICA_PSIQUIATRIA",
+    "group": null
+  },
+  {
+    "area": "CEMI",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": null
+  },
+  {
+    "area": "CEMI",
+    "intent": "ATENCION_MEDICA_NEUROLOGIA",
+    "group": null
+  },
+  {
+    "area": "CEMI",
+    "intent": "IMAGENES_ECOGRAFIA_GINECOLOGICA_OBSTETRICA_Y_MAMARIA",
+    "group": null
+  },
+  {
+    "area": "CEMI",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": "cirugia_francalancia"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_CIRUGIA",
+    "group": "cirugia_goldenberg"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+    "group": "traumatologia_juarez"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
+    "group": "traumatologia_catullo"
+  },
+  {
+    "area": "CEMI",
+    "intent": "ATENCION_MEDICA_NEUROLOGIA",
+    "group": "neurologia_albino"
+  },
+  {
+    "area": "DMO",
+    "intent": "ATENCION_MEDICA_NUTRICION",
+    "group": "nutricion_jara"
+  },
+  {
+    "area": "Pasaje",
+    "intent": "ATENCION_MEDICA_CLINICA_MEDICA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "ATENCION_MEDICA_CLINICA_MEDICA",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "MEDICOS_CLINICOS",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "MEDICOS_CLINICOS",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "MEDICINA_LABORAL",
+    "group": null
+  },
+  {
+    "area": "Pasaje",
+    "intent": "HEMOTERAPIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "FLEBOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Anexo",
+    "intent": "FACTURACION",
+    "group": null
+  },
+  {
+    "area": "Guardia",
+    "intent": "QUIROFANOS",
+    "group": null
+  },
+  {
+    "area": "Guardia",
+    "intent": "TERAPIA_INTENSIVA",
+    "group": null
+  },
+  {
+    "area": "Guardia",
+    "intent": "RADIOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Guardia",
+    "intent": "INTERNACION",
+    "group": null
+  }
+]

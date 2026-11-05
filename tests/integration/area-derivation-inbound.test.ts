@@ -1,3 +1,5 @@
+import { areaNames, seededRules } from "../helpers/area-rules";
+import routingCases from "../fixtures/area-routing.json";
 import { createFakeSupabaseClient } from "../helpers/fake-supabase";
 
 const holder = vi.hoisted(() => ({
@@ -48,6 +50,17 @@ describe("derivación de área al procesar mensajes entrantes", () => {
         { area_id: PASAJE, intent_key: "ATENCION_MEDICA_CIRUGIA", response_group_id: "cirugia_cardoso_martin", is_active: true },
       ],
     });
+  });
+
+  test.each(routingCases)("matriz inbound: $area", async ({ message, expectedAreas }) => {
+    holder.client = createFakeSupabaseClient({
+      areas: areaNames.map((name) => ({ id: `area:${name}`, name, is_active: true })),
+      area_rules: seededRules.map((rule) => ({ ...rule, is_active: true })),
+    });
+    const phone = "+5493510000099";
+    await processInbound(inbound(phone, message, "SM-MATRIX"));
+    expect(conversationFor(phone)).toBeDefined();
+    expect(conversationFor(phone)?.area_ids || []).toEqual(expectedAreas.map((name) => `area:${name}`));
   });
 
   test("cardiología deriva la conversación a Cardiología", async () => {

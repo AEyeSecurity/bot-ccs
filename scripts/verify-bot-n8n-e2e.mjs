@@ -80,7 +80,7 @@ async function loadConversationBundle(from) {
 
   const { data: conversation, error: conversationError } = await supabase
     .from("conversations")
-    .select("id,status,current_intent,current_step,last_activity_at")
+    .select("id,status,current_intent,current_step,last_activity_at,area_ids")
     .eq("contact_id", contact.id)
     .order("last_activity_at", { ascending: false })
     .limit(1)
@@ -339,6 +339,34 @@ async function main() {
       twilioStatus: latest.twilio_status,
     };
   });
+
+  const routingCases = JSON.parse(fs.readFileSync("tests/fixtures/area-routing.json", "utf8"));
+  const { data: areas, error: areasError } = await supabase.from("areas").select("id,name").eq("is_active", true);
+  if (areasError) throw new Error(areasError.message);
+  const areaNames = new Map(areas.map((area) => [area.id, area.name]));
+  await runCheck("inventario de áreas activas", async () => {
+    assert(JSON.stringify([...areaNames.values()].sort()) === JSON.stringify(routingCases.map((item) => item.area).sort()), "Las áreas activas difieren de la matriz acordada");
+    return { areas: [...areaNames.values()].sort() };
+  });
+  await runCheck("contrato completo de reglas activas en Supabase", async () => {
+    const expected = JSON.parse(fs.readFileSync("tests/fixtures/area-rules-expected.json", "utf8"));
+    const { data: rules, error } = await supabase.from("area_rules").select("area_id,intent_key,response_group_id").eq("is_active", true);
+    if (error) throw new Error(error.message);
+    const serialize = (items) => items.map((rule) => JSON.stringify(rule)).sort();
+    const actual = rules.map((rule) => ({ area: areaNames.get(rule.area_id), intent: rule.intent_key, group: rule.response_group_id }));
+    assert(JSON.stringify(serialize(actual)) === JSON.stringify(serialize(expected)), "Las reglas activas difieren del contrato versionado; revisar cambios antes de actualizar expectativas");
+    return { expectedRules: expected.length, actualRules: actual.length };
+  });
+  for (const [index, scenario] of routingCases.entries()) {
+    await runCheck(`derivación de área via n8n: ${scenario.area}`, async () => {
+      const from = uniquePhone(seed + 100 + index);
+      await postTwilioWebhook(from, scenario.message);
+      const bundle = await waitForConversation(from, (item) => Boolean(latestOutbound(item)));
+      const actual = (bundle.conversation.area_ids || []).map((id) => areaNames.get(id) || `unknown:${id}`).sort();
+      assert(JSON.stringify(actual) === JSON.stringify([...scenario.expectedAreas].sort()), `Esperado ${JSON.stringify(scenario.expectedAreas)}; obtenido ${JSON.stringify(actual)}`);
+      return { input: scenario.message, expected: scenario.expectedAreas, actual, conversationId: bundle.conversation.id };
+    });
+  }
 
   const failed = checks.filter((check) => !check.ok).length;
   const report = {

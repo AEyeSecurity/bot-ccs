@@ -1,5 +1,4 @@
-import fs from "node:fs";
-import path from "node:path";
+import expectedRules from "../fixtures/area-rules-expected.json";
 import initialCatalog from "../../data/bot-catalog-initial.json";
 import { getPublishedCatalog } from "@/lib/catalog-store";
 import { MEDICAL_SERVICES, IMAGING_STUDIES } from "@/lib/bot-catalog";
@@ -9,49 +8,11 @@ import {
   canViewConversation,
   deriveAreaIds,
   resolveRoutingKeys,
-  type AreaRule,
 } from "@/lib/areas";
 
-const migration004 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/004_roles_areas.sql"), "utf8");
-const migration005 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/005_gamma_contacto_profesionales.sql"), "utf8");
-const migration008 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/008_clinica_medica_edificios.sql"), "utf8");
-const migration009 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/009_servicios_sin_area.sql"), "utf8");
-
-// Las reglas viven en las migraciones (fuente de la carga inicial). Se leen de ahí para no duplicarlas.
-function insertNames(sql: string) {
-  const start = sql.indexOf("insert into public.areas");
-  if (start < 0) return [];
-  const block = sql.slice(start, sql.indexOf(";", start));
-  return [...block.matchAll(/'([^']+)'/g)].map((match) => match[1]);
-}
-const areaNames = [...new Set([...insertNames(migration004), ...insertNames(migration005)])];
+import { areaNames, seededRules } from "../helpers/area-rules";
+import routingCases from "../fixtures/area-routing.json";
 const areaIdByName = new Map(areaNames.map((name) => [name, `area:${name}`]));
-
-// Admite tuplas de 2 o 3 columnas: ('área', 'INTENT') o ('área', 'INTENT', null|'grupo').
-// El nombre de área nunca lleva guión bajo, para no confundir con las listas `in (...)`.
-function tuplesOf(sql: string, areaIdOf: (name: string) => string): AreaRule[] {
-  return [...sql.matchAll(/\('([^'_]+)',\s*'([A-Z_]+)'(?:\s*,\s*(null|'[a-z_]+'))?\)/g)].map(([, areaName, intentKey, group]) => ({
-    area_id: areaIdOf(areaName),
-    intent_key: intentKey,
-    response_group_id: group === "null" || group === undefined ? null : group.slice(1, -1),
-  }));
-}
-
-const areaIdOf = (name: string) => areaIdByName.get(name) || `missing:${name}`;
-const removals: Array<{ area_id: string; intent_key: string; response_group_id: string | null }> = [
-  ...migration005.matchAll(/a\.name = '([^']+)'\s+and r\.intent_key = '([A-Z_]+)'\s+and r\.response_group_id = '([a-z_]+)'/g),
-].map(([, areaName, intentKey, group]) => ({ area_id: areaIdOf(areaName), intent_key: intentKey, response_group_id: group }));
-// 008: quita Clínica Médica y Médicos clínicos de Guardia (reglas genéricas, sin grupo).
-removals.push({ area_id: areaIdOf("Guardia"), intent_key: "ATENCION_MEDICA_CLINICA_MEDICA", response_group_id: null });
-removals.push({ area_id: areaIdOf("Guardia"), intent_key: "MEDICOS_CLINICOS", response_group_id: null });
-const seededRules: AreaRule[] = [
-  ...tuplesOf(migration004, areaIdOf).filter(
-    (rule) => !removals.some((removed) => removed.area_id === rule.area_id && removed.intent_key === rule.intent_key && removed.response_group_id === rule.response_group_id),
-  ),
-  ...tuplesOf(migration005, areaIdOf),
-  ...tuplesOf(migration008, areaIdOf),
-  ...tuplesOf(migration009, areaIdOf),
-];
 
 const id = (name: string) => areaIdByName.get(name) as string;
 const names = (ids: string[]) => ids.map((areaId) => areaId.replace(/^area:/, "")).sort();
@@ -208,5 +169,35 @@ describe("permisos por área", () => {
     expect(canOperateConversation(otherCardiologyOperator, unassignedConversation)).toBe(true);
     expect(canOperateConversation(tacOperator, unassignedConversation)).toBe(false);
     expect(canOperateConversation(admin, cardiologyConversation)).toBe(true);
+  });
+});
+
+// Expectativas explícitas independientes del parser de migraciones.
+describe("matriz de todas las áreas", () => {
+  test("cada área definida tiene un caso de aceptación", () => {
+    expect(routingCases.map((item) => item.area).sort()).toEqual([...areaNames].sort());
+  });
+  test.each(routingCases)("$area: $message", ({ intent, expectedAreas }) => {
+    expect(derive(intent)).toEqual(expectedAreas);
+  });
+  test.each(areaNames)("permisos aislados para %s", (area) => {
+    const operator = { id: "owner", role: "operator" as const, area_ids: [id(area)] };
+    for (const target of areaNames) {
+      const conversation = { area_ids: [id(target)], assigned_operator_id: null };
+      expect(canViewConversation(operator, conversation)).toBe(area === target);
+      expect(canTakeConversation(operator, conversation)).toBe(area === target);
+      expect(canOperateConversation(operator, conversation)).toBe(area === target);
+    }
+  });
+});
+
+describe("contrato completo de reglas acordadas", () => {
+  test("migraciones conservan exactamente el inventario esperado", () => {
+    const serialize = (rules: typeof expectedRules) => rules.map((rule) => JSON.stringify(rule)).sort();
+    expect(serialize(seededRules.map((rule) => ({ area: rule.area_id.replace(/^area:/, ""), intent: rule.intent_key, group: rule.response_group_id })))).toEqual(serialize(expectedRules));
+  });
+  test.each(expectedRules)("$area / $intent / $group", ({ intent, group }) => {
+    const expected = [...new Set(expectedRules.filter((rule) => rule.intent === intent && rule.group === group).map((rule) => rule.area))].sort();
+    expect(names(deriveAreaIds({ intentKey: intent, responseGroupIds: group ? [group] : [] }, seededRules))).toEqual(expected);
   });
 });

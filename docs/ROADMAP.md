@@ -131,3 +131,7 @@ Supabase hoy cubre PostgreSQL + Auth + RLS + SDK con poco esfuerzo. Se conserva 
 3. **Residencia/compliance** de datos de salud (elegir región o self-hosted por exigencias legales).
 
 La migración más razonable, si llegara a ser necesaria, sería a **PostgreSQL autogestionado (Neon o servidor propio) + Auth.js**, manteniendo el mismo esquema SQL. Ver análisis completo en [ARCHITECTURE.md](ARCHITECTURE.md) (componentes y decisión vigente) cuando se reabra el tema.
+
+## Alias de estudios detectados en validación — 5 de noviembre de 2026
+
+Revisar «una biopsia» y «una colonoscopia»: no reciben el destino esperado en el fixture actual. Acordar alias y distinguir solicitud de estudio de consulta de informes; agregar regresiones antes de corregir el reconocimiento y validar catálogo publicado. La matriz por las 14 áreas y el contrato de 77 reglas están implementados; ver TESTING y CHANGELOG.

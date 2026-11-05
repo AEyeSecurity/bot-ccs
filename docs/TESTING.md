@@ -233,3 +233,17 @@ Web recreada healthy con merge-8f1f249 aplicada como docker-migration; imagen co
 Pull fast-forward del borrado de usuarios con confirmación y protección de la propia cuenta. Build, lint y 394 pruebas aprobados en Compose. Matriz aislada finalizada 16:20 UTC: 229 escenarios, 54 ramas, 23 transiciones, 17 HTTP y 9 n8n, cero fallos/omisiones/incidentes. Transporte mock sobre Supabase compartido; workflow temporal retirado y ensayo detenido, reportes en volumen.
 
 Web recreada con pull-25acc7f como docker-migration, healthy e imagen cotejada. Readiness local/público (ok=true, testInstance=false), inicio y vCard Medicina Nuclear HTTP200. DELETE /api/admin/operators sin sesión HTTP401; sin borrar cuentas reales. Mantenimiento saludable y túnel activo. Imagen previa before-25acc7f-20261029 conservada. Sin migraciones ni cambios de catálogo. Pendiente comprobación visual con sesión; WhatsApp real y reinicio Windows siguen pendientes.
+
+## Contrato de derivaciones por área — 5 de noviembre de 2026
+
+`tests/fixtures/area-routing.json` define mensajes y destinos explícitos para las 14 áreas: Cardiología, TAC, RMN, Admisión, Hemodinamia, Call Center, Guardia, Pasaje, Anexo, DMO, CEMI, Patología, Laboratorio y Gamma. Gamma es contacto y espera cero asignaciones; esto no certifica su vCard en el fixture hermético, que no incluye Medicina Nuclear.
+
+`tests/fixtures/area-rules-expected.json` congela las 77 reglas acordadas de las migraciones 004/005/008/009 (incluidos profesionales y destinos múltiples). No se recalcula en ejecución: ante una diferencia revisar el acuerdo antes de modificar expectativas. `tests/helpers/area-rules.ts` reconstruye las migraciones para contrastarlas contra ese contrato independiente.
+
+- Nivel 1: `areas.test.ts` verifica inventario completo, destinos por regla y permisos cruzados entre todas las áreas; `area-balancing.test.ts` verifica presencia, ocupación y desempate. La prueba de prioridad de conectado incluye carga en el área conectada.
+- Nivel 2: `area-derivation-inbound.test.ts` procesa un mensaje representativo por área y verifica la asignación persistida en Supabase simulado; conserva la prueba de saludo sin cambio de destino.
+- Nivel 3: `verify-bot-n8n-e2e.mjs`, incluido en `test:bot:report`, contrasta inventario y reglas activas de Supabase contra ambos fixtures y envía los 14 casos por el workflow temporal. Reporta entrada, esperado, obtenido e identificador sintético en `bot-n8n-e2e.latest.json` dentro del volumen. No modifica reglas, catálogo, presencia ni operadores reales.
+
+Ejecutar el runner aislado de esta guía: no es necesario abrir el editor de n8n. El ensayo usa transporte mock y comparte Supabase: crea conversaciones sintéticas. La matriz comprueba asignaciones y permisos, no reenvío de conversaciones a otro número ni entrega real de WhatsApp.
+
+Limitación detectada: con el catálogo hermético actual, «Necesito una biopsia» y «Necesito una colonoscopia» no reciben el área de los estudios correspondientes; los nombres «biopsias» y «endoscopia alta y baja (colonoscopia)» sí. La matriz utiliza estos nombres reconocidos. La ampliación de alias queda en ROADMAP; no presentar esta cobertura como aceptación de todas las formas de escritura.
