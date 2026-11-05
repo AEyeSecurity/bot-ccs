@@ -86,4 +86,4 @@ Aplicación y mantenimiento en Docker Compose; n8n existente conserva el workflo
 
 ## Ajustes de usuarios y resolución — 05/11/2026
 
-Cuentas de sector: nombre libre y campo Personas (texto informativo de hasta 2000 caracteres visible en Usuarios). No identifica al autor de respuestas. Admin y admindev protegidos contra borrado. Filtros Abierta, Pendiente, Resuelta, Todas; panel sin cierre manual, resolución independiente del archivo automático. Panel de datos llama Archivadas al total histórico status=closed.
+Cuentas de sector: nombre libre y lista Personas (hasta 50 personas, cada una con Nombre y Apellido separados, visibles solo en Usuarios; + Agregar persona abre otra tarjeta y Quitar persona la retira). No identifica al autor de respuestas. Admin y admindev protegidos contra borrado. Filtros Abierta, Pendiente, Resuelta, Todas; panel sin cierre manual, resolución independiente del archivo automático. Panel de datos llama Archivadas al total histórico status=closed.

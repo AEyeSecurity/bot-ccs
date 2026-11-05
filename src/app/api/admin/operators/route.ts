@@ -3,6 +3,7 @@ import { z } from "zod";
 import { apiError, getOperatorFromRequest, requireAdminPanels } from "@/lib/auth";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import { isPasswordStrong } from "@/lib/password";
+import { personasSchema } from "@/lib/operator-personas";
 import type { Operator } from "@/lib/domain";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +16,7 @@ const passwordSchema = z
 const createSchema = z.object({
   username: z.string().trim().toLowerCase().regex(/^[a-z0-9._-]{3,}$/, "El usuario debe tener al menos 3 caracteres (a-z, 0-9, . _ -)"),
   name: z.string().trim().min(1, "El nombre es obligatorio"),
-  personas: z.string().trim().max(2000).optional(),
+  personas_list: personasSchema.optional(),
   password: passwordSchema,
   role: z.enum(["admin", "operator"]),
   areas: z.array(z.string().trim().min(1)).default([]),
@@ -24,7 +25,7 @@ const createSchema = z.object({
 const updateSchema = z.object({
   id: z.string().min(1),
   name: z.string().trim().min(1, "El nombre es obligatorio"),
-  personas: z.string().trim().max(2000).optional(),
+  personas_list: personasSchema.optional(),
   role: z.enum(["admin", "operator"]),
   areas: z.array(z.string().trim().min(1)).default([]),
   is_active: z.boolean(),
@@ -65,7 +66,7 @@ async function replaceAreas(
 async function loadOperatorWithAreas(supabase: ReturnType<typeof createAdminSupabaseClient>, id: string) {
   const { data: operator, error } = await supabase
     .from("operators")
-    .select("id,auth_user_id,name,email,role,is_active,last_seen_at,personas")
+    .select("id,auth_user_id,name,email,role,is_active,last_seen_at,personas,personas_list")
     .eq("id", id)
     .single();
   if (error) throw new Error(error.message);
@@ -82,7 +83,7 @@ export async function GET(request: NextRequest) {
     const [{ data: operators }, { data: areas }] = await Promise.all([
       supabase
         .from("operators")
-        .select("id,auth_user_id,name,email,role,is_active,last_seen_at,personas")
+        .select("id,auth_user_id,name,email,role,is_active,last_seen_at,personas,personas_list")
         .order("name", { ascending: true }),
       supabase.from("areas").select("id,name").order("name", { ascending: true }),
     ]);
@@ -133,7 +134,7 @@ export async function POST(request: NextRequest) {
     const { data: row, error: upsertError } = await supabase
       .from("operators")
       .upsert(
-        { auth_user_id: created.user.id, name: input.name, personas: input.personas || "", email, role: input.role, is_active: true, password_change_required: true },
+        { auth_user_id: created.user.id, name: input.name, personas_list: input.personas_list || [], email, role: input.role, is_active: true, password_change_required: true },
         { onConflict: "email" },
       )
       .select("id")
@@ -182,7 +183,7 @@ export async function PATCH(request: NextRequest) {
       .from("operators")
       .update({
         name: input.name,
-        ...(input.personas !== undefined ? { personas: input.personas } : {}),
+        ...(input.personas_list !== undefined ? { personas_list: input.personas_list } : {}),
         role: input.role,
         is_active: input.is_active,
         ...(passwordChanged ? { password_change_required: true } : {}),

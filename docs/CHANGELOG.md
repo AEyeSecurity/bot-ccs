@@ -258,3 +258,9 @@ Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout d
 Implementado ajuste aprobado de cuentas por sector: Personas como texto administrativo (migración 011), nombre libre de sector, protección de admin/admindev, filtros con Todas al final y retirada del botón/modal de cierre manual. Métrica renombrada Archivadas conservando historia. Script explícito de limpieza con previsualización por cantidades y preservación de administradores. Validación y aplicación: ver TESTING/MEMORY.
 
 Aplicado y desplegado: 011 en transacción; eliminadas 6 cuentas conservando admin/admindev activas y contraseñas existentes. Sin controles humanos que archivar ni purga de conversaciones. 519 pruebas/lint/build y matriz 17 HTTP/25 n8n OK; salud local/pública e imagen verificadas. Prueba visual con sesión pendiente.
+
+## Personas con Nombre y Apellido — 05/11/2026
+
+Se reemplaza el campo de texto por tarjetas con Nombre/Apellido separados, + Agregar persona y Quitar persona. API y migración 012 persisten una lista estructurada por cuenta; se valida cantidad y campos completos. El texto anterior se conserva sin inferir apellidos. Cuenta de sector, Auth, áreas, presencia, permisos y atribución de mensajes continúan funcionando por cuenta; las personas son informativas. No se repite la limpieza de usuarios.
+
+Aplicada 012 (2 cuentas preservadas, texto anterior vacío), desplegado y salud local/pública verificada. 525 pruebas/lint/build, 17 HTTP y 25 n8n aprobados. Pendiente comprobación visual con sesión.

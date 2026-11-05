@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ChevronDown, KeyRound, LoaderCircle, RefreshCw, UserPlus } from "lucide-react";
+import { ArrowLeft, ChevronDown, KeyRound, LoaderCircle, Plus, RefreshCw, Trash2, UserPlus } from "lucide-react";
+import type { OperatorPersona } from "@/lib/operator-personas";
 import { isPasswordStrong, PASSWORD_RULES } from "@/lib/password";
 
 type ApiFetch = (path: string, init?: RequestInit) => Promise<Record<string, unknown>>;
@@ -10,6 +11,7 @@ type OperatorRow = {
   id: string;
   name: string;
   personas?: string;
+  personas_list?: OperatorPersona[];
   email: string;
   role: "admin" | "operator";
   is_active: boolean;
@@ -23,9 +25,9 @@ type FormState = {
   mode: "create" | "edit";
   id?: string;
   username: string;
-  personas: string;
-  firstName: string;
-  lastName: string;
+  personas_list: OperatorPersona[];
+  legacyPersonas: string;
+  name: string;
   password: string;
   confirmPassword: string;
   role: "admin" | "operator";
@@ -37,9 +39,9 @@ type FormState = {
 const emptyForm: FormState = {
   mode: "create",
   username: "",
-  personas: "",
-  firstName: "",
-  lastName: "",
+  personas_list: [],
+  legacyPersonas: "",
+  name: "",
   password: "",
   confirmPassword: "",
   role: "operator",
@@ -50,13 +52,6 @@ const emptyForm: FormState = {
 
 function areaName(areas: AreaRow[], id: string) {
   return areas.find((area) => area.id === id)?.name || id;
-}
-
-function splitName(name: string) {
-  const parts = name.trim().split(/\s+/);
-  const lastName = parts.length > 1 ? parts.pop() || "" : "";
-  const firstName = parts.join(" ");
-  return { firstName, lastName };
 }
 
 function generatePassword() {
@@ -125,14 +120,13 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
   function openEdit(operator: OperatorRow) {
     setNotice("");
     setAreasOpen(false);
-    const { firstName, lastName } = splitName(operator.name);
     setForm({
       mode: "edit",
       id: operator.id,
       username: operator.email.replace("@bot-ccs.local", ""),
-      personas: operator.personas || "",
-      firstName,
-      lastName,
+      personas_list: operator.personas_list?.map((person) => ({ ...person })) || [],
+      legacyPersonas: operator.personas || "",
+      name: operator.name,
       password: "",
       confirmPassword: "",
       role: operator.role,
@@ -162,17 +156,17 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
     setError("");
     setNotice("");
     try {
-      const name = `${form.firstName.trim()} ${form.lastName.trim()}`.trim();
+      const name = form.name.trim();
       const areaNames = form.areas
         .map((id) => areas.find((area) => area.id === id)?.name)
         .filter((value): value is string => Boolean(value));
       const body =
         form.mode === "create"
-          ? { username: form.username, name, personas: form.personas, password: form.password, role: form.role, areas: areaNames }
+          ? { username: form.username, name, personas_list: form.personas_list, password: form.password, role: form.role, areas: areaNames }
           : {
               id: form.id,
               name,
-              personas: form.personas,
+              personas_list: form.personas_list,
               role: form.role,
               areas: areaNames,
               is_active: form.is_active,
@@ -195,7 +189,7 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
 
   async function remove() {
     if (!form || form.mode !== "edit" || !form.id) return;
-    const fullName = `${form.firstName.trim()} ${form.lastName.trim()}`.trim();
+    const fullName = form.name.trim();
     if (!window.confirm(`¿Seguro que querés eliminar a ${fullName}? Esta acción no se puede deshacer.`)) return;
     setBusy(true);
     setError("");
@@ -250,7 +244,7 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
                 <span className={`h-3 w-3 shrink-0 rounded-full ${operator.is_active ? "bg-emerald-500" : "bg-zinc-300"}`} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold text-zinc-800">{operator.name}</p>
-                  {operator.personas ? <p className="whitespace-pre-wrap text-sm text-zinc-600">Personas: {operator.personas}</p> : null}
+                  {operator.personas_list?.length ? <p className="break-words text-sm text-zinc-600">Personas: {operator.personas_list.map((person) => `${person.first_name} ${person.last_name}`).join(", ")}</p> : operator.personas ? <p className="whitespace-pre-wrap text-sm text-zinc-600">Personas (información anterior): {operator.personas}</p> : null}
                   <p className="truncate text-xs text-zinc-500">
                     {operator.role === "admin" ? "Administrador" : operator.area_ids?.map((id) => areaName(areas, id)).join(", ") || "Sin área"} · {operator.email}
                   </p>
@@ -290,14 +284,36 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
               ) : null}
               <label className="block text-sm">
                 <span className="font-semibold text-zinc-700">Nombre de la cuenta o sector</span>
-                <input value={`${form.firstName}${form.lastName ? ` ${form.lastName}` : ""}`} onChange={(event) => setForm({ ...form, firstName: event.target.value, lastName: "" })} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3" placeholder="Recepción Cardiología" />
+                <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3" placeholder="Recepción Cardiología" />
               </label>
 
-              <label className="block text-sm">
-                <span className="font-semibold text-zinc-700">Personas</span>
-                <textarea value={form.personas} maxLength={2000} onChange={(event) => setForm({ ...form, personas: event.target.value })} className="mt-1 min-h-24 w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3" placeholder="Personas que utilizan esta cuenta de sector" />
-                <span className="text-xs text-zinc-500">Información visible solo en Usuarios. No asigna permisos ni identifica quién responde.</span>
-              </label>
+              <section aria-label="Personas de la cuenta" className="space-y-3 rounded-xl border border-zinc-200 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-semibold text-zinc-700">Personas</span>
+                  <button type="button" disabled={busy || form.personas_list.length >= 50} onClick={() => setForm({ ...form, personas_list: [...form.personas_list, { first_name: "", last_name: "" }] })} className="flex items-center gap-1 rounded-lg border border-emerald-200 px-2 py-1.5 text-xs font-semibold text-emerald-800 disabled:opacity-40" aria-label="Agregar persona">
+                    <Plus size={16} /> Agregar persona
+                  </button>
+                </div>
+                <p className="text-xs text-zinc-500">Personas que utilizan esta cuenta. Información visible solo en Usuarios.</p>
+                {form.legacyPersonas && !form.personas_list.length ? <p className="whitespace-pre-wrap rounded-lg bg-amber-50 p-2 text-xs text-amber-900">Información anterior: {form.legacyPersonas}. Cargá los nombres y apellidos por separado con el botón +.</p> : null}
+                {form.personas_list.map((person, index) => (
+                  <fieldset key={index} className="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3">
+                    <legend className="px-1 text-xs font-semibold text-zinc-600">Persona {index + 1}</legend>
+                    <div className="grid grid-cols-2 gap-2">
+                      <label className="text-sm">
+                        <span className="font-semibold text-zinc-700">Nombre</span>
+                        <input value={person.first_name} maxLength={100} onChange={(event) => setForm({ ...form, personas_list: form.personas_list.map((row, i) => i === index ? { ...row, first_name: event.target.value } : row) })} className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-2" autoComplete="off" />
+                      </label>
+                      <label className="text-sm">
+                        <span className="font-semibold text-zinc-700">Apellido</span>
+                        <input value={person.last_name} maxLength={100} onChange={(event) => setForm({ ...form, personas_list: form.personas_list.map((row, i) => i === index ? { ...row, last_name: event.target.value } : row) })} className="mt-1 h-10 w-full rounded-lg border border-zinc-200 bg-white px-2" autoComplete="off" />
+                      </label>
+                    </div>
+                    <button type="button" onClick={() => setForm({ ...form, personas_list: form.personas_list.filter((_, i) => i !== index) })} className="flex items-center gap-1 text-xs font-semibold text-rose-700" aria-label={`Quitar persona ${index + 1}`}><Trash2 size={14} /> Quitar persona</button>
+                  </fieldset>
+                ))}
+                {!form.personas_list.length ? <p className="text-xs text-zinc-400">Sin personas cargadas. Usá + para agregar una.</p> : null}
+              </section>
 
               {needsPassword ? (
                 <>
@@ -404,7 +420,8 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
                 disabled={
                   busy ||
                   (form.mode === "create" && !form.username.trim()) ||
-                  !form.firstName.trim() ||
+                  !form.name.trim() ||
+                  form.personas_list.some((person) => !person.first_name.trim() || !person.last_name.trim()) ||
                   !passwordValid ||
                   (form.role === "operator" && !form.areas.length)
                 }

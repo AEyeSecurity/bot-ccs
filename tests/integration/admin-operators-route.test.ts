@@ -183,20 +183,20 @@ describe("eliminación de usuarios", () => {
 
 
 describe("Personas y cuentas protegidas", () => {
-  test("guarda texto informativo sin modificar áreas y lo devuelve al admin", async () => {
+  test("guarda varias personas separadas sin modificar áreas y las devuelve al admin", async () => {
     const response = await PATCH(request("/api/admin/operators", "token-auth-admin", {
-      method: "PATCH", body: JSON.stringify({ id: "op-carla", name: "Cardiología", role: "operator", areas: ["Cardiología"], is_active: true, personas: "Ana\nLuis" }),
+      method: "PATCH", body: JSON.stringify({ id: "op-carla", name: "Cardiología", role: "operator", areas: ["Cardiología"], is_active: true, personas_list: [{ first_name: "Ana María", last_name: "Pérez López" }, { first_name: "Luis", last_name: "Gómez" }] }),
     }));
     expect(response.status).toBe(200);
     const list = await GET(request("/api/admin/operators", "token-auth-admin"));
     const body = await list.json();
-    expect(body.operators.find((row: { id: string }) => row.id === "op-carla").personas).toBe("Ana\nLuis");
+    expect(body.operators.find((row: { id: string }) => row.id === "op-carla").personas_list).toEqual([{ first_name: "Ana María", last_name: "Pérez López" }, { first_name: "Luis", last_name: "Gómez" }]);
     expect(holder.client.table("operator_areas")).toEqual([expect.objectContaining({ operator_id: "op-carla", area_id: CARDIOLOGIA })]);
   });
 
-  test("rechaza texto excesivo antes de modificar la cuenta", async () => {
+  test("rechaza nombre excesivo antes de modificar la cuenta", async () => {
     const response = await PATCH(request("/api/admin/operators", "token-auth-admin", {
-      method: "PATCH", body: JSON.stringify({ id: "op-carla", name: "Sector", role: "operator", areas: ["Cardiología"], is_active: true, personas: "a".repeat(2001) }),
+      method: "PATCH", body: JSON.stringify({ id: "op-carla", name: "Sector", role: "operator", areas: ["Cardiología"], is_active: true, personas_list: [{ first_name: "a".repeat(101), last_name: "Pérez" }] }),
     }));
     expect(response.status).toBe(400);
     expect(holder.client.table("operators").find((row) => row.id === "op-carla")?.name).toBe("Carla");
@@ -207,5 +207,37 @@ describe("Personas y cuentas protegidas", () => {
     const response = await DELETE(request("/api/admin/operators", "token-auth-admin", { method: "DELETE", body: JSON.stringify({ id: "protected" }) }));
     expect(response.status).toBe(400);
     expect(holder.client.table("operators").some((row) => row.id === "protected")).toBe(true);
+  });
+});
+
+
+describe("edición de lista de personas", () => {
+  const first = { first_name: "Ana", last_name: "Pérez" };
+  const second = { first_name: "Luis", last_name: "Gómez" };
+  const edit = (personas_list?: unknown) => PATCH(request("/api/admin/operators", "token-auth-admin", {
+    method: "PATCH", body: JSON.stringify({ id: "op-carla", name: "Cardiología", role: "operator", areas: ["Cardiología"], is_active: true, ...(personas_list !== undefined ? { personas_list } : {}) }),
+  }));
+  test("permite quitar una persona y vaciar la lista", async () => {
+    expect((await edit([first, second])).status).toBe(200);
+    expect((await edit([second])).status).toBe(200);
+    expect(holder.client.table("operators").find((row) => row.id === "op-carla")?.personas_list).toEqual([second]);
+    expect((await edit([])).status).toBe(200);
+    expect(holder.client.table("operators").find((row) => row.id === "op-carla")?.personas_list).toEqual([]);
+  });
+  test("omite la lista sin perder personas ni texto anterior", async () => {
+    const row = holder.client.table("operators").find((item) => item.id === "op-carla")!;
+    row.personas = "Información anterior";
+    row.personas_list = [first];
+    expect((await edit()).status).toBe(200);
+    expect(row.personas_list).toEqual([first]);
+    expect(row.personas).toBe("Información anterior");
+  });
+  test.each([
+    [[{ first_name: "Ana", last_name: " " }]],
+    [[{ first_name: " ", last_name: "Pérez" }]],
+    ["texto sin estructura"],
+    [Array.from({ length: 51 }, () => first)],
+  ])("rechaza personas incompletas, texto o exceso de personas %#", async (input) => {
+    expect((await edit(input)).status).toBe(400);
   });
 });
