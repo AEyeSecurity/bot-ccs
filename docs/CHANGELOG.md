@@ -276,3 +276,7 @@ Desplegado y verificado: 535 pruebas/lint/build aprobados, matriz mock 17 HTTP/2
 Retirada la frase explicativa bajo Personas en alta/edición de usuarios, a pedido del usuario. Cambio solo visual.
 
 23 pruebas de usuarios, lint y build OK. Publicado y salud pública/imagen verificadas; matriz bot no repetida por cambio exclusivo de texto.
+
+## Sincronización GitHub — 05/11/2026
+
+Subidos los 6 commits pendientes de main hasta 125c0fe a origin/main tras fetch sin divergencia. Incluye los cambios ya desplegados de Personas/atención y sus pruebas/documentación. Sin cambios de aplicación, datos ni despliegue en esta sincronización; se conservan las validaciones registradas.
