@@ -2,6 +2,12 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Guía de conexión de WhatsApp y revisión de pendientes — 5 de noviembre de 2026
+
+OPERATIONS incorpora alta/revisión de sender, rutas directas/ISV, números ya registrados, webhooks, variables realmente consumidas, prioridad de Messaging Service, recreación de runtime y prueba de entrega. Corregidos pendientes obsoletos: 008/009/010 y transformaciones de catálogo ya aplicadas el 28/10. Consolidada lista previa a atención real sin dar por terminados pendientes no ensayados.
+
+Diagnóstico de solo lectura: web/maintenance saludables, transporte live/testInstance=0, credenciales presentes, sin Messaging Service; cuenta Twilio active/Full, remitente configurado terminado en 4148 OFFLINE con inbound correcto, sin motivo offline informado. No se enviaron WhatsApp ni cambiaron credenciales, sender, workflow o servicios. El usuario confirmó que el número definitivo coincide con el configurado y está registrado, pero no tiene acceso a Twilio/Meta: falta identificar administrador y tipo de registro; no se certifica conectividad WhatsApp real. Documentación contrastada con fuentes oficiales de Twilio. Validación: 515 pruebas herméticas, lint y build aprobados en tools/Compose; diff sin errores. No se repite matriz HTTP/n8n porque el cambio es exclusivamente documental y de diagnóstico de solo lectura.
+
 ## Pruebas integrales de derivación — 5 de noviembre de 2026
 
 Agregada matriz explícita de mensajes/destinos para las 14 áreas y contrato versionado de las 77 reglas, incluidos profesionales y destinos múltiples. Las unitarias comparan todas las reglas de migraciones contra expectativas fijas y verifican permisos cruzados de las 14 áreas; la integración del motor procesa un mensaje por área y comprueba persistencia simulada. Corregida la prueba de prioridad de presencia para que el área conectada sea efectivamente la más ocupada.

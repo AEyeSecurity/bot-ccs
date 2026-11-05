@@ -16,7 +16,7 @@ Se creó la cuenta temporal `admindev@bot-ccs.local`, operador activo con rol `a
 - Requiere `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` o en el entorno. Ejecutar dentro del servicio Compose `tools` con las variables inyectadas.
 - Crea la cuenta en Supabase Auth con email `<usuario>@bot-ccs.local` (el login acepta solo el usuario), la registra en `operators` y asigna las áreas en `operator_areas`. Si ya existe, actualiza nombre, áreas y reactiva la cuenta, sin cambiar la contraseña.
 - La contraseña temporal del CLI se imprime una sola vez. Entregarla en persona y pedir el cambio en el primer acceso. No registrarla en logs ni en Git.
-- Los nombres de área deben existir en la tabla `areas` (migraciones 004 y 005). Las migraciones 005, 006 y 007 ya están aplicadas en el Supabase productivo (resolución de casos, presencia y alta desde la web operativas). Pendiente de aplicar en el servidor la migración `010_password_change_required.sql` (cambio de contraseña forzado).
+- Los nombres de área deben existir en la tabla `areas` (migraciones 004 y 005). Las migraciones 005, 006 y 007 ya están aplicadas en el Supabase productivo (resolución de casos, presencia y alta desde la web operativas). Migración `010_password_change_required.sql` aplicada el 28/10/2026 (cambio de contraseña forzado); ver CHANGELOG.
 
 ## Requisitos y configuración
 
@@ -104,7 +104,7 @@ Se conserva la ruta ccs antigua en el túnel Server CIT (082b5e55-3ff9-489c-ae27
 
 ## Comprobaciones pendientes
 
-WhatsApp real y el reinicio completo de SERVER-CIT se posponen por decisión del usuario. No cuentan como pruebas aprobadas.
+WhatsApp real y el reinicio completo de SERVER-CIT continúan pendientes y no cuentan como pruebas aprobadas. El 05/11 el usuario retomó la preparación de conexión WhatsApp; primero obtener acceso del administrador a Twilio/Meta y resolver el estado del sender. El reinicio del host sigue requiriendo una ventana coordinada.
 
 ### WhatsApp real
 
@@ -131,4 +131,80 @@ El servidor dispone de un único proyecto Supabase externo. Los archivos test.en
 
 El 27 de octubre de 2026 se completó la puesta al día del servidor principal: `git pull` + rebuild Docker de las entregas 2-3 y el panel de datos, y aplicación de las migraciones `005_gamma_contacto_profesionales.sql`, `006_resolution_status.sql` y `007_presence.sql` (resolución de casos, presencia y alta de usuarios desde la web operativas). También se ejecutó `fix-medicina-nuclear-as-study.mjs --apply`, se reinició web y se completó el texto del estudio desde el panel, y se configuró `BOT_CCS_ADMIN_USERS` en runtime.env.
 
-Pendiente de aplicar en el servidor (mismo commit): migraciones `008_clinica_medica_edificios.sql`, `009_servicios_sin_area.sql` y `010_password_change_required.sql`; y los scripts `add-servicios-sin-area.mjs --apply`, `enable-medicina-nuclear.mjs --apply` y `fix-direccion-dermatologo.mjs --apply` (todos dentro del servicio tools, con `SUPABASE_SERVICE_ROLE_KEY`), seguido de reinicio de web para recargar la caché.
+Completado el 28/10/2026: migraciones 008/009 junto con las transformaciones de catálogo y posteriormente 010, con validación y despliegue documentados en CHANGELOG. No repetir migraciones ni scripts de contenido como parte de la conexión de Twilio.
+
+## Conectar el número definitivo de WhatsApp con Twilio
+
+Guía revisada el 05/11/2026. No implica que el número definitivo esté habilitado. El usuario confirmó que el número definitivo coincide con el remitente configurado terminado en 4148 y que está registrado. No tiene acceso a Twilio/Meta; falta identificar titular/administrador y si el registro corresponde a app móvil u otro proveedor. Confirmar acceso a SMS/llamada antes de cualquier traslado. No confundir el remitente único del bot con los teléfonos de contacto de las áreas: cambiar el remitente no cambia el catálogo publicado.
+
+### Estado observado y pendientes reales
+
+Consulta de solo lectura del 05/11: contenedores web/maintenance saludables; runtime usa transporte live, no es instancia de ensayo y tiene SID/Auth Token configurados, sin Messaging Service. La cuenta consultada figura active/Full. El remitente configurado termina en 4148 y la API Senders v2 lo informa OFFLINE, con webhook inbound correcto; offline_reasons es null. Esto no identifica la causa: revisar el remitente en Console y WhatsApp Manager. No se enviaron mensajes ni se cambió configuración.
+
+Antes de atención real siguen pendientes: habilitar/verificar el remitente definitivo y WhatsApp real; validar cuentas/áreas y contraseñas con sesión; retirar admindev tras comprobar administrador definitivo y actualizar listas de permisos (incluido restauración); rotar la contraseña administrativa de Tareas; confirmar catálogo/textos/decisiones del cliente; verificar cifrado y copias/restauración; capacitación y aceptación; reinicio coordinado del host y retirada segura de ruta Cloudflare antigua. Ver ROADMAP/MEMORY. Los alias de biopsia/colonoscopia siguen pendientes. Transferencia manual y otras prestaciones de Fase 2 no bloquean técnicamente la conexión, pero no están implementadas.
+
+### 1. Registrar o revisar el remitente
+
+En la cuenta/subcuenta Twilio que usará la clínica, abrir WhatsApp Senders. Si el número ya existe, revisar su estado y errores antes de darlo de alta otra vez. Para alta directa de la clínica, usar Self Sign-up con acceso administrador al Meta Business Portfolio, seleccionar su WABA, verificar el número por SMS/voz y completar las revisiones que indique Meta/Twilio. Se admite un número externo a Twilio: no comprar otro solo por conectarlo.
+
+Si el número está activo en WhatsApp/WhatsApp Business del celular, definir primero el traslado: la guía actual de Twilio indica liberar la cuenta móvil; no borrar la cuenta ni interrumpir la línea durante este diagnóstico. Si ya usa otro proveedor de API, seguir migración de proveedor. No asumir coexistencia de app móvil y Twilio. Si A-Eye incorpora clientes como ISV en cuentas propias, revisar la ruta Tech Provider en lugar de aplicar automáticamente el alta directa.
+
+Referencias oficiales: [Self Sign-up y requisitos](https://www.twilio.com/docs/whatsapp/self-sign-up), [migraciones](https://www.twilio.com/docs/whatsapp/migrate-numbers-and-senders), [Senders API v2 y estados](https://www.twilio.com/docs/whatsapp/api/senders). La aprobación operativa se comprueba con estado ONLINE y prueba de entrega; estar en Phone Numbers o disponer de la SIM no acredita habilitación WhatsApp.
+
+### 2. Configurar recepción y confirmaciones
+
+En el sender de WhatsApp (o Integration del Messaging Service si se adopta uno), configurar:
+
+| Campo | Valor |
+|---|---|
+| Webhook de mensajes entrantes | `https://n8n.aeye.com.ar/webhook/bot-ccs` |
+| Método | `POST` |
+| Status callback | `https://ccs.aeye.com.ar/api/twilio/status` |
+
+Usar el webhook de producción `/webhook/`, no `/webhook-test/`. El workflow BOT CCS debe estar activo/publicado: no necesita el editor abierto ni el botón de escucha manual. Sus nodos inbound/send/outbound apuntan a `http://127.0.0.1:3010/api/bot/...` y usan Header Auth `x-bot-ccs-secret`, coincidente con BOT_CCS_WEBHOOK_SECRET. Esta credencial es para n8n→bot; no introducirla como requisito adicional del webhook Twilio→n8n.
+
+El código también envía el callback configurado en cada mensaje saliente; que el campo callback del sender esté vacío no demuestra que falten callbacks por mensaje.
+
+### 3. Ajustar runtime privado
+
+Editar `C:/ProgramData/BotCCS/runtime.env`, sin guardar valores reales en Git:
+
+```dotenv
+TWILIO_ACCOUNT_SID=<SID de la cuenta/subcuenta del sender>
+TWILIO_AUTH_TOKEN=<Auth Token de esa cuenta>
+TWILIO_WHATSAPP_FROM=whatsapp:<numero exacto registrado en Twilio>
+TWILIO_MESSAGING_SERVICE_SID=
+TWILIO_STATUS_CALLBACK_URL=https://ccs.aeye.com.ar/api/twilio/status
+TWILIO_WEBHOOK_URL=https://n8n.aeye.com.ar/webhook/bot-ccs
+N8N_WEBHOOK_BOT_CCS_URL=https://n8n.aeye.com.ar/webhook/bot-ccs
+TWILIO_TRANSPORT=live
+BOT_CCS_TEST_INSTANCE=0
+```
+
+Conservar el resto de variables y el secreto compartido existente. Copiar el número internacional exacto del sender, con `+` y sin espacios; no inferir prefijos argentinos ni pegar el formato local con 0/15. Esta versión autentica Twilio con Account SID + Auth Token: las variables API_KEY de la plantilla no son consumidas por el cliente actual.
+
+Si se define TWILIO_MESSAGING_SERVICE_SID, el código usa el servicio en lugar de enviar `from`: incluir el sender definitivo en su pool y revisar qué números puede seleccionar. Para esta instalación, actualmente sin servicio, dejarlo vacío permite fijar el remitente.
+
+Después de acordar el cambio, recrear web en una ventana de baja actividad; no hace falta build por cambiar estas variables:
+
+```powershell
+docker compose --env-file C:/ProgramData/BotCCS/deploy.env up -d --no-build --force-recreate --wait web
+```
+
+Antes, comprobar la imagen seleccionada en deploy.env: el comando usa esa etiqueta local, que puede haber sido reconstruida para validación. Si se necesita conservar exactamente el binario activo, fijar una etiqueta de la imagen activa antes de recrear. Un restart no recarga runtime.env. No ejecutar el comando durante una guía de diagnóstico sin haber acordado el cambio del número.
+
+### 4. Verificar qué número funciona
+
+Desde otro teléfono autorizado, escribir al número definitivo mostrado por Twilio. Iniciar con `hola` abre la ventana de atención de 24 horas para respuestas libres; fuera de esa ventana se requieren plantillas aprobadas, que este bot no implementa como flujo de recontacto. [Guía oficial de envío/recepción](https://www.twilio.com/docs/whatsapp/quickstart).
+
+Comprobar en este orden: mensaje entrante en Twilio con To igual al número definitivo; conversación en el CRM; respuesta saliente cuyo From sea ese mismo número; estado delivered en Twilio y recepción visible en el teléfono. queued/sent no acreditan entrega, y read depende de confirmaciones de lectura. Luego probar laboratorio/vCard, turno de cardiología y control humano con datos ficticios. Ver procedimiento WhatsApp real de este documento.
+
+Si no entra en Twilio: revisar registro/estado del sender y número destinatario. Si entra allí pero no en CRM: revisar webhook, workflow, conectividad y Header Auth. Si entra en CRM pero no responde: revisar transporte, cuenta y remitente, ventana de atención y código de error en Messaging Logs. Si el número saliente difiere: revisar runtime y Messaging Service. No usar la matriz de teléfonos sintéticos con transporte live.
+
+El Sandbox sirve para probar con el número compartido de Twilio y participantes vinculados por código join; no habilita por sí mismo el número de la clínica. [Sandbox oficial](https://www.twilio.com/docs/whatsapp/sandbox).
+
+### Solicitar acceso al responsable
+
+Pedir invitación al correo de trabajo a la cuenta/subcuenta Twilio que contiene el sender, con permisos para revisar/configurar WhatsApp Senders y ver Messaging Logs. El propietario puede usar Settings > Account settings > User management (o Twilio Admin > Users según la consola) e invitar al correo de trabajo al ámbito correcto; [gestión oficial de usuarios](https://www.twilio.com/docs/iam/organizations/managed-users). No pedir acceso de propietario a toda la organización para revisar una sola cuenta. Para un alta o vinculación Meta, el administrador del Business Portfolio debe realizarla o conceder el acceso administrativo necesario; para diagnóstico, puede mostrar WhatsApp Manager en una sesión compartida sin compartir contraseña. Confirmar quién controla la SIM/línea para recibir códigos. Los códigos se introducen en el portal oficial por el responsable, no se guardan en este proyecto.
+
+Texto sugerido: «Para conectar el WhatsApp de la clínica al bot necesito identificar quién administra Twilio y el portfolio comercial de Meta. ¿Pueden invitar mi correo de trabajo a la cuenta Twilio del número, con permisos de WhatsApp Senders y registros de mensajes? Necesitamos que el administrador de Meta revise con nosotros la cuenta WhatsApp y complete cualquier validación pendiente. El número ya está cargado en Twilio pero figura OFFLINE. Confirmen también si se usa desde WhatsApp Business del celular y quién puede recibir SMS/llamadas de verificación. Por ahora no borren la cuenta ni cambien el registro del número».
