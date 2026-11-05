@@ -6,6 +6,8 @@ import { accessDenied, canOperateConversation } from "@/lib/areas";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import { RESOLUTION_STATUSES } from "@/lib/domain";
 
+import { withConversationLock } from "@/lib/conversation-lock";
+
 export const dynamic = "force-dynamic";
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -20,31 +22,41 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const supabase = createAdminSupabaseClient();
     const now = new Date().toISOString();
 
-    const { data: current, error: currentError } = await supabase
-      .from("conversations")
-      .select("id,area_ids,assigned_operator_id")
-      .eq("id", id)
-      .single();
-    if (currentError) throw new Error(currentError.message);
-    if (!canOperateConversation(operator, current)) throw accessDenied("Solo el operador que tiene la conversación o un admin puede cambiar su estado.");
+    return await withConversationLock(supabase, id, async () => {
+      const { data: current, error: currentError } = await supabase
+        .from("conversations")
+        .select("id,status,area_ids,assigned_operator_id")
+        .eq("id", id)
+        .single();
+      if (currentError) throw new Error(currentError.message);
+      if (!canOperateConversation(operator, current)) throw accessDenied("Solo el operador que tiene la conversación o un admin puede cambiar su estado.");
 
-    const { data, error } = await supabase
-      .from("conversations")
-      .update({
+      const { data, error } = await supabase
+        .from("conversations")
+        .update({
+          ...(resolution_status === "resuelta" ? {
+            ...(current.status !== "closed" ? { status: "bot_active" } : {}),
+            assigned_operator_id: null, bot_paused_until: null, unanswered_release_at: null,
+          } : {}),
+          resolution_status,
+          resolved_at: resolution_status === "resuelta" ? now : null,
+          resolved_by: resolution_status === "resuelta" ? operator.id : null,
+          updated_at: now,
+        })
+        .eq("id", id)
+        .select("*")
+        .single();
+      if (error) throw new Error(error.message);
+
+      await insertConversationEvent(supabase, id, "resolution_status_changed", "operator", operator.id, {
         resolution_status,
-        resolved_at: resolution_status === "resuelta" ? now : null,
-        resolved_by: resolution_status === "resuelta" ? operator.id : null,
-        updated_at: now,
-      })
-      .eq("id", id)
-      .select("*")
-      .single();
-    if (error) throw new Error(error.message);
-
-    await insertConversationEvent(supabase, id, "resolution_status_changed", "operator", operator.id, {
-      resolution_status,
+      });
+      if (resolution_status === "resuelta" && current.status !== "closed" &&
+          (current.status === "human_takeover" || current.assigned_operator_id)) {
+        await insertConversationEvent(supabase, id, "bot_released", "operator", operator.id, { reason: "resolution_resuelta", automatic: true });
+      }
+      return Response.json({ conversation: data });
     });
-    return Response.json({ conversation: data });
   } catch (error) {
     return apiError(error);
   }

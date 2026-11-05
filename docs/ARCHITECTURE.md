@@ -35,7 +35,7 @@ Estados de conversación:
 
 - `bot_active`: el bot puede responder.
 - `waiting_operator`: caso derivado a atención humana.
-- `human_takeover`: un operador tomó control.
+- `human_takeover`: atención humana, activada automáticamente antes del envío del operador.
 - `takeover_expired`: venció el control humano por inactividad.
 - `closed`: conversación cerrada.
 
@@ -118,3 +118,9 @@ Se retiraron configuraciones PM2, instaladores/watchdog Windows, el script de co
 ## Ajustes de usuarios y resolución — 05/11/2026
 
 Migración 012 agrega operators.personas_list jsonb NOT NULL DEFAULT [] (array, máximo 50). Cada elemento contiene first_name y last_name, obligatorios y limitados a 100 caracteres por API. GET/POST/PATCH administrativa lee/persiste la lista; PATCH sin personas_list conserva su valor. operators.personas de 011 queda como texto anterior de compatibilidad: solo se muestra para revisión si existe y aún no hay lista; no se adivinan nombres/apellidos. No se crean identidades Auth por persona. No se incorpora a identidad, derivación ni métricas. DELETE protege emails admin/admindev. El frontend retira cierre manual; API previa conservada por compatibilidad. Archivadas mantiene semántica histórica status=closed.
+
+## Atención humana automática (05/11/2026)
+
+`POST conversations/:id/send` admite conversaciones no archivadas visibles para el sector: pausa y asigna antes de Twilio, renueva el plazo y reabre resolución Resuelta a Abierta. Un compañero de la misma área puede asumir al responder, como antes al tomar control. Si Twilio rechaza el envío se restauran los campos de control/resolución anteriores; si el proveedor aceptó y falla la persistencia posterior se mantiene la pausa (no reenviar sin verificar entrega). `resolution=resuelta` libera asignación/pausa y cambia a bot_active en una única actualización, conservando closed si ya estaba archivada. Pendiente/Abierta no cambian el control.
+
+`contact-lock.ts` mantiene en globalThis una cola compartida por teléfono normalizado entre bundles de rutas de la única réplica. Inbound, envío humano y resolución usan la misma cola; resolución relee el estado tras esperar y no se adelanta a un envío en curso. No cancela mensajes ya enviados o encolados fuera de ese turno. Rutas takeover/release/close conservadas por compatibilidad sin controles en la UI. Sin migración ni cambios a cuentas/catálogo.

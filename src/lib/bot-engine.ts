@@ -1,3 +1,4 @@
+import { withContactLock } from "./contact-lock";
 import crypto from "crypto";
 import { insertConversationEvent } from "./api-helpers";
 import { evaluateInboundTurn, getDocumentValidationRequestsForTurn } from "./bot-core";
@@ -18,27 +19,9 @@ export type { NormalizedInbound } from "./bot-types";
 
 type SupabaseAdmin = ReturnType<typeof createAdminSupabaseClient>;
 
-const inboundQueues = new Map<string, Promise<void>>();
-
 function normalizePhone(value: string) {
   const digits = String(value || "").replace(/\D/g, "");
   return digits ? `+${digits}` : "";
-}
-
-function processInboundSerially<T>(phone: string, operation: () => Promise<T>) {
-  const previous = inboundQueues.get(phone) || Promise.resolve();
-  const result = previous.catch(() => undefined).then(operation);
-  const completion = result.then(
-    () => undefined,
-    () => undefined,
-  );
-
-  inboundQueues.set(phone, completion);
-  void completion.finally(() => {
-    if (inboundQueues.get(phone) === completion) inboundQueues.delete(phone);
-  });
-
-  return result;
 }
 
 function normalizeText(value: string) {
@@ -483,5 +466,5 @@ async function processInboundForContact(payload: NormalizedInbound) {
 }
 
 export function processInbound(payload: NormalizedInbound) {
-  return processInboundSerially(normalizePhone(payload.from), () => processInboundForContact(payload));
+  return withContactLock(normalizePhone(payload.from), () => processInboundForContact(payload));
 }

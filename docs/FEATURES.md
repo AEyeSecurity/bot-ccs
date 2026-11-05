@@ -32,7 +32,7 @@ El login admite el nombre de usuario (sin dominio) o el email completo: si no tr
 - Cada área de la hoja "Usuarios" es una cuenta. Varias computadoras pueden usar la misma cuenta y ven lo mismo.
 - La conversación se deriva por intent, especialidad, estudio o profesional nombrado (por ejemplo, "electrocardiograma" o "Dr. Segovia" a Cardiología, "Nefrología" a Pasaje).
 - Un operador solo ve las conversaciones de sus áreas. Admin ve todas, incluidas las que no tienen área.
-- Un compañero del área puede tomar una conversación que otro estaba atendiendo; el cambio queda registrado. Liberar y cerrar requieren ser el dueño o que no tenga dueño dentro del área.
+- Un compañero del área puede asumir una conversación al responder; el cambio queda registrado. Cambiar la resolución requiere ser el dueño o que no tenga dueño dentro del área (admin puede operar cualquiera).
 - Alta de usuarios por línea de comandos: `npm run operator:create` (ver OPERATIONS).
 - Estado de resolución por conversación: `abierta`, `pendiente` o `resuelta`, con botón de cambio y filtro propio (entrega 2).
 - Filtro por rango de fechas (desde/hasta) en la bandeja.
@@ -51,10 +51,10 @@ El login admite el nombre de usuario (sin dominio) o el email completo: si no tr
 
 - Búsqueda y filtros por estado y por resolución; rango de fechas.
 - Lectura de mensajes y estado del caso.
-- Toma de control, respuesta humana, liberación y cierre manual.
+- Respuesta humana sin botones de toma/liberación: al enviar se asigna la cuenta del sector y se pausa el bot; Resuelta habilita al bot para próximos mensajes y libera la asignación.
 - El panel no ofrece cierre manual ni confirmación de resolución al archivar. Se conserva la resolución independiente y el cierre automático a las 24 h según inactividad/liberación sin respuesta.
 - El bot no responde mientras existe control humano.
-- El control humano vence según `HUMAN_TAKEOVER_TIMEOUT_MINUTES` después del último mensaje del operador.
+- La pausa humana vence según `HUMAN_TAKEOVER_TIMEOUT_MINUTES` después del último mensaje del operador (default 10 minutos). Pendiente conserva la pausa y su plazo si había atención humana; marcar Pendiente solo no inicia una pausa. Al responder tras el vencimiento se renueva automáticamente; responder una Resuelta la vuelve a Abierta.
 - Si se libera sin respuesta humana, la conversación cierra al cumplirse 24 horas desde el último inbound.
 - Un nuevo mensaje del paciente o una respuesta humana cancela el cierre pendiente.
 

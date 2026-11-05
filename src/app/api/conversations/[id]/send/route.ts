@@ -5,7 +5,9 @@ import { addMinutes, insertConversationEvent } from "@/lib/api-helpers";
 import { createAdminSupabaseClient } from "@/lib/supabase";
 import { sendWhatsappMessage } from "@/lib/twilio";
 import { getServerEnv } from "@/lib/env";
-import { accessDenied, canViewConversation, isAdmin } from "@/lib/areas";
+import { accessDenied, canViewConversation } from "@/lib/areas";
+
+import { withConversationLock } from "@/lib/conversation-lock";
 
 export const dynamic = "force-dynamic";
 
@@ -26,86 +28,83 @@ export async function POST(request: NextRequest, context: RouteContext) {
     const { body } = schema.parse(await request.json());
     const supabase = createAdminSupabaseClient();
 
-    const { data: conversation, error: conversationError } = await supabase
-      .from("conversations")
-      .select("*,contact:contacts(*)")
-      .eq("id", id)
-      .single();
-    if (conversationError) throw new Error(conversationError.message);
-    if (!canViewConversation(operator, conversation)) throw accessDenied();
-    if (!conversation.contact?.whatsapp_number) throw Object.assign(new Error("Conversation has no WhatsApp contact"), { status: 400 });
-    if (conversation.status !== "human_takeover") {
-      throw apiStatusError("Tomá control de la conversación antes de enviar.", 409);
-    }
-    if (!isAdmin(operator) && conversation.assigned_operator_id && conversation.assigned_operator_id !== operator.id) {
-      throw apiStatusError("La conversación está tomada por otro operador.", 403);
-    }
+    return await withConversationLock(supabase, id, async () => {
+      const { data: conversation, error: conversationError } = await supabase
+        .from("conversations")
+        .select("*,contact:contacts(*)")
+        .eq("id", id)
+        .single();
+      if (conversationError) throw new Error(conversationError.message);
+      if (!canViewConversation(operator, conversation)) throw accessDenied();
+      if (!conversation.contact?.whatsapp_number) throw Object.assign(new Error("Conversation has no WhatsApp contact"), { status: 400 });
+      if (conversation.status === "closed") throw apiStatusError("La conversación está archivada. Esperá un nuevo mensaje del paciente.", 409);
+      const now = new Date().toISOString();
+      const pausedUntil = addMinutes(getServerEnv().humanTakeoverTimeoutMinutes);
+      const previous = Object.fromEntries([
+        "status", "assigned_operator_id", "bot_paused_until", "unanswered_release_at", "resolution_status", "resolved_at", "resolved_by", "updated_at",
+      ].map((key) => [key, conversation[key] ?? null]));
+      const { error: pauseError } = await supabase.from("conversations").update({
+        status: "human_takeover", assigned_operator_id: operator.id, bot_paused_until: pausedUntil,
+        unanswered_release_at: null, updated_at: now,
+        ...(conversation.resolution_status === "resuelta" ? { resolution_status: "abierta", resolved_at: null, resolved_by: null } : {}),
+      }).eq("id", id);
+      if (pauseError) throw new Error(pauseError.message);
 
-    const nowDate = new Date();
-    const pausedUntilDate = conversation.bot_paused_until ? new Date(conversation.bot_paused_until) : null;
-    if (pausedUntilDate && pausedUntilDate.getTime() <= nowDate.getTime()) {
-      const nowIso = nowDate.toISOString();
-      await supabase
+      let twilioMessage;
+      try {
+        twilioMessage = await sendWhatsappMessage(conversation.contact.whatsapp_number, body);
+      } catch (sendError) {
+        const { error: restoreError } = await supabase.from("conversations").update(previous).eq("id", id);
+        if (restoreError) throw new Error("Falló el envío y no se pudo restaurar el estado de la conversación");
+        throw sendError;
+      }
+
+      const { data: message, error: messageError } = await supabase
+        .from("messages")
+        .insert({
+          conversation_id: id,
+          contact_id: conversation.contact_id,
+          direction: "outbound",
+          sender_type: "operator",
+          operator_id: operator.id,
+          body,
+          twilio_message_sid: twilioMessage.sid,
+          twilio_status: twilioMessage.status || "queued",
+          expires_at: new Date(Date.now() + getServerEnv().retentionMessagesDays * 86400000).toISOString(),
+        })
+        .select("*")
+        .single();
+      if (messageError) throw new Error(messageError.message);
+
+      const { error: updateError } = await supabase
         .from("conversations")
         .update({
-          status: "takeover_expired",
-          assigned_operator_id: null,
-          bot_paused_until: null,
-          updated_at: nowIso,
+          status: "human_takeover",
+          assigned_operator_id: operator.id,
+          bot_paused_until: pausedUntil,
+          last_outbound_at: now,
+          last_activity_at: now,
+          unread_count: 0,
+          unanswered_release_at: null,
+          updated_at: now,
         })
         .eq("id", id);
+      if (updateError) throw new Error(updateError.message);
 
-      await insertConversationEvent(supabase, id, "takeover_expired", "system", null, {
-        expired_at: nowIso,
-        previous_bot_paused_until: conversation.bot_paused_until,
+      if (conversation.status !== "human_takeover" || conversation.assigned_operator_id !== operator.id ||
+          (conversation.bot_paused_until && new Date(conversation.bot_paused_until).getTime() <= Date.now())) {
+        await insertConversationEvent(supabase, id, "human_takeover_started", "operator", operator.id, {
+          automatic: true, previous_operator_id: conversation.assigned_operator_id || null,
+        });
+      }
+      await insertConversationEvent(supabase, id, "operator_message_sent", "operator", operator.id, {
+        message_id: message.id,
+        twilio_message_sid: twilioMessage.sid,
+        bot_paused_until: pausedUntil,
       });
 
-      throw apiStatusError("El control humano venció. Volvé a tomar control antes de enviar.", 409);
-    }
-
-    const twilioMessage = await sendWhatsappMessage(conversation.contact.whatsapp_number, body);
-    const now = nowDate.toISOString();
-    const pausedUntil = addMinutes(getServerEnv().humanTakeoverTimeoutMinutes);
-
-    const { data: message, error: messageError } = await supabase
-      .from("messages")
-      .insert({
-        conversation_id: id,
-        contact_id: conversation.contact_id,
-        direction: "outbound",
-        sender_type: "operator",
-        operator_id: operator.id,
-        body,
-        twilio_message_sid: twilioMessage.sid,
-        twilio_status: twilioMessage.status || "queued",
-        expires_at: new Date(Date.now() + getServerEnv().retentionMessagesDays * 86400000).toISOString(),
-      })
-      .select("*")
-      .single();
-    if (messageError) throw new Error(messageError.message);
-
-    const { error: updateError } = await supabase
-      .from("conversations")
-      .update({
-        status: "human_takeover",
-        assigned_operator_id: operator.id,
-        bot_paused_until: pausedUntil,
-        last_outbound_at: now,
-        last_activity_at: now,
-        unread_count: 0,
-        unanswered_release_at: null,
-        updated_at: now,
-      })
-      .eq("id", id);
-    if (updateError) throw new Error(updateError.message);
-
-    await insertConversationEvent(supabase, id, "operator_message_sent", "operator", operator.id, {
-      message_id: message.id,
-      twilio_message_sid: twilioMessage.sid,
-      bot_paused_until: pausedUntil,
+      return Response.json({ message });
     });
-
-    return Response.json({ message });
   } catch (error) {
     return apiError(error);
   }

@@ -3,7 +3,6 @@
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BarChart3,
-  Bot,
   ChevronDown,
   ChevronLeft,
   CheckCircle2,
@@ -146,7 +145,6 @@ export function DashboardApp() {
   const [reply, setReply] = useState("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [nowMs, setNowMs] = useState(0);
   const [view, setView] = useState<"conversations" | "catalog" | "users" | "analytics">("conversations");
   const [adminOpen, setAdminOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -263,11 +261,6 @@ export function DashboardApp() {
   }, [detail?.messages]);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setNowMs(Date.now()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
     if (!accessToken) return;
     const ping = () => apiFetch("/api/presence", { method: "POST" }).catch(() => undefined);
     void ping();
@@ -311,22 +304,6 @@ export function DashboardApp() {
       setAuthError(changeError instanceof Error ? changeError.message : "No se pudo cambiar la contraseña");
     } finally {
       setPasswordBusy(false);
-    }
-  }
-
-  async function action(path: string) {
-    if (!selectedId) return;
-    setBusy(true);
-    try {
-      await apiFetch(`/api/conversations/${selectedId}/${path}`, { method: "POST", body: "{}" });
-      await Promise.all([loadConversations(), loadMessages(selectedId)]);
-    } catch (error) {
-      setAuthError(error instanceof Error ? error.message : "Error");
-      if (selectedId) {
-        await Promise.all([loadConversations(), loadMessages(selectedId)]).catch(() => undefined);
-      }
-    } finally {
-      setBusy(false);
     }
   }
 
@@ -484,21 +461,9 @@ export function DashboardApp() {
   }
 
   const selected = detail?.conversation || conversations.find((conversation) => conversation.id === selectedId) || null;
-  const takeoverExpired =
-    selected?.status === "takeover_expired" ||
-    Boolean(
-      selected?.status === "human_takeover" &&
-        selected.bot_paused_until &&
-        new Date(selected.bot_paused_until).getTime() <= nowMs,
-    );
-  const canReply = Boolean(selected && selected.status === "human_takeover" && !takeoverExpired);
-  const replyPlaceholder = !selected
-    ? "Seleccione una conversación"
-    : takeoverExpired
-      ? "Control vencido. Volvé a tomar control para responder."
-      : selected.status !== "human_takeover"
-        ? "Tomá control para responder"
-        : "Responder";
+  const canReply = Boolean(selected && selected.status !== "closed");
+  const replyPlaceholder = !selected ? "Seleccione una conversación" : selected.status === "closed"
+    ? "Conversación archivada" : "Responder (el bot se pausa al enviar)";
 
   if (view === "catalog" && canAdmin) {
     return <CatalogAdminPanel apiFetch={apiFetch} onBack={() => setView("conversations")} canRestore={canRestore} />;
@@ -679,27 +644,7 @@ export function DashboardApp() {
               </p>
             </div>
           </div>
-          {selected ? (
-            <div className="flex shrink-0 gap-2">
-              <button
-                title="Tomar control"
-                disabled={busy || selected.status === "closed"}
-                onClick={() => action("takeover")}
-                className="grid h-9 w-9 place-items-center rounded-xl border border-zinc-200 text-zinc-700 transition hover:bg-sky-50 hover:text-sky-700"
-              >
-                <UserCheck size={17} />
-              </button>
-              <button
-                title="Liberar bot"
-                disabled={busy || selected.status === "closed"}
-                onClick={() => action("release")}
-                className="grid h-9 w-9 place-items-center rounded-xl border border-zinc-200 text-zinc-700 transition hover:bg-emerald-50 hover:text-[#176b5a]"
-              >
-                <Bot size={17} />
-              </button>
 
-            </div>
-          ) : null}
         </header>
 
         <div className="conversation-canvas min-h-0 flex-1 overflow-y-auto px-4 py-6">

@@ -15,7 +15,7 @@ BOT CCS resuelve el problema con un asistente que:
 - responde consultas frecuentes de forma automática y consistente;
 - captura datos (nombre, DNI, cobertura, disponibilidad) y valida documentos;
 - deriva los casos a la cuenta de área correcta en el panel;
-- permite que los operadores tomen control, respondan y cierren casos;
+- permite responder desde el sector con pausa automática del bot y finalizar la atención marcando Resuelta;
 - expone métricas operativas al administrador.
 
 El beneficio esperado es reducir la carga manual y los casos mal derivados. Los resultados operativos (volumen, resolución, tiempos) se miden en el panel de datos y no se afirman aquí como concluidos.
@@ -41,7 +41,7 @@ Resumen por bloques; el detalle está en [docs/FEATURES.md](docs/FEATURES.md).
 - **Atención al paciente:** saludo, clasificación determinística, respuestas por especialidad/profesional/estudio, servicios directos, obras sociales y vCards.
 - **Datos y DNI:** captura de nombre, DNI, cobertura y disponibilidad; validación estructurada de frente y dorso (OCR de Gemini, sin persistir los archivos).
 - **Áreas y permisos (Iteración 1):** derivación por intent o profesional, permisos por área, estado de resolución, presencia, alta de usuarios y panel de datos.
-- **Panel de conversaciones:** filtros, toma de control, respuesta humana, liberación y cierre; control humano con vencimiento.
+- **Panel de conversaciones:** filtros, respuesta humana con toma automática y devolución al bot al marcar Resuelta; pausa humana con vencimiento.
 - **Banco administrable:** edición y publicación de textos, profesionales, estudios y coberturas, con historial, restauración y publicación sin build ni reinicio.
 
 ## Arquitectura y funcionamiento

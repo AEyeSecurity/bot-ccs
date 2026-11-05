@@ -264,3 +264,9 @@ Aplicado y desplegado: 011 en transacción; eliminadas 6 cuentas conservando adm
 Se reemplaza el campo de texto por tarjetas con Nombre/Apellido separados, + Agregar persona y Quitar persona. API y migración 012 persisten una lista estructurada por cuenta; se valida cantidad y campos completos. El texto anterior se conserva sin inferir apellidos. Cuenta de sector, Auth, áreas, presencia, permisos y atribución de mensajes continúan funcionando por cuenta; las personas son informativas. No se repite la limpieza de usuarios.
 
 Aplicada 012 (2 cuentas preservadas, texto anterior vacío), desplegado y salud local/pública verificada. 525 pruebas/lint/build, 17 HTTP y 25 n8n aprobados. Pendiente comprobación visual con sesión.
+
+## Atención humana sin botones — 05/11/2026
+
+Retirados Tomar control y Liberar bot. Primer envío pausa/asigna automáticamente, renueva plazo y reabre resolución Resuelta; Resuelta libera bot/asignación sin archivar; Pendiente conserva pausa y plazo. Cola por contacto compartida entre inbound/envío/resolución y restauración del estado si Twilio rechaza. Se mantienen APIs anteriores por compatibilidad. Sin migraciones ni cambios de cuentas/catálogo.
+
+Desplegado y verificado: 535 pruebas/lint/build aprobados, matriz mock 17 HTTP/25 n8n sin incidentes; workflow retirado/ensayo detenido. Salud local/pública e imagen correctas. Pausa runtime confirmada en 10 minutos. Sin WhatsApp real en esta validación.
