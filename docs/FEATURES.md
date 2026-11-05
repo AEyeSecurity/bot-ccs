@@ -87,3 +87,5 @@ Aplicación y mantenimiento en Docker Compose; n8n existente conserva el workflo
 ## Ajustes de usuarios y resolución — 05/11/2026
 
 Cuentas de sector: nombre libre y lista Personas (hasta 50 personas, cada una con Nombre y Apellido separados, visibles solo en Usuarios; + Agregar persona abre otra tarjeta y Quitar persona la retira). No identifica al autor de respuestas. Admin y admindev protegidos contra borrado. Filtros Abierta, Pendiente, Resuelta, Todas; panel sin cierre manual, resolución independiente del archivo automático. Panel de datos llama Archivadas al total histórico status=closed.
+
+Ajuste visual 05/11/2026: se retira la explicación bajo Personas en el formulario de alta/edición de Usuarios.

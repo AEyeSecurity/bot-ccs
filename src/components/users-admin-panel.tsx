@@ -294,7 +294,6 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
                     <Plus size={16} /> Agregar persona
                   </button>
                 </div>
-                <p className="text-xs text-zinc-500">Personas que utilizan esta cuenta. Información visible solo en Usuarios.</p>
                 {form.legacyPersonas && !form.personas_list.length ? <p className="whitespace-pre-wrap rounded-lg bg-amber-50 p-2 text-xs text-amber-900">Información anterior: {form.legacyPersonas}. Cargá los nombres y apellidos por separado con el botón +.</p> : null}
                 {form.personas_list.map((person, index) => (
                   <fieldset key={index} className="space-y-2 rounded-xl border border-zinc-200 bg-zinc-50 p-3">

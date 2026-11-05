@@ -270,3 +270,9 @@ Aplicada 012 (2 cuentas preservadas, texto anterior vacío), desplegado y salud 
 Retirados Tomar control y Liberar bot. Primer envío pausa/asigna automáticamente, renueva plazo y reabre resolución Resuelta; Resuelta libera bot/asignación sin archivar; Pendiente conserva pausa y plazo. Cola por contacto compartida entre inbound/envío/resolución y restauración del estado si Twilio rechaza. Se mantienen APIs anteriores por compatibilidad. Sin migraciones ni cambios de cuentas/catálogo.
 
 Desplegado y verificado: 535 pruebas/lint/build aprobados, matriz mock 17 HTTP/25 n8n sin incidentes; workflow retirado/ensayo detenido. Salud local/pública e imagen correctas. Pausa runtime confirmada en 10 minutos. Sin WhatsApp real en esta validación.
+
+## Texto de Personas — 05/11/2026
+
+Retirada la frase explicativa bajo Personas en alta/edición de usuarios, a pedido del usuario. Cambio solo visual.
+
+23 pruebas de usuarios, lint y build OK. Publicado y salud pública/imagen verificadas; matriz bot no repetida por cambio exclusivo de texto.
