@@ -15,6 +15,7 @@ const passwordSchema = z
 const createSchema = z.object({
   username: z.string().trim().toLowerCase().regex(/^[a-z0-9._-]{3,}$/, "El usuario debe tener al menos 3 caracteres (a-z, 0-9, . _ -)"),
   name: z.string().trim().min(1, "El nombre es obligatorio"),
+  personas: z.string().trim().max(2000).optional(),
   password: passwordSchema,
   role: z.enum(["admin", "operator"]),
   areas: z.array(z.string().trim().min(1)).default([]),
@@ -23,6 +24,7 @@ const createSchema = z.object({
 const updateSchema = z.object({
   id: z.string().min(1),
   name: z.string().trim().min(1, "El nombre es obligatorio"),
+  personas: z.string().trim().max(2000).optional(),
   role: z.enum(["admin", "operator"]),
   areas: z.array(z.string().trim().min(1)).default([]),
   is_active: z.boolean(),
@@ -63,7 +65,7 @@ async function replaceAreas(
 async function loadOperatorWithAreas(supabase: ReturnType<typeof createAdminSupabaseClient>, id: string) {
   const { data: operator, error } = await supabase
     .from("operators")
-    .select("id,auth_user_id,name,email,role,is_active,last_seen_at")
+    .select("id,auth_user_id,name,email,role,is_active,last_seen_at,personas")
     .eq("id", id)
     .single();
   if (error) throw new Error(error.message);
@@ -80,7 +82,7 @@ export async function GET(request: NextRequest) {
     const [{ data: operators }, { data: areas }] = await Promise.all([
       supabase
         .from("operators")
-        .select("id,auth_user_id,name,email,role,is_active,last_seen_at")
+        .select("id,auth_user_id,name,email,role,is_active,last_seen_at,personas")
         .order("name", { ascending: true }),
       supabase.from("areas").select("id,name").order("name", { ascending: true }),
     ]);
@@ -131,7 +133,7 @@ export async function POST(request: NextRequest) {
     const { data: row, error: upsertError } = await supabase
       .from("operators")
       .upsert(
-        { auth_user_id: created.user.id, name: input.name, email, role: input.role, is_active: true, password_change_required: true },
+        { auth_user_id: created.user.id, name: input.name, personas: input.personas || "", email, role: input.role, is_active: true, password_change_required: true },
         { onConflict: "email" },
       )
       .select("id")
@@ -180,6 +182,7 @@ export async function PATCH(request: NextRequest) {
       .from("operators")
       .update({
         name: input.name,
+        ...(input.personas !== undefined ? { personas: input.personas } : {}),
         role: input.role,
         is_active: input.is_active,
         ...(passwordChanged ? { password_change_required: true } : {}),
@@ -209,11 +212,15 @@ export async function DELETE(request: NextRequest) {
 
     const { data: target, error: targetError } = await supabase
       .from("operators")
-      .select("id,auth_user_id")
+      .select("id,auth_user_id,email")
       .eq("id", input.id)
       .maybeSingle();
     if (targetError) throw new Error(targetError.message);
     if (!target) throw Object.assign(new Error("Usuario inexistente"), { status: 404 });
+
+    if (["admin@bot-ccs.local", "admindev@bot-ccs.local"].includes(String(target.email).toLowerCase())) {
+      throw Object.assign(new Error("Esta cuenta administrativa está protegida"), { status: 400 });
+    }
 
     if (target.auth_user_id) {
       const { error: authError } = await supabase.auth.admin.deleteUser(target.auth_user_id);

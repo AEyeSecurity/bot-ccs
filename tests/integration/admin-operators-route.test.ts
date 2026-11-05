@@ -180,3 +180,32 @@ describe("eliminación de usuarios", () => {
     expect(response.status).toBe(404);
   });
 });
+
+
+describe("Personas y cuentas protegidas", () => {
+  test("guarda texto informativo sin modificar áreas y lo devuelve al admin", async () => {
+    const response = await PATCH(request("/api/admin/operators", "token-auth-admin", {
+      method: "PATCH", body: JSON.stringify({ id: "op-carla", name: "Cardiología", role: "operator", areas: ["Cardiología"], is_active: true, personas: "Ana\nLuis" }),
+    }));
+    expect(response.status).toBe(200);
+    const list = await GET(request("/api/admin/operators", "token-auth-admin"));
+    const body = await list.json();
+    expect(body.operators.find((row: { id: string }) => row.id === "op-carla").personas).toBe("Ana\nLuis");
+    expect(holder.client.table("operator_areas")).toEqual([expect.objectContaining({ operator_id: "op-carla", area_id: CARDIOLOGIA })]);
+  });
+
+  test("rechaza texto excesivo antes de modificar la cuenta", async () => {
+    const response = await PATCH(request("/api/admin/operators", "token-auth-admin", {
+      method: "PATCH", body: JSON.stringify({ id: "op-carla", name: "Sector", role: "operator", areas: ["Cardiología"], is_active: true, personas: "a".repeat(2001) }),
+    }));
+    expect(response.status).toBe(400);
+    expect(holder.client.table("operators").find((row) => row.id === "op-carla")?.name).toBe("Carla");
+  });
+
+  test.each(["admin", "admindev"])("protege %s incluso frente a otro administrador", async (username) => {
+    holder.client.table("operators").push({ id: "protected", auth_user_id: "protected-auth", email: `${username}@bot-ccs.local`, role: "admin", is_active: true });
+    const response = await DELETE(request("/api/admin/operators", "token-auth-admin", { method: "DELETE", body: JSON.stringify({ id: "protected" }) }));
+    expect(response.status).toBe(400);
+    expect(holder.client.table("operators").some((row) => row.id === "protected")).toBe(true);
+  });
+});

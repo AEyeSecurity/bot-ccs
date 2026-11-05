@@ -30,8 +30,8 @@ import { UsersAdminPanel } from "@/components/users-admin-panel";
 import { AnalyticsPanel } from "@/components/analytics-panel";
 
 const resolutionFilters: Array<{ key: "all" | ResolutionStatus; label: string }> = [
-  { key: "all", label: "Todas" },
   ...RESOLUTION_STATUSES.map((status) => ({ key: status as ResolutionStatus, label: RESOLUTION_LABELS[status] })),
+  { key: "all", label: "Todas" },
 ];
 
 function resolutionClasses(status?: ResolutionStatus | null) {
@@ -149,7 +149,6 @@ export function DashboardApp() {
   const [nowMs, setNowMs] = useState(0);
   const [view, setView] = useState<"conversations" | "catalog" | "users" | "analytics">("conversations");
   const [adminOpen, setAdminOpen] = useState(false);
-  const [confirmClose, setConfirmClose] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const accessToken = session?.access_token || "";
 
@@ -326,23 +325,6 @@ export function DashboardApp() {
       if (selectedId) {
         await Promise.all([loadConversations(), loadMessages(selectedId)]).catch(() => undefined);
       }
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function closeConversation(markResolved: boolean) {
-    if (!selectedId) return;
-    setBusy(true);
-    setConfirmClose(false);
-    try {
-      await apiFetch(`/api/conversations/${selectedId}/close`, {
-        method: "POST",
-        body: JSON.stringify({ mark_resolved: markResolved }),
-      });
-      await Promise.all([loadConversations(), loadMessages(selectedId)]);
-    } catch (error) {
-      setAuthError(error instanceof Error ? error.message : "Error");
     } finally {
       setBusy(false);
     }
@@ -715,20 +697,7 @@ export function DashboardApp() {
               >
                 <Bot size={17} />
               </button>
-              <button
-                title="Cerrar conversación"
-                disabled={busy || selected.status === "closed"}
-                onClick={() => {
-                  if (selected.resolution_status && selected.resolution_status !== "resuelta") {
-                    setConfirmClose(true);
-                  } else {
-                    void closeConversation(selected.resolution_status === "resuelta");
-                  }
-                }}
-                className="grid h-9 w-9 place-items-center rounded-xl border border-zinc-200 text-zinc-700 transition hover:bg-rose-50 hover:text-rose-700"
-              >
-                <CheckCircle2 size={17} />
-              </button>
+
             </div>
           ) : null}
         </header>
@@ -869,37 +838,7 @@ export function DashboardApp() {
         )}
       </aside>
 
-      {confirmClose ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/30 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl">
-            <p className="text-sm font-bold text-zinc-800">Cerrar conversación</p>
-            <p className="mt-1 text-sm text-zinc-500">¿Querés marcarla como resuelta antes de cerrarla?</p>
-            <div className="mt-4 grid gap-2">
-              <button
-                disabled={busy}
-                onClick={() => closeConversation(true)}
-                className="h-11 rounded-xl bg-[#176b5a] px-4 text-sm font-semibold text-white transition hover:bg-[#125747]"
-              >
-                Marcar resuelta y cerrar
-              </button>
-              <button
-                disabled={busy}
-                onClick={() => closeConversation(false)}
-                className="h-11 rounded-xl border border-zinc-200 px-4 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
-              >
-                Solo cerrar
-              </button>
-              <button
-                disabled={busy}
-                onClick={() => setConfirmClose(false)}
-                className="h-9 text-sm font-semibold text-zinc-500 hover:text-zinc-700"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+
     </main>
   );
 }

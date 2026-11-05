@@ -9,6 +9,7 @@ type ApiFetch = (path: string, init?: RequestInit) => Promise<Record<string, unk
 type OperatorRow = {
   id: string;
   name: string;
+  personas?: string;
   email: string;
   role: "admin" | "operator";
   is_active: boolean;
@@ -22,6 +23,7 @@ type FormState = {
   mode: "create" | "edit";
   id?: string;
   username: string;
+  personas: string;
   firstName: string;
   lastName: string;
   password: string;
@@ -35,6 +37,7 @@ type FormState = {
 const emptyForm: FormState = {
   mode: "create",
   username: "",
+  personas: "",
   firstName: "",
   lastName: "",
   password: "",
@@ -127,6 +130,7 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
       mode: "edit",
       id: operator.id,
       username: operator.email.replace("@bot-ccs.local", ""),
+      personas: operator.personas || "",
       firstName,
       lastName,
       password: "",
@@ -164,10 +168,11 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
         .filter((value): value is string => Boolean(value));
       const body =
         form.mode === "create"
-          ? { username: form.username, name, password: form.password, role: form.role, areas: areaNames }
+          ? { username: form.username, name, personas: form.personas, password: form.password, role: form.role, areas: areaNames }
           : {
               id: form.id,
               name,
+              personas: form.personas,
               role: form.role,
               areas: areaNames,
               is_active: form.is_active,
@@ -245,6 +250,7 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
                 <span className={`h-3 w-3 shrink-0 rounded-full ${operator.is_active ? "bg-emerald-500" : "bg-zinc-300"}`} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold text-zinc-800">{operator.name}</p>
+                  {operator.personas ? <p className="whitespace-pre-wrap text-sm text-zinc-600">Personas: {operator.personas}</p> : null}
                   <p className="truncate text-xs text-zinc-500">
                     {operator.role === "admin" ? "Administrador" : operator.area_ids?.map((id) => areaName(areas, id)).join(", ") || "Sin área"} · {operator.email}
                   </p>
@@ -282,26 +288,16 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
                   <span className="mt-1 block text-xs text-zinc-400">Se crea como {form.username || "usuario"}@bot-ccs.local</span>
                 </label>
               ) : null}
-              <div className="grid grid-cols-2 gap-2">
-                <label className="block text-sm">
-                  <span className="font-semibold text-zinc-700">Nombre</span>
-                  <input
-                    value={form.firstName}
-                    onChange={(event) => setForm({ ...form, firstName: event.target.value })}
-                    className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 outline-none focus:border-[#176b5a]"
-                    placeholder="María"
-                  />
-                </label>
-                <label className="block text-sm">
-                  <span className="font-semibold text-zinc-700">Apellido</span>
-                  <input
-                    value={form.lastName}
-                    onChange={(event) => setForm({ ...form, lastName: event.target.value })}
-                    className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3 outline-none focus:border-[#176b5a]"
-                    placeholder="García"
-                  />
-                </label>
-              </div>
+              <label className="block text-sm">
+                <span className="font-semibold text-zinc-700">Nombre de la cuenta o sector</span>
+                <input value={`${form.firstName}${form.lastName ? ` ${form.lastName}` : ""}`} onChange={(event) => setForm({ ...form, firstName: event.target.value, lastName: "" })} className="mt-1 h-11 w-full rounded-xl border border-zinc-200 bg-zinc-50 px-3" placeholder="Recepción Cardiología" />
+              </label>
+
+              <label className="block text-sm">
+                <span className="font-semibold text-zinc-700">Personas</span>
+                <textarea value={form.personas} maxLength={2000} onChange={(event) => setForm({ ...form, personas: event.target.value })} className="mt-1 min-h-24 w-full rounded-xl border border-zinc-200 bg-zinc-50 p-3" placeholder="Personas que utilizan esta cuenta de sector" />
+                <span className="text-xs text-zinc-500">Información visible solo en Usuarios. No asigna permisos ni identifica quién responde.</span>
+              </label>
 
               {needsPassword ? (
                 <>
@@ -409,7 +405,6 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
                   busy ||
                   (form.mode === "create" && !form.username.trim()) ||
                   !form.firstName.trim() ||
-                  !form.lastName.trim() ||
                   !passwordValid ||
                   (form.role === "operator" && !form.areas.length)
                 }
@@ -421,7 +416,7 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
               <button onClick={() => setForm(null)} className="h-9 text-sm font-semibold text-zinc-500 hover:text-zinc-700">
                 Cancelar
               </button>
-              {form.mode === "edit" ? (
+              {form.mode === "edit" && !["admin", "admindev"].includes(form.username) ? (
                 <button
                   disabled={busy}
                   onClick={() => void remove()}

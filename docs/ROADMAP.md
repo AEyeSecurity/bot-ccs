@@ -10,7 +10,7 @@ Ya implementado (no repetir aquí; ver detalle en los documentos canónicos):
 - **Iteración 2** — texto general propio por especialidad (`customBody`, caso Cardiología). ([FEATURES.md](FEATURES.md))
 - **Iteración 4** — clasificación Gemini "lazy" (asíncrona y solo ante fallo de reglas determinísticas). ([ARCHITECTURE.md](ARCHITECTURE.md))
 
-Comprobaciones operativas pendientes (WhatsApp real, reinicio del host, retiro de `admindev`, ruta Cloudflare antigua) se gestionan en [OPERATIONS.md](OPERATIONS.md#comprobaciones-pendientes), no aquí.
+Comprobaciones operativas pendientes (WhatsApp real, reinicio del host, ruta Cloudflare antigua) se gestionan en [OPERATIONS.md](OPERATIONS.md#comprobaciones-pendientes), no aquí.
 
 ## Cierre del MVP Base — pendientes de aceptación (2 de noviembre de 2026)
 

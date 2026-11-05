@@ -6,11 +6,11 @@ Al retomar trabajo en un chat nuevo, leer primero [MEMORY.MD](../MEMORY.MD). Act
 
 Se creó la cuenta temporal `admindev@bot-ccs.local`, operador activo con rol `admin`. El panel acepta el alias `admindev` o el email completo. La contraseña fue elegida por el usuario y solo se guarda protegida en Supabase Auth; no debe registrarse en Git, logs ni documentación. La cuenta `admin@bot-ccs.local` y su contraseña se conservan sin cambios.
 
-**Pendiente obligatorio antes de habilitar el sistema a usuarios reales:** eliminar la cuenta temporal `admindev`. Primero desactivar su registro en `operators` para bloquear las APIs incluso con sesiones existentes y después eliminar su identidad de Supabase Auth, preservando el historial de acciones y referencias existentes. Verificar el acceso de un administrador definitivo antes de retirarla. No automatizar un borrado de contactos, conversaciones o datos clínicos al eliminar esta cuenta.
+**Decisión del 05/11/2026:** conservar `admin@bot-ccs.local` y `admindev@bot-ccs.local`, activas y con sus contraseñas. El endpoint de borrado protege ambas cuentas. Se revoca el pendiente de retirar admindev; conserva su permiso de restauración.
 
 ## Alta de usuarios de área
 
-- Desde la web (panel "Usuarios", admin): nombre (Nombre + Apellido), usuario (login único), contraseña escrita por el admin y áreas. La contraseña debe cumplir mínimo 8 caracteres, una mayúscula, una minúscula y un número; se rechaza un usuario (login) repetido. El usuario debe cambiarla en el primer acceso (y tras un reset), antes de entrar al panel.
+- Desde la web (panel "Usuarios", admin): nombre de cuenta o sector, usuario (login único), contraseña escrita por el admin y áreas. La contraseña debe cumplir mínimo 8 caracteres, una mayúscula, una minúscula y un número; se rechaza un usuario (login) repetido. El usuario debe cambiarla en el primer acceso (y tras un reset), antes de entrar al panel.
 - Para eliminar un usuario: abrir su edición en Usuarios y confirmar "Eliminar usuario". Requiere acceso administrativo; no permite borrar la propia cuenta. Elimina también Supabase Auth; las referencias históricas se desvinculan según las FK. No usar cuentas reales para verificar el borrado.
 - Por CLI: `npm run operator:create -- --username cardiologia --name "Cardiología" --areas "Cardiología"`. Varias áreas se separan con coma. Para un admin: `--role admin` (sin áreas).
 - Requiere `NEXT_PUBLIC_SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY` en `.env.local` o en el entorno. Ejecutar dentro del servicio Compose `tools` con las variables inyectadas.
@@ -123,7 +123,7 @@ El workflow evita guardar cuerpos de ejecuciones: una lista vacía de ejecucione
 
 Coordinar una ventana con los responsables de los servicios compartidos. Después del reinicio, verificar que Docker inicia, web y maintenance están saludables, cloudflared reconecta y `https://ccs.aeye.com.ar/api/health/ready` devuelve `ok: true`, `testInstance: false`. Confirmar catálogo, conversaciones conservadas y acceso del n8n existente al puerto3010. No reactivar tareas nativas. `unless-stopped` depende de que el motor Docker esté activo.
 
-La retirada segura de la ruta compartida antigua y la eliminación del administrador temporal también siguen pendientes según los apartados anteriores. Registrar el resultado en TESTING y CHANGELOG después de cada comprobación.
+La retirada segura de la ruta compartida antigua sigue pendiente según los apartados anteriores. Registrar el resultado en TESTING y CHANGELOG después de cada comprobación.
 
 ## Áreas: migraciones aplicadas
 
@@ -141,7 +141,7 @@ Guía revisada el 05/11/2026. No implica que el número definitivo esté habilit
 
 Consulta de solo lectura del 05/11: contenedores web/maintenance saludables; runtime usa transporte live, no es instancia de ensayo y tiene SID/Auth Token configurados, sin Messaging Service. La cuenta consultada figura active/Full. El remitente configurado termina en 4148 y la API Senders v2 lo informa OFFLINE, con webhook inbound correcto; offline_reasons es null. Esto no identifica la causa: revisar el remitente en Console y WhatsApp Manager. No se enviaron mensajes ni se cambió configuración.
 
-Antes de atención real siguen pendientes: habilitar/verificar el remitente definitivo y WhatsApp real; validar cuentas/áreas y contraseñas con sesión; retirar admindev tras comprobar administrador definitivo y actualizar listas de permisos (incluido restauración); rotar la contraseña administrativa de Tareas; confirmar catálogo/textos/decisiones del cliente; verificar cifrado y copias/restauración; capacitación y aceptación; reinicio coordinado del host y retirada segura de ruta Cloudflare antigua. Ver ROADMAP/MEMORY. Los alias de biopsia/colonoscopia siguen pendientes. Transferencia manual y otras prestaciones de Fase 2 no bloquean técnicamente la conexión, pero no están implementadas.
+Antes de atención real siguen pendientes: habilitar/verificar el remitente definitivo y WhatsApp real; validar cuentas/áreas y contraseñas con sesión; rotar la contraseña administrativa de Tareas; confirmar catálogo/textos/decisiones del cliente; verificar cifrado y copias/restauración; capacitación y aceptación; reinicio coordinado del host y retirada segura de ruta Cloudflare antigua. Ver ROADMAP/MEMORY. Los alias de biopsia/colonoscopia siguen pendientes. Transferencia manual y otras prestaciones de Fase 2 no bloquean técnicamente la conexión, pero no están implementadas.
 
 ### 1. Registrar o revisar el remitente
 
@@ -208,3 +208,11 @@ El Sandbox sirve para probar con el número compartido de Twilio y participantes
 Pedir invitación al correo de trabajo a la cuenta/subcuenta Twilio que contiene el sender, con permisos para revisar/configurar WhatsApp Senders y ver Messaging Logs. El propietario puede usar Settings > Account settings > User management (o Twilio Admin > Users según la consola) e invitar al correo de trabajo al ámbito correcto; [gestión oficial de usuarios](https://www.twilio.com/docs/iam/organizations/managed-users). No pedir acceso de propietario a toda la organización para revisar una sola cuenta. Para un alta o vinculación Meta, el administrador del Business Portfolio debe realizarla o conceder el acceso administrativo necesario; para diagnóstico, puede mostrar WhatsApp Manager en una sesión compartida sin compartir contraseña. Confirmar quién controla la SIM/línea para recibir códigos. Los códigos se introducen en el portal oficial por el responsable, no se guardan en este proyecto.
 
 Texto sugerido: «Para conectar el WhatsApp de la clínica al bot necesito identificar quién administra Twilio y el portfolio comercial de Meta. ¿Pueden invitar mi correo de trabajo a la cuenta Twilio del número, con permisos de WhatsApp Senders y registros de mensajes? Necesitamos que el administrador de Meta revise con nosotros la cuenta WhatsApp y complete cualquier validación pendiente. El número ya está cargado en Twilio pero figura OFFLINE. Confirmen también si se usa desde WhatsApp Business del celular y quién puede recibir SMS/llamadas de verificación. Por ahora no borren la cuenta ni cambien el registro del número».
+
+## Cuentas de sector y limpieza aprobada (05/11/2026)
+
+Aplicar únicamente `011_operator_personas.sql` en una transacción, sin repetir seeds/migraciones previas. `operators.personas` guarda hasta 2000 caracteres de texto informativo editable en Usuarios; no interviene en permisos, presencia, asignación ni atribución de mensajes. El nombre de cuenta admite un sector sin apellido.
+
+`node scripts/reset-sector-accounts.mjs` muestra solo cantidades y comprueba los dos administradores activos. Con `--apply` elimina las demás cuentas registradas en operators y sus identidades Auth: primero desactiva, archiva sus eventuales conversaciones en control humano sin cambiar la resolución, y luego elimina Auth/operador. No purga conversaciones, contactos ni mensajes; las FK desvinculan referencias y se pierde la atribución por usuario eliminado. No toca identidades Auth ajenas a operators. Ejecutar dentro de tools con el entorno privado; es una operación explícita de reinicio, no parte del arranque ni del despliegue normal. Si falla parcialmente, revisar el estado antes de repetir.
+
+El panel ya no ofrece cierre manual. Usar Abierta/Pendiente/Resuelta y liberar el bot según corresponda; se conserva el cierre automático por inactividad y por liberación sin respuesta a las 24 h. La tarjeta Archivadas cuenta status=closed e incluye cierres históricos/manuales y de limpieza; no equivale a casos resueltos. La API de cierre existente se conserva por compatibilidad, sin acceso desde el panel.

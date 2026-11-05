@@ -1,6 +1,6 @@
 # Funcionalidades Implementadas
 
-El login admite el nombre de usuario (sin dominio) o el email completo: si no trae `@` se interpreta como `<usuario>@bot-ccs.local`; permisos y estado activo se comprueban mediante Supabase Auth y `operators`. `admindev` es una cuenta administrativa temporal de desarrollo que debe retirarse antes del uso con usuarios reales, según OPERATIONS.md.
+El login admite el nombre de usuario (sin dominio) o el email completo: si no trae `@` se interpreta como `<usuario>@bot-ccs.local`; permisos y estado activo se comprueban mediante Supabase Auth y `operators`. `admin` y `admindev` se conservan por decisión expresa del 05/11/2026, según OPERATIONS.md.
 
 ## Atención Al Paciente
 
@@ -37,7 +37,7 @@ El login admite el nombre de usuario (sin dominio) o el email completo: si no tr
 - Estado de resolución por conversación: `abierta`, `pendiente` o `resuelta`, con botón de cambio y filtro propio (entrega 2).
 - Filtro por rango de fechas (desde/hasta) en la bandeja.
 - El selector de áreas conserva los IDs al editar y envía los nombres al guardar (POST/PATCH), como exige la API de usuarios.
-- Alta y edición de usuarios desde la web (admin): crear, activar/desactivar, asignar áreas y resetear contraseña. La contraseña la escribe el admin con requisitos (mínimo 8 caracteres, una mayúscula, una minúscula y un número); el nombre de usuario (login) es único y se rechaza si ya existe. El nombre visible se compone de "Nombre" y "Apellido".
+- Alta y edición de usuarios desde la web (admin): crear, activar/desactivar, asignar áreas y resetear contraseña. La contraseña la escribe el admin con requisitos (mínimo 8 caracteres, una mayúscula, una minúscula y un número); el nombre de usuario (login) es único y se rechaza si ya existe. El nombre visible es un campo libre para la cuenta o sector.
 - Eliminación de usuarios desde el panel (admin): botón "Eliminar usuario" en el modo edición, con confirmación antes de borrar. No se puede eliminar la propia cuenta.
 - Cambio de contraseña forzado en el primer acceso y tras un reset: al entrar se pide elegir una contraseña nueva antes de ver el panel.
 - Presencia: latido del panel cada 30 s; el listado de usuarios muestra "conectado" según el último latido (90 s).
@@ -52,7 +52,7 @@ El login admite el nombre de usuario (sin dominio) o el email completo: si no tr
 - Búsqueda y filtros por estado y por resolución; rango de fechas.
 - Lectura de mensajes y estado del caso.
 - Toma de control, respuesta humana, liberación y cierre manual.
-- Al cerrar una conversación abierta o pendiente se pregunta si marcarla resuelta; el cierre por abandono queda pendiente.
+- El panel no ofrece cierre manual ni confirmación de resolución al archivar. Se conserva la resolución independiente y el cierre automático a las 24 h según inactividad/liberación sin respuesta.
 - El bot no responde mientras existe control humano.
 - El control humano vence según `HUMAN_TAKEOVER_TIMEOUT_MINUTES` después del último mensaje del operador.
 - Si se libera sin respuesta humana, la conversación cierra al cumplirse 24 horas desde el último inbound.
@@ -83,3 +83,7 @@ El login admite el nombre de usuario (sin dominio) o el email completo: si no tr
 ## Docker: configuración vigente desde 2026-10-16
 
 Aplicación y mantenimiento en Docker Compose; n8n existente conserva el workflow editable y llama al puerto loopback3010 del host. Supabase sigue externo y conserva los datos. Cloudflare dedicado se configura con el perfil public y token propio. Las vCards se generan desde el catálogo publicado en /vcards/. BOT_CCS_WEBHOOK_SECRET es obligatorio, usando Header Auth en n8n. PM2 y tareas Windows son mecanismos históricos retirados al completar el corte. Ver docs/OPERATIONS.md y docs/TESTING.md.
+
+## Ajustes de usuarios y resolución — 05/11/2026
+
+Cuentas de sector: nombre libre y campo Personas (texto informativo de hasta 2000 caracteres visible en Usuarios). No identifica al autor de respuestas. Admin y admindev protegidos contra borrado. Filtros Abierta, Pendiente, Resuelta, Todas; panel sin cierre manual, resolución independiente del archivo automático. Panel de datos llama Archivadas al total histórico status=closed.

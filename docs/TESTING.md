@@ -247,3 +247,11 @@ Web recreada con pull-25acc7f como docker-migration, healthy e imagen cotejada. 
 Ejecutar el runner aislado de esta guía: no es necesario abrir el editor de n8n. El ensayo usa transporte mock y comparte Supabase: crea conversaciones sintéticas. La matriz comprueba asignaciones y permisos, no reenvío de conversaciones a otro número ni entrega real de WhatsApp.
 
 Limitación detectada: con el catálogo hermético actual, «Necesito una biopsia» y «Necesito una colonoscopia» no reciben el área de los estudios correspondientes; los nombres «biopsias» y «endoscopia alta y baja (colonoscopia)» sí. La matriz utiliza estos nombres reconocidos. La ampliación de alias queda en ROADMAP; no presentar esta cobertura como aceptación de todas las formas de escritura.
+
+## Cuentas por sector y cierre manual — 05/11/2026
+
+519 pruebas herméticas aprobadas (incluyen persistencia/límite de Personas y protección de ambos administradores), lint y build Docker OK. Matriz aislada: 229 escenarios, 17 HTTP y 25 n8n, sin fallos/omisiones; workflow temporal retirado y web de ensayo detenida. Los reportes siguen en el volumen. El primer test nuevo comparaba también el ID generado de operator_areas; se corrigió para verificar la asociación y pasó la repetición completa.
+
+Migración 011 aplicada en una transacción y verificada; sin seeds ni cambios al catálogo. Previsualización y aplicación de limpieza: 6 cuentas eliminadas, 2 administradores protegidos activos, 0 controles humanos a archivar. Ocho identidades Auth correspondían a ocho operadores antes de limpiar. No se purgaron contactos, mensajes ni conversaciones; se desvinculan referencias históricas de los usuarios eliminados. Pendiente comprobación manual del panel con sesión; WhatsApp real y reinicio Windows siguen pendientes.
+
+Publicada imagen docker-migration y cotejada con el contenedor: web/maintenance healthy, readiness local y público HTTP200 (ok=true/testInstance=false), inicio y vCard Medicina Nuclear HTTP200; Usuarios sin sesión HTTP401. Imagen anterior conservada como before-sector-accounts-20261105.

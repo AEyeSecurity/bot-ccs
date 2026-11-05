@@ -161,7 +161,7 @@ Qué validan, el criterio de alta y la línea base están en [docs/TESTING.md](d
 ## Limitaciones y problemas conocidos
 
 - No agenda turnos reales, no consulta historia clínica ni facturación, no descarga estudios ni ofrece visualización segura de adjuntos.
-- Pendientes operativos: WhatsApp real, reinicio coordinado del host, retiro de la cuenta temporal `admindev` y retirada de la ruta Cloudflare antigua. Ver [docs/OPERATIONS.md](docs/OPERATIONS.md#comprobaciones-pendientes).
+- Pendientes operativos: WhatsApp real, reinicio coordinado del host, retirada de la ruta Cloudflare antigua. Ver [docs/OPERATIONS.md](docs/OPERATIONS.md#comprobaciones-pendientes).
 - La información de ubicaciones/edificios hoy se sirve como texto fijo; su modelado como dato estructurado está planificado en [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Documentación relacionada

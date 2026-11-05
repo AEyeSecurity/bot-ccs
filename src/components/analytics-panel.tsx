@@ -142,7 +142,7 @@ export function AnalyticsPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBac
             <div className="mb-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
               {card("Conversaciones", report.volume.total, <MessageSquare size={15} />)}
               {card("Abiertas", report.volume.open, <MessageSquare size={15} />)}
-              {card("Cerradas", report.volume.closed, <MessageSquare size={15} />)}
+              {card("Archivadas", report.volume.closed, <MessageSquare size={15} />)}
               {card("Pendientes", report.resolution.pendiente, <Timer size={15} />)}
               {card("Resueltas", report.resolution.resuelta, <MessageSquare size={15} />)}
             </div>

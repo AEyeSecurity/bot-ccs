@@ -114,3 +114,7 @@ Aplicación y mantenimiento en Docker Compose; n8n existente conserva el workflo
 Las dependencias y `.next` se generan dentro de las imágenes. Los reportes viven en un volumen Docker y los logs en el mecanismo de rotación de Docker. No hay montajes de fuentes o dependencias del host en web o mantenimiento. El único archivo externo montado en producción es el token del túnel, de solo lectura. Los archivos privados de entorno se inyectan al crear los contenedores.
 
 Se retiraron configuraciones PM2, instaladores/watchdog Windows, el script de corte inicial, snapshots de workflows y el sincronizador antiguo de menús Twilio. La limpieza no altera tablas, usuarios, catálogo publicado ni configuración del n8n compartido.
+
+## Ajustes de usuarios y resolución — 05/11/2026
+
+Migración 011 agrega operators.personas text NOT NULL DEFAULT vacío con límite 2000. API administrativa GET/POST/PATCH expone/persiste el texto; PATCH sin personas conserva su valor. No se incorpora a identidad, derivación ni métricas. DELETE protege emails admin/admindev. El frontend retira cierre manual; API previa conservada por compatibilidad. Archivadas mantiene semántica histórica status=closed.

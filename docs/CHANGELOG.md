@@ -252,3 +252,9 @@ Aplicadas únicamente 005/006/007 mediante pg en transacción con lock_timeout d
 - Catálogo publicado en Supabase con borrador, revisión, publicación, historial, restauración, validación y caché en memoria.
 - Cierre automático de conversaciones liberadas sin respuesta a las 24 horas.
 - Aplicación, mantenimiento y túnel propio operativos en Docker Compose; n8n externo conserva el workflow. PM2 y tareas Windows del bot retirados.
+
+## Ajustes de usuarios y resolución — 05/11/2026
+
+Implementado ajuste aprobado de cuentas por sector: Personas como texto administrativo (migración 011), nombre libre de sector, protección de admin/admindev, filtros con Todas al final y retirada del botón/modal de cierre manual. Métrica renombrada Archivadas conservando historia. Script explícito de limpieza con previsualización por cantidades y preservación de administradores. Validación y aplicación: ver TESTING/MEMORY.
+
+Aplicado y desplegado: 011 en transacción; eliminadas 6 cuentas conservando admin/admindev activas y contraseñas existentes. Sin controles humanos que archivar ni purga de conversaciones. 519 pruebas/lint/build y matriz 17 HTTP/25 n8n OK; salud local/pública e imagen verificadas. Prueba visual con sesión pendiente.
