@@ -46,6 +46,7 @@ describe("carga inicial de áreas (hoja Usuarios)", () => {
       "LABORATORIO_CLINICO", "OBRAS_SOCIALES", "RECETAS_MEDICAS", "MEDICOS_CLINICOS",
       "MEDICINA_LABORAL", "HEMOTERAPIA", "FLEBOLOGIA", "FACTURACION",
       "QUIROFANOS", "TERAPIA_INTENSIVA", "RADIOLOGIA", "INTERNACION",
+      "INFORMES_MEDICOS_IMAGENES_MEDICAS", "INFORMES_MEDICOS_ESTUDIOS_PATOLOGIA", "INFORMES_MEDICOS_LABORATORIO_CLINICO",
     ]);
 
     expect(seededRules.length).toBeGreaterThanOrEqual(60);
@@ -64,7 +65,7 @@ describe("carga inicial de áreas (hoja Usuarios)", () => {
   });
 
   test("un profesional de cardiología deriva a Cardiología", () => {
-    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["cardiologia_segovia"], professionalOrService: "Segovia Néstor" })).toEqual(["Cardiología"]);
+    expect(derive(SPECIALTY, { professionalResponseGroupIds: ["cardiologia_segovia"], professionalOrService: "Segovia Marcelo" })).toEqual(["Cardiología"]);
   });
 
   test("especialidad nombrada sin profesional: Nefrología va a Pasaje", () => {
@@ -107,14 +108,17 @@ describe("carga inicial de áreas (hoja Usuarios)", () => {
   });
 
   test("servicios asignados por el cliente derivan a su área", () => {
-    expect(derive("MEDICINA_LABORAL")).toEqual(["Pasaje"]);
+    expect(derive("MEDICINA_LABORAL")).toEqual(["Admisión"]);
     expect(derive("HEMOTERAPIA")).toEqual(["Pasaje"]);
     expect(derive("FLEBOLOGIA")).toEqual(["Anexo"]);
     expect(derive("FACTURACION")).toEqual(["Anexo"]);
     expect(derive("QUIROFANOS")).toEqual(["Guardia"]);
     expect(derive("TERAPIA_INTENSIVA")).toEqual(["Guardia"]);
     expect(derive("RADIOLOGIA")).toEqual(["Guardia"]);
-    expect(derive("INTERNACION")).toEqual(["Guardia"]);
+    expect(derive("INTERNACION")).toEqual(["Admisión"]);
+    expect(derive("INFORMES_MEDICOS_IMAGENES_MEDICAS")).toEqual(["Call Center"]);
+    expect(derive("INFORMES_MEDICOS_ESTUDIOS_PATOLOGIA")).toEqual(["Call Center"]);
+    expect(derive("INFORMES_MEDICOS_LABORATORIO_CLINICO")).toEqual(["Call Center"]);
   });
 
   test("profesionales agregados en la hoja actualizada van a su área", () => {

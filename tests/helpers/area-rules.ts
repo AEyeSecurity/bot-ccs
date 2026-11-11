@@ -5,6 +5,7 @@ import type { AreaRule } from "@/lib/areas";
 const migration004 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/004_roles_areas.sql"), "utf8");
 const migration005 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/005_gamma_contacto_profesionales.sql"), "utf8");
 const migration008 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/008_clinica_medica_edificios.sql"), "utf8");
+const migration013 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/013_derivaciones_admision_callcenter.sql"), "utf8");
 const migration009 = fs.readFileSync(path.join(process.cwd(), "supabase/migrations/009_servicios_sin_area.sql"), "utf8");
 
 // Las reglas viven en las migraciones (fuente de la carga inicial). Se leen de ahí para no duplicarlas.
@@ -34,12 +35,18 @@ const removals: Array<{ area_id: string; intent_key: string; response_group_id: 
 // 008: quita Clínica Médica y Médicos clínicos de Guardia (reglas genéricas, sin grupo).
 removals.push({ area_id: areaIdOf("Guardia"), intent_key: "ATENCION_MEDICA_CLINICA_MEDICA", response_group_id: null });
 removals.push({ area_id: areaIdOf("Guardia"), intent_key: "MEDICOS_CLINICOS", response_group_id: null });
+// 013: Internación sale de Guardia y Medicina laboral sale de Pasaje (ahora van a Admisión).
+removals.push({ area_id: areaIdOf("Guardia"), intent_key: "INTERNACION", response_group_id: null });
+removals.push({ area_id: areaIdOf("Pasaje"), intent_key: "MEDICINA_LABORAL", response_group_id: null });
 export const seededRules: AreaRule[] = [
   ...tuplesOf(migration004, areaIdOf).filter(
     (rule) => !removals.some((removed) => removed.area_id === rule.area_id && removed.intent_key === rule.intent_key && removed.response_group_id === rule.response_group_id),
   ),
   ...tuplesOf(migration005, areaIdOf),
   ...tuplesOf(migration008, areaIdOf),
-  ...tuplesOf(migration009, areaIdOf),
+  ...tuplesOf(migration009, areaIdOf).filter(
+    (rule) => !removals.some((removed) => removed.area_id === rule.area_id && removed.intent_key === rule.intent_key && removed.response_group_id === rule.response_group_id),
+  ),
+  ...tuplesOf(migration013.slice(migration013.indexOf("insert into")), areaIdOf),
 ];
 

@@ -222,7 +222,7 @@ async function main() {
       (item) =>
         item.conversation.current_intent === "TURNOS_MEDICOS_ATENCION_MEDICA" &&
         item.conversation.current_step === "patient_identity" &&
-        String(latestOutbound(item)?.body || "").includes("El Dr. Segovia Néstor atiende"),
+        String(latestOutbound(item)?.body || "").includes("El Dr. Segovia Marcelo atiende"),
     );
     const latest = latestOutbound(bundle);
     assert(latest, "Missing full Cardiology response");

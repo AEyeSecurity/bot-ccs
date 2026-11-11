@@ -214,7 +214,7 @@ async function main() {
     const from = uniquePhone(seed + 10);
     const result = await postInbound(from, "Hola, necesito turno con un CARDIOLOGO");
     if (result.intent !== "TURNOS_MEDICOS_ATENCION_MEDICA") throw new Error(`Unexpected intent ${result.intent}`);
-    if (!String(result.replyText || "").includes("El Dr. Segovia Néstor atiende")) {
+    if (!String(result.replyText || "").includes("El Dr. Segovia Marcelo atiende")) {
       throw new Error("Full Cardiology response missing");
     }
     if (!String(result.replyText || "").includes("nombre completo del paciente")) {
@@ -312,7 +312,7 @@ async function main() {
     }
     const second = await postInbound(from, "Cardiología");
     if (second.intent !== "TURNOS_MEDICOS_ATENCION_MEDICA") throw new Error(`Recovery failed: ${second.intent}`);
-    if (!String(second.replyText || "").includes("Segovia Néstor")) throw new Error("Recovered specialty body missing");
+    if (!String(second.replyText || "").includes("Segovia Marcelo")) throw new Error("Recovered specialty body missing");
     return { firstIntent: first.intent, secondIntent: second.intent };
   });
 

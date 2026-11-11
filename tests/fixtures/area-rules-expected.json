@@ -346,11 +346,6 @@
   },
   {
     "area": "Pasaje",
-    "intent": "MEDICINA_LABORAL",
-    "group": null
-  },
-  {
-    "area": "Pasaje",
     "intent": "HEMOTERAPIA",
     "group": null
   },
@@ -380,8 +375,28 @@
     "group": null
   },
   {
-    "area": "Guardia",
+    "area": "Admisión",
     "intent": "INTERNACION",
+    "group": null
+  },
+  {
+    "area": "Admisión",
+    "intent": "MEDICINA_LABORAL",
+    "group": null
+  },
+  {
+    "area": "Call Center",
+    "intent": "INFORMES_MEDICOS_IMAGENES_MEDICAS",
+    "group": null
+  },
+  {
+    "area": "Call Center",
+    "intent": "INFORMES_MEDICOS_ESTUDIOS_PATOLOGIA",
+    "group": null
+  },
+  {
+    "area": "Call Center",
+    "intent": "INFORMES_MEDICOS_LABORATORIO_CLINICO",
     "group": null
   }
 ]

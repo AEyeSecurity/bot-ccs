@@ -40,7 +40,7 @@ const PROFESSION_ALIASES: Record<string, readonly string[]> = {
   Dermatología: ["dermatólogo", "dermatóloga"],
   Diabetología: ["diabetólogo", "diabetóloga"],
   Gastroenterología: ["gastroenterólogo", "gastroenteróloga"],
-  "Ginecología y Obstetricia": ["ginecólogo", "ginecóloga", "obstetra"],
+  "Ginecología": ["ginecólogo", "ginecóloga", "obstetra"],
   Nefrología: ["nefrólogo", "nefróloga"],
   Neurología: ["neurólogo", "neuróloga"],
   Nutrición: ["nutricionista"],
@@ -605,7 +605,7 @@ describe("generated bot scenario matrix", () => {
     expect(latestCaseFor(supabaseHolder.client, from)?.status).toBe("closed");
     const third = await applyTurn(from, "Cardiología");
     expect(third.result.intent).toBe("TURNOS_MEDICOS_ATENCION_MEDICA");
-    expect(third.result.replyText).toContain("Segovia Néstor");
+    expect(third.result.replyText).toContain("Segovia Marcelo");
     recordScenario("recuperación tras servicio no disponible", [
       "TURNOS_MEDICOS_SELECTOR",
       "SERVICIO_NO_DISPONIBLE",
@@ -683,7 +683,7 @@ describe("generated bot scenario matrix", () => {
         expect(first.result.replyText).not.toContain("¿En qué podemos ayudarle?");
         const second = await applyTurn(from, "Cardiología");
         expect(second.result.intent).toBe("TURNOS_MEDICOS_ATENCION_MEDICA");
-        expect(second.result.replyText).toContain("Segovia Néstor");
+        expect(second.result.replyText).toContain("Segovia Marcelo");
         expect(second.result.replyText).toContain("nombre completo del paciente");
       },
     },

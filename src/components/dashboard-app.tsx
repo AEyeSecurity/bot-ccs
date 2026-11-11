@@ -135,7 +135,7 @@ export function DashboardApp() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordBusy, setPasswordBusy] = useState(false);
-  const [resolutionFilter, setResolutionFilter] = useState<"all" | ResolutionStatus>("all");
+  const [resolutionFilter, setResolutionFilter] = useState<"all" | ResolutionStatus>("abierta");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [query, setQuery] = useState("");

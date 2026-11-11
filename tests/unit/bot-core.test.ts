@@ -60,7 +60,7 @@ const PROFESSION_ALIASES: Record<string, readonly string[]> = {
   Dermatología: ["dermatólogo", "dermatóloga"],
   Diabetología: ["diabetólogo", "diabetóloga"],
   Gastroenterología: ["gastroenterólogo", "gastroenteróloga"],
-  "Ginecología y Obstetricia": ["ginecólogo", "ginecóloga", "obstetra"],
+  "Ginecología": ["ginecólogo", "ginecóloga", "obstetra"],
   Nefrología: ["nefrólogo", "nefróloga"],
   Neurología: ["neurólogo", "neuróloga"],
   Nutrición: ["nutricionista"],
@@ -77,6 +77,18 @@ const PROFESSION_ALIASES: Record<string, readonly string[]> = {
 function withoutAccents(value: string) {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
+
+describe("Internación", () => {
+  test.each([
+    "Mi papá está internado en la clínica",
+    "tengo una familiar internada, ¿cómo la visito?",
+    "internaron a mi tío ayer",
+    "Información sobre internación",
+  ])("%s -> INTERNACION", async (text) => {
+    const result = await detectIntent(payload(text), conversation({ current_intent: OPENING_INTENT }));
+    expect(result.intent).toBe("INTERNACION");
+  });
+});
 
 describe("bot core detection", () => {
   test("generic greeting opens a natural prompt without numeric menus", async () => {
@@ -123,7 +135,7 @@ describe("bot core detection", () => {
       options: { contactCardBaseUrl: "https://vcards.aeye.com.ar" },
     });
     expect(attention.intent).toBe("TURNOS_MEDICOS_ATENCION_MEDICA");
-    expect(attention.reply?.text).toContain("Segovia Néstor");
+    expect(attention.reply?.text).toContain("Segovia Marcelo");
     expect(attention.reply?.text).toContain("nombre completo del paciente");
     expect(attention.currentStep).toBe("patient_identity");
 
@@ -397,7 +409,7 @@ describe("bot core detection", () => {
       kind: "match",
       responseGroupIds: ["neurologia_albino"],
     });
-    expect(detectProfessional("Núñes Gaspar")).toMatchObject({
+    expect(detectProfessional("Núñez Gaspar")).toMatchObject({
       kind: "match",
       responseGroupIds: ["traumatologia_nunes"],
     });

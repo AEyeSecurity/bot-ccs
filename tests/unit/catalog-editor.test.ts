@@ -20,12 +20,12 @@ describe("catalog editor presentation model", () => {
     expect(model?.generalBody).toBe("");
     expect(model?.activeBlockCount).toBe(4);
     expect(model?.blocks.map((block) => block.title)).toEqual([
-      "Respuesta de Segovia Néstor",
+      "Respuesta de Segovia Marcelo",
       "Respuesta de Kurta Leonardo",
       "Respuesta de Bossio Ariel",
       "Respuesta de Moguilner Alejandro",
     ]);
-    expect(model?.preview).toContain("El Dr. Segovia Néstor");
+    expect(model?.preview).toContain("El Dr. Segovia Marcelo");
     expect(model?.preview).toContain("El Dr. Alejandro Moguilner");
   });
 

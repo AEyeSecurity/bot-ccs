@@ -106,7 +106,7 @@ export const BOT_2026_DATA = {
     {
       "intent": "ATENCION_MEDICA_CARDIOLOGIA",
       "title": "Cardiología",
-      "body": "El Dr. Segovia Néstor atiende por orden de llegada (sin turno previo) de lunes a jueves desde las 8 hasta las 16 hs. Puede dirigirse al sector E, sobre calle 9 de Julio. \nEl Dr. Kurta Leonardo atiende por orden de llegada (sin turno previo) los días lunes, miércoles y viernes de 9 a 12 hs y por la tarde de 15 a 17 hs. Los días martes y jueves únicamente atiende por la mañana. Puede dirigirse al sector E, sobre calle 9 de Julio.\nPara realizar una consulta con el Dr. Bossio Ariel es necesario agendar previamente un turno. Puede solicitar el suyo presencialmente a partir de las 08 hs en el sector E, sobre calle 9 de julio o puede comunicarse por WhatsApp al +5492974192007. El Dr. se encuentra disponible de martes a viernes de 10 a 13 hs y de 14 a 18 hs.\nEl Dr. Alejandro Moguilner es nuestro cardiólogo intervencionista, puede comunicarse por WhatsApp al +5492974192007 para solicitar un turno para el estudio solicitado.",
+      "body": "El Dr. Segovia Marcelo atiende por orden de llegada (sin turno previo) de lunes a jueves desde las 8 hasta las 16 hs. Puede dirigirse al sector E, sobre calle 9 de Julio. \nEl Dr. Kurta Leonardo atiende por orden de llegada (sin turno previo) los días lunes, miércoles y viernes de 9 a 12 hs y por la tarde de 15 a 17 hs. Los días martes y jueves únicamente atiende por la mañana. Puede dirigirse al sector E, sobre calle 9 de Julio.\nPara realizar una consulta con el Dr. Bossio Ariel es necesario agendar previamente un turno. Puede solicitar el suyo presencialmente a partir de las 08 hs en el sector E, sobre calle 9 de julio o puede comunicarse por WhatsApp al +5492974192007. El Dr. se encuentra disponible de martes a viernes de 10 a 13 hs y de 14 a 18 hs.\nEl Dr. Alejandro Moguilner es nuestro cardiólogo intervencionista, puede comunicarse por WhatsApp al +5492974192007 para solicitar un turno para el estudio solicitado.",
       "phones": [
         "+5492974192007"
       ],
@@ -156,7 +156,7 @@ export const BOT_2026_DATA = {
     },
     {
       "intent": "ATENCION_MEDICA_GINECOLOGIA_Y_OBSTETRICIA",
-      "title": "Ginecología y Obstetricia",
+      "title": "Ginecología",
       "body": "Puede comunicarse con el Centro Materno Infantil para turnos enviando un mensaje por WhatsApp al +5492974290998.\n\nSi se encuentra afiliada a la obra social de la provincia, Caja de Servicios Sociales, es necesario solicitar un turno con el Dr. Jotale José.\nLa Dra. Obregón Verónica no realiza consultorio en Clínica Cruz del Sur, solo realiza intervenciones. Puede agendar su estudio o procedimiento enviando el pedido médico por WhatsApp.\nEl Dr. Espeche Matías es mastólogo, médico especialista en el cuidado de la salud de las mamas, por lo que recomendamos solicitar un turno por cualquier inquietud al respecto.",
       "phones": [
         "+5492974290998"
@@ -244,7 +244,7 @@ export const BOT_2026_DATA = {
     {
       "intent": "ATENCION_MEDICA_TRAUMATOLOGIA",
       "title": "Traumatología",
-      "body": "Nuestro equipo de traumatología y ortopedía atiende con turnos previos, en los sectores B y C. Puede solicitar una consulta de manera presencial o enviando un mensaje por WhatsApp al +5492974017474.\n\nDr. Longo José - Sector C\nDr. Castro Germán - Sector C\nDr. Vargas Mario - Sector B\nDr. Núñes Gaspar - Sector B\nDr. Juárez Marcelo- Sector B\n\nLes recordamos que el Dr. Catullo Marcelo no realiza consultorio en Clínica Cruz del Sur, solo realiza intervenciones. Puede agendar su estudio o procedimiento enviando el pedido médico por WhatsApp al +5492974352470.",
+      "body": "Nuestro equipo de traumatología y ortopedía atiende con turnos previos, en los sectores B y C. Puede solicitar una consulta de manera presencial o enviando un mensaje por WhatsApp al +5492974017474.\n\nDr. Longo José - Sector C\nDr. Castro Germán - Sector C\nDr. Vargas Mario - Sector B\nDr. Núñez Gaspar - Sector B\nDr. Juárez Marcelo- Sector B\n\nLes recordamos que el Dr. Catullo Marcelo no realiza consultorio en Clínica Cruz del Sur, solo realiza intervenciones. Puede agendar su estudio o procedimiento enviando el pedido médico por WhatsApp al +5492974352470.",
       "phones": [
         "+5492974017474",
         "+5492974352470"
@@ -442,7 +442,7 @@ export const BOT_2026_DATA = {
       "id": "cardiologia_segovia",
       "specialty": "Cardiología",
       "subservices": [],
-      "body": "El Dr. Segovia Néstor atiende por orden de llegada (sin turno previo) de lunes a jueves desde las 8 hasta las 16 hs. Puede dirigirse al sector E, sobre calle 9 de Julio.",
+      "body": "El Dr. Segovia Marcelo atiende por orden de llegada (sin turno previo) de lunes a jueves desde las 8 hasta las 16 hs. Puede dirigirse al sector E, sobre calle 9 de Julio.",
       "phones": [],
       "order": 1,
       "sourceCell": "A6"
@@ -627,7 +627,7 @@ export const BOT_2026_DATA = {
     },
     {
       "id": "ginecologia_jotale",
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [],
       "body": "Si se encuentra afiliada a la obra social de la provincia, Caja de Servicios Sociales, es necesario solicitar un turno con el Dr. Jotale José.",
       "phones": [],
@@ -636,7 +636,7 @@ export const BOT_2026_DATA = {
     },
     {
       "id": "ginecologia_obregon",
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [],
       "body": "La Dra. Obregón Verónica no realiza consultorio en Clínica Cruz del Sur, solo realiza intervenciones. Puede agendar su estudio o procedimiento enviando el pedido médico por WhatsApp.",
       "phones": [],
@@ -645,7 +645,7 @@ export const BOT_2026_DATA = {
     },
     {
       "id": "ginecologia_espeche",
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [
         "Mastología"
       ],
@@ -850,7 +850,7 @@ export const BOT_2026_DATA = {
       "id": "traumatologia_equipo",
       "specialty": "Traumatología",
       "subservices": [],
-      "body": "Nuestro equipo de traumatología y ortopedía atiende con turnos previos, en los sectores B y C. Puede solicitar una consulta de manera presencial o enviando un mensaje por WhatsApp al +5492974017474.\n\nDr. Longo José - Sector C\nDr. Castro Germán - Sector C\nDr. Vargas Mario - Sector B\nDr. Núñes Gaspar - Sector B\nDr. Juárez Marcelo- Sector B",
+      "body": "Nuestro equipo de traumatología y ortopedía atiende con turnos previos, en los sectores B y C. Puede solicitar una consulta de manera presencial o enviando un mensaje por WhatsApp al +5492974017474.\n\nDr. Longo José - Sector C\nDr. Castro Germán - Sector C\nDr. Vargas Mario - Sector B\nDr. Núñez Gaspar - Sector B\nDr. Juárez Marcelo- Sector B",
       "phones": [
         "+5492974017474"
       ],
@@ -893,10 +893,10 @@ export const BOT_2026_DATA = {
   ],
   "professionals": [
     {
-      "name": "Segovia Néstor",
+      "name": "Segovia Marcelo",
       "aliases": [
-        "Segovia Néstor",
-        "Néstor Segovia",
+        "Segovia Marcelo",
+        "Marcelo Segovia",
         "Segovia"
       ],
       "specialty": "Cardiología",
@@ -1131,7 +1131,7 @@ export const BOT_2026_DATA = {
         "Jose Jotale",
         "Jotale"
       ],
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [],
       "responseGroupId": "ginecologia_jotale",
       "sourceCell": "A12"
@@ -1146,7 +1146,7 @@ export const BOT_2026_DATA = {
         "Obregón",
         "Obregon"
       ],
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [],
       "responseGroupId": "ginecologia_obregon",
       "sourceCell": "A12"
@@ -1160,7 +1160,7 @@ export const BOT_2026_DATA = {
         "Matias Espeche",
         "Espeche"
       ],
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [
         "Mastología"
       ],
@@ -1445,23 +1445,17 @@ export const BOT_2026_DATA = {
       "sourceCell": "A21"
     },
     {
-      "name": "Núñes Gaspar",
+      "name": "Núñez Gaspar",
       "aliases": [
-        "Núñes Gaspar",
-        "Nunes Gaspar",
         "Núñez Gaspar",
-        "Nuñez Gaspar",
         "Nunez Gaspar",
-        "Gaspar Núñes",
-        "Gaspar Nunes",
+        "Nuñez Gaspar",
         "Gaspar Núñez",
-        "Gaspar Nuñez",
         "Gaspar Nunez",
-        "Núñes",
-        "Nunes",
+        "Gaspar Nuñez",
         "Núñez",
-        "Nuñez",
-        "Nunez"
+        "Nunez",
+        "Nuñez"
       ],
       "specialty": "Traumatología",
       "subservices": [],

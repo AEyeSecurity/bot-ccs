@@ -417,7 +417,7 @@ describe("processInbound integration", () => {
     expect(attention.shouldReply).toBe(true);
     expect(attention.intent).toBe("TURNOS_MEDICOS_ATENCION_MEDICA");
     expect(attention.replyText).not.toContain("Hola, soy");
-    expect(attention.replyText).toContain("Segovia Néstor");
+    expect(attention.replyText).toContain("Segovia Marcelo");
     expect(attention.replyText).toContain("nombre completo del paciente");
   });
 

@@ -13,14 +13,18 @@ import {
   Info,
   LoaderCircle,
   Phone,
+  Plus,
   Search,
   Send,
 } from "lucide-react";
 import {
+  addProfessionalToCatalog,
   editorialState,
   joinReply,
   pendingEntryCount,
   phonesIn,
+  renameProfessionalInCatalog,
+  renameSpecialtyInCatalog,
   specialtyEditorModel,
 } from "@/lib/catalog-editor";
 import type { ManagedCatalog } from "@/lib/managed-catalog";
@@ -61,6 +65,9 @@ type EditorItem = {
   searchText?: string;
   blocks?: EditorBlock[];
   hasNestedPending?: boolean;
+  nameLabel?: string;
+  name?: string;
+  setName?: (catalog: ManagedCatalog, value: string) => void;
   setBody?: (catalog: ManagedCatalog, value: string) => void;
   setAvailable?: (catalog: ManagedCatalog, value: boolean) => void;
   setReview: (catalog: ManagedCatalog, value: "reviewed" | "pending") => void;
@@ -152,7 +159,7 @@ function catalogChangeSummary(current: ManagedCatalog, published: ManagedCatalog
   return {
     especialidades: current.medicalServices.filter((item, index) => changed(
       { body: item.generalBody, customBody: item.customBody, available: item.available },
-      { body: published.medicalServices[index].generalBody, customBody: published.medicalServices[index].customBody, available: published.medicalServices[index].available },
+      { body: published.medicalServices[index]?.generalBody, customBody: published.medicalServices[index]?.customBody, available: published.medicalServices[index]?.available },
     )).length,
     profesionales: current.professionals.filter((item, index) => {
       const currentGroup = current.professionalResponseGroups.find((group) => group.id === item.responseGroupId);
@@ -160,7 +167,7 @@ function catalogChangeSummary(current: ManagedCatalog, published: ManagedCatalog
       return changed(
         { available: item.available, body: currentGroup?.body, groupAvailable: currentGroup?.available },
         {
-          available: published.professionals[index].available,
+          available: published.professionals[index]?.available,
           body: publishedGroup?.body,
           groupAvailable: publishedGroup?.available,
         },
@@ -210,9 +217,14 @@ function editorItems(category: Category, catalog: ManagedCatalog): EditorItem[] 
         reviewStatus: service.reviewStatus,
         preview: model?.preview || service.generalBody,
         phones: model?.generalPhones || [],
+        nameLabel: "Nombre de la especialidad",
+        name: service.title,
+        setName: (next, value) => renameSpecialtyInCatalog(next, index, value),
         bodyLabel: "Texto general de la especialidad",
         bodyHelp: "Se muestra antes de los bloques profesionales en la respuesta completa.",
-        emptyBodyMessage: "Esta especialidad no tiene texto general. La respuesta se construye con los siguientes bloques profesionales.",
+        emptyBodyMessage: model?.usesSharedMessage
+          ? "Esta especialidad usa el mensaje de Médicos clínicos (Mensajes generales > Servicios). Si escribe un texto aquí, tendrá prioridad."
+          : "Esta especialidad no tiene texto general. La respuesta se construye con los siguientes bloques profesionales.",
         searchText: blocks.map((block) => `${block.title} ${block.subtitle} ${block.body}`).join(" "),
         blocks,
         hasNestedPending: blocks.some((block) => block.reviewStatus === "pending"),
@@ -244,6 +256,9 @@ function editorItems(category: Category, catalog: ManagedCatalog): EditorItem[] 
         reviewStatus: professional.reviewStatus === "pending" || group?.reviewStatus === "pending" ? "pending" : "reviewed",
         preview,
         phones: phonesIn(group?.body || ""),
+        nameLabel: "Nombre del profesional",
+        name: professional.name,
+        setName: (next, value) => renameProfessionalInCatalog(next, index, value),
         bodyLabel: "Respuesta de este profesional",
         bodyHelp: sharedProfessionals.length > 1
           ? `Este bloque se comparte con ${sharedProfessionals.map((item) => item.name).join(", ")}. Cualquier edición se reflejará en todos.`
@@ -332,6 +347,25 @@ function editorItems(category: Category, catalog: ManagedCatalog): EditorItem[] 
   return [...directItems, ...messageItems];
 }
 
+function NameEditor({ label, value, disabled, onApply }: { label: string; value: string; disabled: boolean; onApply: (value: string) => void }) {
+  const [draft, setDraft] = useState(value);
+  const changed = draft.trim() !== value && draft.trim().length > 0;
+  return (
+    <div className="mb-3 rounded-xl border border-zinc-200 bg-white p-3">
+      <label className="block text-sm font-bold text-zinc-800">{label}
+        <div className="mt-2 flex gap-2">
+          <input aria-label={label} value={draft} onChange={(event) => setDraft(event.target.value)} className="h-10 min-w-0 flex-1 rounded-xl border border-zinc-200 px-3 text-sm font-normal outline-none focus:border-[#176b5a] focus:ring-4 focus:ring-emerald-50" />
+          <button type="button" disabled={disabled || !changed} onClick={() => onApply(draft)} className="rounded-xl bg-[#176b5a] px-3 text-xs font-bold text-white disabled:opacity-40">Aplicar nombre</button>
+        </div>
+      </label>
+      <p className="mt-2 text-[11px] leading-4 text-zinc-500">El bot seguirá reconociendo el nombre anterior. El cambio queda pendiente de revisión hasta publicarlo.</p>
+    </div>
+  );
+}
+
+type NewProfessionalForm = { name: string; specialty: string; body: string; area: string };
+const emptyProfessionalForm: NewProfessionalForm = { name: "", specialty: "", body: "", area: "" };
+
 export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: ApiFetch; onBack: () => void; canRestore: boolean }) {
   const [state, setState] = useState<AdminState | null>(null);
   const [catalog, setCatalog] = useState<ManagedCatalog | null>(null);
@@ -343,6 +377,10 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [showAdd, setShowAdd] = useState(false);
+  const [form, setForm] = useState<NewProfessionalForm>(emptyProfessionalForm);
+  const [areaNames, setAreaNames] = useState<string[]>([]);
+  const [pendingRules, setPendingRules] = useState<Array<{ groupId: string; area: string }>>([]);
 
   async function load() {
     setBusy(true);
@@ -404,6 +442,52 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
     setNotice("");
   }
 
+  function applyName(item: EditorItem, value: string) {
+    if (!catalog || !item.setName) return;
+    try {
+      const next = cloneCatalog(catalog);
+      item.setName(next, value);
+      item.setReview(next, "pending");
+      setCatalog(next);
+      setDirty(true);
+      setNotice("");
+      setError("");
+      setExpanded(null);
+    } catch (nameError) {
+      setError(nameError instanceof Error ? nameError.message : "No se pudo cambiar el nombre");
+    }
+  }
+
+  async function openAddProfessional() {
+    setShowAdd(true);
+    setForm((previous) => ({ ...previous, specialty: previous.specialty || catalog?.medicalServices[0]?.title || "" }));
+    if (areaNames.length) return;
+    try {
+      const response = await apiFetch("/api/admin/area-rules") as unknown as { areas: string[] };
+      setAreaNames(response.areas || []);
+    } catch (areasError) {
+      setError(areasError instanceof Error ? areasError.message : "No se pudieron cargar los sectores");
+    }
+  }
+
+  function addProfessional() {
+    if (!catalog) return;
+    try {
+      const next = cloneCatalog(catalog);
+      const { groupId } = addProfessionalToCatalog(next, form);
+      setCatalog(next);
+      setDirty(true);
+      setNotice("Profesional agregado al borrador. Guarde el borrador, revíselo y publique para que el bot lo use.");
+      setError("");
+      if (form.area) setPendingRules((previous) => [...previous, { groupId, area: form.area }]);
+      setExpanded(form.name.replace(/\s+/g, " ").trim());
+      setShowAdd(false);
+      setForm(emptyProfessionalForm);
+    } catch (addError) {
+      setError(addError instanceof Error ? addError.message : "No se pudo agregar el profesional");
+    }
+  }
+
   function applyDraftResponse(response: { draft: Version; validation: AdminState["validation"] }) {
     setState((previous) => previous ? { ...previous, draft: response.draft, validation: response.validation } : previous);
     setCatalog(cloneCatalog(response.draft.payload));
@@ -433,7 +517,22 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
     setBusy(true);
     try {
       applyDraftResponse(await writeDraft(catalog));
-      setNotice("Borrador guardado en la base de datos. El bot todavía usa la versión publicada.");
+      let ruleNotice = "";
+      if (pendingRules.length) {
+        const remaining: typeof pendingRules = [];
+        for (const rule of pendingRules) {
+          try {
+            await apiFetch("/api/admin/area-rules", { method: "POST", body: JSON.stringify(rule) });
+          } catch {
+            remaining.push(rule);
+          }
+        }
+        setPendingRules(remaining);
+        ruleNotice = remaining.length
+          ? " No se pudo registrar la derivación a sector de algún profesional: vuelva a guardar el borrador."
+          : " La derivación por sector quedó registrada.";
+      }
+      setNotice("Borrador guardado en la base de datos. El bot todavía usa la versión publicada." + ruleNotice);
     } catch (saveError) {
       await handleWriteError(saveError, "No se pudo guardar");
     } finally {
@@ -552,6 +651,39 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
             {state?.validation.errors.length ? <div className="mt-3 rounded-xl bg-rose-50 px-3 py-2 text-sm text-rose-700">{state.validation.errors.join(" · ")}</div> : null}
           </div>
 
+          {category === "professionals" && catalog ? (
+            <div className="mb-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+              {showAdd ? (
+                <div className="space-y-3">
+                  <p className="font-bold text-zinc-800">Agregar profesional</p>
+                  <label className="block text-sm font-semibold text-zinc-700">Nombre (Apellido Nombre)
+                    <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} placeholder="Ej.: Pérez María" className="mt-1 h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm font-normal outline-none focus:border-[#176b5a]" />
+                  </label>
+                  <label className="block text-sm font-semibold text-zinc-700">Especialidad
+                    <select value={form.specialty} onChange={(event) => setForm({ ...form, specialty: event.target.value })} className="mt-1 h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm font-normal outline-none">
+                      {catalog.medicalServices.map((service) => <option key={service.intent} value={service.title}>{service.title}</option>)}
+                    </select>
+                  </label>
+                  <label className="block text-sm font-semibold text-zinc-700">Respuesta que recibe el paciente
+                    <textarea value={form.body} onChange={(event) => setForm({ ...form, body: event.target.value })} rows={5} placeholder="Días y horarios, sector, si requiere turno, teléfono de WhatsApp..." className="mt-1 w-full resize-y rounded-xl border border-zinc-200 p-3 text-sm font-normal leading-6 outline-none focus:border-[#176b5a]" />
+                  </label>
+                  <label className="block text-sm font-semibold text-zinc-700">Sector al que se deriva
+                    <select value={form.area} onChange={(event) => setForm({ ...form, area: event.target.value })} className="mt-1 h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm font-normal outline-none">
+                      <option value="">Sin sector (solo lo ve el administrador)</option>
+                      {areaNames.map((area) => <option key={area} value={area}>{area}</option>)}
+                    </select>
+                  </label>
+                  <div className="flex gap-2">
+                    <button type="button" disabled={!form.name.trim() || !form.body.trim() || !form.specialty} onClick={addProfessional} className="rounded-xl bg-[#176b5a] px-4 py-2 text-sm font-bold text-white disabled:opacity-40">Agregar al borrador</button>
+                    <button type="button" onClick={() => { setShowAdd(false); setForm(emptyProfessionalForm); }} className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-bold text-zinc-700">Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <button type="button" onClick={() => void openAddProfessional()} className="flex items-center gap-2 rounded-xl bg-[#176b5a] px-4 py-2.5 text-sm font-bold text-white"><Plus size={16} />Agregar profesional</button>
+              )}
+            </div>
+          ) : null}
+
           {busy && !catalog ? <div className="grid h-56 place-items-center text-zinc-500"><LoaderCircle className="animate-spin" /></div> : null}
           <div className="space-y-3">
             {visibleItems.map((item) => {
@@ -568,6 +700,7 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
                   {isExpanded ? (
                     <div className="grid gap-4 border-t border-zinc-100 bg-zinc-50/60 p-4 xl:grid-cols-2">
                       <div>
+                        {item.setName && item.name ? <NameEditor key={item.id + item.name} label={item.nameLabel || "Nombre"} value={item.name} disabled={busy} onApply={(value) => applyName(item, value)} /> : null}
                         <div className="mb-3 flex flex-wrap items-center gap-2">
                           {item.setAvailable ? <button onClick={() => updateItem(item, (next) => item.setAvailable?.(next, item.available === false))} className={`rounded-lg px-3 py-2 text-xs font-bold ${item.available === false ? "bg-zinc-200 text-zinc-700" : "bg-emerald-100 text-emerald-800"}`}>{item.available === false ? "No disponible" : "Disponible"}</button> : null}
                           <button disabled={busy || dirty} title={dirty ? "Guardá el borrador antes de cambiar su revisión" : "La revisión se guardará inmediatamente en la base"} onClick={() => void persistReview(item.setReview, item.reviewStatus === "pending" ? "reviewed" : "pending")} className="flex items-center gap-1 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs font-bold text-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"><Check size={14} />{item.reviewStatus === "pending" ? "Marcar revisado" : "Marcar para revisión"}</button>

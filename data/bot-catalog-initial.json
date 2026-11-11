@@ -341,9 +341,9 @@
     },
     {
       "intent": "ATENCION_MEDICA_GINECOLOGIA_Y_OBSTETRICIA",
-      "title": "Ginecología y Obstetricia",
+      "title": "Ginecología",
       "matchers": [
-        "Ginecología y Obstetricia",
+        "Ginecología",
         "ginecologia",
         "obstetricia",
         "ginecólogo",
@@ -801,7 +801,7 @@
       "id": "cardiologia_segovia",
       "specialty": "Cardiología",
       "subservices": [],
-      "body": "El Dr. Segovia Néstor atiende por orden de llegada (sin turno previo) de lunes a jueves desde las 8 hasta las 16 hs. Puede dirigirse al sector E, sobre calle 9 de Julio.",
+      "body": "El Dr. Segovia Marcelo atiende por orden de llegada (sin turno previo) de lunes a jueves desde las 8 hasta las 16 hs. Puede dirigirse al sector E, sobre calle 9 de Julio.",
       "phones": [],
       "order": 1,
       "sourceCell": "A6",
@@ -1034,7 +1034,7 @@
     },
     {
       "id": "ginecologia_jotale",
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [],
       "body": "Si se encuentra afiliada a la obra social de la provincia, Caja de Servicios Sociales, es necesario solicitar un turno con el Dr. Jotale José.",
       "phones": [],
@@ -1046,7 +1046,7 @@
     },
     {
       "id": "ginecologia_obregon",
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [],
       "body": "La Dra. Obregón Verónica no realiza consultorio en Clínica Cruz del Sur, solo realiza intervenciones. Puede agendar su estudio o procedimiento enviando el pedido médico por WhatsApp.",
       "phones": [],
@@ -1058,7 +1058,7 @@
     },
     {
       "id": "ginecologia_espeche",
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [
         "Mastología"
       ],
@@ -1367,7 +1367,7 @@
       "id": "traumatologia_nunes",
       "specialty": "Traumatología",
       "subservices": [],
-      "body": "Dr. Núñes Gaspar - Sector B",
+      "body": "Dr. Núñez Gaspar - Sector B",
       "phones": [],
       "order": 4,
       "sourceCell": "A21",
@@ -1432,10 +1432,10 @@
   ],
   "professionals": [
     {
-      "name": "Segovia Néstor",
+      "name": "Segovia Marcelo",
       "aliases": [
-        "Segovia Néstor",
-        "Néstor Segovia",
+        "Segovia Marcelo",
+        "Marcelo Segovia",
         "Segovia"
       ],
       "specialty": "Cardiología",
@@ -1702,7 +1702,7 @@
         "Jose Jotale",
         "Jotale"
       ],
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [],
       "responseGroupId": "ginecologia_jotale",
       "sourceCell": "A12",
@@ -1719,7 +1719,7 @@
         "Obregón",
         "Obregon"
       ],
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [],
       "responseGroupId": "ginecologia_obregon",
       "sourceCell": "A12",
@@ -1735,7 +1735,7 @@
         "Matias Espeche",
         "Espeche"
       ],
-      "specialty": "Ginecología y Obstetricia",
+      "specialty": "Ginecología",
       "subservices": [
         "Mastología"
       ],
@@ -2064,23 +2064,17 @@
       "reviewStatus": "reviewed"
     },
     {
-      "name": "Núñes Gaspar",
+      "name": "Núñez Gaspar",
       "aliases": [
-        "Núñes Gaspar",
-        "Nunes Gaspar",
         "Núñez Gaspar",
-        "Nuñez Gaspar",
         "Nunez Gaspar",
-        "Gaspar Núñes",
-        "Gaspar Nunes",
+        "Nuñez Gaspar",
         "Gaspar Núñez",
-        "Gaspar Nuñez",
         "Gaspar Nunez",
-        "Núñes",
-        "Nunes",
+        "Gaspar Nuñez",
         "Núñez",
-        "Nuñez",
-        "Nunez"
+        "Nunez",
+        "Nuñez"
       ],
       "specialty": "Traumatología",
       "subservices": [],

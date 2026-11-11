@@ -1053,7 +1053,7 @@ export async function detectIntent(
     return { intent: "RECETAS_MEDICAS", confidence: 1, seededData };
   }
 
-  if (normalized.includes("internacion") || normalized.includes("admision")) {
+  if (/\binterna(?:d[oa]s?|ron|cion)\b/.test(normalized) || normalized.includes("admision")) {
     return { intent: "INTERNACION", confidence: 1, seededData };
   }
 

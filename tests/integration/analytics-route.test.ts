@@ -51,8 +51,8 @@ describe("panel de datos (admin)", () => {
     expect((await GET(request("/api/admin/analytics", "token-auth-carla"))).status).toBe(403);
   });
 
-  test("un admin que no está en la lista permitida recibe 403", async () => {
-    holder.client.table("operators").find((row) => row.id === "op-admin").email = "otroadmin@bot-ccs.local";
-    expect((await GET(request("/api/admin/analytics", "token-auth-admin"))).status).toBe(403);
+  test("un admin con otro usuario también accede (supervisora)", async () => {
+    holder.client.table("operators").find((row) => row.id === "op-admin").email = "supervisora@bot-ccs.local";
+    expect((await GET(request("/api/admin/analytics", "token-auth-admin"))).status).toBe(200);
   });
 });

@@ -24,6 +24,7 @@ const INTENT_PROMPT = [
   "- Si menciona telemedicina o Dra. Estrada, priorizá TELEMEDICINA_DRA_ESTRADA.",
   "- Si menciona Clínica Médica como especialidad, usá TURNOS_MEDICOS_ATENCION_MEDICA.",
   "- Si menciona médico clínico o médicos clínicos como atención por orden de llegada, usá MEDICOS_CLINICOS.",
+  "- Si la persona dice que tiene un familiar, pariente o conocido internado en la clínica (o pregunta por la internación), usá INTERNACION.",
   "- Si hay duda, devolvé OTRAS_CONSULTAS con needs_operator=true.",
   'Formato exacto: {"intent_key":"OTRAS_CONSULTAS","confidence":0.75,"needs_operator":false,"reason":"breve"}',
 ].join("\n");

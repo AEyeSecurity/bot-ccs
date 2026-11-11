@@ -1,5 +1,5 @@
 import type { BotCaseData, BotFieldKey, PersistedCaseState } from "./bot-types";
-import type { ManagedCatalog } from "./managed-catalog";
+import { serviceFallbackBody, type ManagedCatalog } from "./managed-catalog";
 
 export let BOT_GREETING = "";
 export let BOT_THANK_YOU = "";
@@ -525,7 +525,7 @@ export function activateCatalog(catalog: ManagedCatalog) {
       .sort((left, right) => left.order - right.order);
     return {
       ...service,
-      body: formatReply([service.generalBody, ...groups.map((group) => group.body)]),
+      body: formatReply([service.generalBody || serviceFallbackBody(catalog, service.intent), ...groups.map((group) => group.body)]),
     };
   });
   IMAGING_STUDIES = catalog.imagingStudies;

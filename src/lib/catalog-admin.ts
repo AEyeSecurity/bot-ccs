@@ -1,7 +1,9 @@
 import { replacePublishedCatalog } from "./catalog-store";
+import { normalizeLabel } from "./catalog-editor";
 import {
   extractManagedPhones,
   managedCatalogSchema,
+  serviceFallbackBody,
   validateManagedCatalog,
   type ManagedCatalog,
 } from "./managed-catalog";
@@ -25,30 +27,52 @@ function httpError(message: string, status: number) {
   return Object.assign(new Error(message), { status });
 }
 
+// Parte de la estructura que el panel no puede cambiar (claves, intents, relaciones, orden).
+// Sí se pueden: renombrar especialidades y profesionales, ampliar alias/matchers, y agregar
+// profesionales con su bloque de respuesta (siempre al final de las listas).
 function immutableProjection(catalog: ManagedCatalog) {
+  const intentByTitle = new Map(catalog.medicalServices.map((item) => [item.title, item.intent]));
+  const specialtyKey = (title: string) => intentByTitle.get(title) ?? title;
   return {
     schemaVersion: catalog.schemaVersion,
     messageKeys: Object.keys(catalog.messages).sort(),
     directKeys: Object.keys(catalog.direct).sort(),
-    medicalServices: catalog.medicalServices.map(({ intent, title, matchers, sourceCell }) => ({
-      intent, title, matchers, sourceCell,
-    })),
+    medicalServices: catalog.medicalServices.map(({ intent, sourceCell }) => ({ intent, sourceCell })),
     imagingStudies: catalog.imagingStudies.map(({ intent, title, matchers, sourceCell }) => ({
       intent, title, matchers, sourceCell,
     })),
     professionalResponseGroups: catalog.professionalResponseGroups.map(({
       id, specialty, subservices, order, sourceCell, includeServiceGeneral,
-    }) => ({ id, specialty, subservices, order, sourceCell, includeServiceGeneral })),
+    }) => ({ id, specialty: specialtyKey(specialty), subservices, order, sourceCell, includeServiceGeneral })),
     professionals: catalog.professionals.map(({
-      name, aliases, specialty, subservices, responseGroupId, sourceCell,
-    }) => ({ name, aliases, specialty, subservices, responseGroupId, sourceCell })),
+      specialty, subservices, responseGroupId, sourceCell,
+    }) => ({ specialty: specialtyKey(specialty), subservices, responseGroupId, sourceCell })),
     insurancePlans: catalog.insurancePlans.map(({ id, aliases }) => ({ id, aliases })),
   };
 }
 
+function keepsAll(previous: string[], next: string[]) {
+  const kept = new Set(next.map(normalizeLabel));
+  return previous.every((value) => kept.has(normalizeLabel(value)));
+}
+
 function assertEditableStructure(candidate: ManagedCatalog, published: ManagedCatalog) {
-  if (JSON.stringify(immutableProjection(candidate)) !== JSON.stringify(immutableProjection(published))) {
-    throw httpError("La estructura, los alias y las relaciones del catálogo no se pueden modificar desde el panel", 400);
+  const next = immutableProjection(candidate);
+  const base = immutableProjection(published);
+  const sameLength = candidate.medicalServices.length === published.medicalServices.length;
+  const appendOnly =
+    candidate.professionals.length >= published.professionals.length &&
+    candidate.professionalResponseGroups.length >= published.professionalResponseGroups.length;
+  const sameBase = JSON.stringify({
+    ...next,
+    professionalResponseGroups: next.professionalResponseGroups.slice(0, base.professionalResponseGroups.length),
+    professionals: next.professionals.slice(0, base.professionals.length),
+  }) === JSON.stringify(base);
+  const aliasesKept =
+    published.medicalServices.every((item, index) => keepsAll(item.matchers, candidate.medicalServices[index]?.matchers || [])) &&
+    published.professionals.every((item, index) => keepsAll(item.aliases, candidate.professionals[index]?.aliases || []));
+  if (!sameLength || !appendOnly || !sameBase || !aliasesKept) {
+    throw httpError("La estructura y las relaciones del catálogo no se pueden modificar desde el panel (solo nombres, textos y altas de profesionales)", 400);
   }
 }
 
@@ -63,6 +87,7 @@ function markChangedEntriesPending(candidate: ManagedCatalog, base: ManagedCatal
   candidate.medicalServices.forEach((entry, index) => {
     const previous = base.medicalServices[index];
     if (
+      entry.title !== previous.title ||
       entry.generalBody !== previous.generalBody ||
       entry.customBody !== previous.customBody ||
       entry.available !== previous.available
@@ -74,10 +99,11 @@ function markChangedEntriesPending(candidate: ManagedCatalog, base: ManagedCatal
   });
   candidate.professionalResponseGroups.forEach((entry, index) => {
     const previous = base.professionalResponseGroups[index];
-    if (entry.body !== previous.body || entry.available !== previous.available) entry.reviewStatus = "pending";
+    if (!previous || entry.body !== previous.body || entry.available !== previous.available) entry.reviewStatus = "pending";
   });
   candidate.professionals.forEach((entry, index) => {
-    if (entry.available !== base.professionals[index].available) entry.reviewStatus = "pending";
+    const previous = base.professionals[index];
+    if (!previous || entry.available !== previous.available || entry.name !== previous.name) entry.reviewStatus = "pending";
   });
   candidate.insurancePlans.forEach((entry, index) => {
     const previous = base.insurancePlans[index];
@@ -90,7 +116,9 @@ export function prepareCatalogPayload(input: unknown) {
   const catalog = structuredClone(managedCatalogSchema.parse(input));
   for (const entry of Object.values(catalog.direct)) entry.phones = extractManagedPhones(entry.body);
   for (const service of catalog.medicalServices) {
-    service.phones = extractManagedPhones(service.customBody.trim() ? service.customBody : service.generalBody);
+    service.phones = extractManagedPhones(
+      service.customBody.trim() ? service.customBody : service.generalBody || serviceFallbackBody(catalog, service.intent),
+    );
   }
   for (const study of catalog.imagingStudies) study.phones = extractManagedPhones(study.body);
   for (const group of catalog.professionalResponseGroups) group.phones = extractManagedPhones(group.body);
@@ -213,4 +241,10 @@ export async function restoreCatalogVersion(args: { actorId: string; versionId: 
   const row = (Array.isArray(data) ? data[0] : data) as CatalogVersionRow | null;
   if (!row) throw httpError("No se pudo restaurar la versión", 500);
   return row;
+}
+
+// Catálogo que el panel está editando: el borrador si existe, si no el publicado.
+export async function getEditableCatalog() {
+  const [draft, published] = await Promise.all([getVersion("draft"), getVersion("published")]);
+  return (draft || published)?.payload || null;
 }

@@ -25,7 +25,7 @@ const serviceAliases = {
   "Dermatología": ["dermatólogo", "dermatóloga"],
   "Diabetología": ["diabetólogo", "diabetóloga"],
   "Gastroenterología": ["gastroenterólogo", "gastroenteróloga"],
-  "Ginecología y Obstetricia": ["ginecologia", "obstetricia", "ginecólogo", "ginecóloga", "obstetra"],
+  "Ginecología": ["ginecologia", "obstetricia", "ginecólogo", "ginecóloga", "obstetra"],
   "Nefrología": ["nefrólogo", "nefróloga"],
   "Neurología": ["neurólogo", "neuróloga"],
   "Nutrición": ["nutricionista"],
@@ -85,7 +85,7 @@ for (const group of originalGroups) {
       ["Longo", "traumatologia_longo", "Dr. Longo José - Sector C"],
       ["Castro", "traumatologia_castro", "Dr. Castro Germán - Sector C"],
       ["Vargas", "traumatologia_vargas", "Dr. Vargas Mario - Sector B"],
-      ["Núñes", "traumatologia_nunes", "Dr. Núñes Gaspar - Sector B"],
+      ["Núñez", "traumatologia_nunes", "Dr. Núñez Gaspar - Sector B"],
       ["Juárez", "traumatologia_juarez", "Dr. Juárez Marcelo - Sector B"],
     ];
     const replacements = {};

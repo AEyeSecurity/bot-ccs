@@ -53,7 +53,7 @@ describe("managed catalog runtime", () => {
     expect(await evaluate("cardiólogo")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
 
     const professionalCatalog = cloneCatalog();
-    professionalCatalog.professionals.find((item) => item.name === "Segovia Néstor")!.available = false;
+    professionalCatalog.professionals.find((item) => item.name === "Segovia Marcelo")!.available = false;
     activateCatalog(professionalCatalog);
     expect(await evaluate("Dr Segovia")).toMatchObject({ intent: "SERVICIO_NO_DISPONIBLE", reply: { text: unavailable } });
 

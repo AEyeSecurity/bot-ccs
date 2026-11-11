@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { createAdminSupabaseClient } from "./supabase";
-import { getPanelAdminUsernames, getRestoreUsernames } from "./env";
+import { getRestoreUsernames } from "./env";
 import type { Operator } from "./domain";
 import { loadOperatorAreaIds } from "./areas";
 
@@ -46,10 +46,10 @@ export function requireAdmin(operator: Operator) {
   return operator;
 }
 
+// Todo usuario con rol admin accede a los paneles (p. ej. la supervisora de secretarias).
+// BOT_CCS_ADMIN_USERS ya no restringe: se conserva en env solo por compatibilidad.
 export function canAccessAdminPanels(operator: Operator) {
-  if (operator.role !== "admin") return false;
-  const username = (operator.email || "").split("@")[0].toLowerCase();
-  return getPanelAdminUsernames().includes(username);
+  return operator.role === "admin";
 }
 
 export function requireAdminPanels(operator: Operator) {

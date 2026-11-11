@@ -98,6 +98,14 @@ export const REQUIRED_DIRECT_KEYS = [
   "socialInsurance",
 ] as const;
 
+export const CLINICA_MEDICA_INTENT = "ATENCION_MEDICA_CLINICA_MEDICA";
+
+// Clínica Médica no tiene bloques profesionales: si su texto queda vacío se reutiliza el mensaje
+// de "Médicos clínicos" (direct.clinicalMedicine), que es siempre el mismo.
+export function serviceFallbackBody(catalog: Pick<ManagedCatalog, "direct">, intent: string) {
+  return intent === CLINICA_MEDICA_INTENT ? catalog.direct.clinicalMedicine?.body || "" : "";
+}
+
 const mobileCandidate = /(?<!\d)\+?\s*54\s*9(?:[\s-]*\d){10}(?!\d)/g;
 const mobilePrefix = /(?<!\d)\+?\s*54\s*9(?=[\s\d-])/;
 
@@ -146,7 +154,7 @@ export function validateManagedCatalog(input: unknown, options: { requireReviewe
   for (const [key, entry] of Object.entries(catalog.messages)) inspectEntry(`Mensaje ${key}`, entry);
   for (const [key, entry] of Object.entries(catalog.direct)) inspectEntry(`Servicio ${key}`, entry);
   for (const item of catalog.medicalServices) {
-    const effectiveBody = item.customBody.trim() ? item.customBody : item.generalBody;
+    const effectiveBody = item.customBody.trim() ? item.customBody : item.generalBody || serviceFallbackBody(catalog, item.intent);
     inspectEntry(`Especialidad ${item.title}`, { ...item, body: effectiveBody });
   }
   for (const item of catalog.imagingStudies) inspectEntry(`Estudio ${item.title}`, item);
@@ -196,7 +204,7 @@ export function validateManagedCatalog(input: unknown, options: { requireReviewe
     if (!groupIds.has(professional.responseGroupId)) errors.push(`${professional.name} no tiene un bloque válido`);
   }
   for (const service of catalog.medicalServices.filter((item) => item.available)) {
-    const hasGeneral = Boolean(service.generalBody.trim());
+    const hasGeneral = Boolean(service.generalBody.trim() || service.customBody.trim() || serviceFallbackBody(catalog, service.intent).trim());
     const hasActiveGroup = catalog.professionalResponseGroups.some(
       (group) => group.specialty === service.title && group.available && catalog.professionals.some(
         (professional) => professional.responseGroupId === group.id && professional.available,

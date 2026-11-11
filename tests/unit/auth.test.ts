@@ -24,23 +24,18 @@ afterEach(() => {
 });
 
 describe("canAccessAdminPanels", () => {
-  test("permite a los admins listados por defecto", () => {
+  test("permite a cualquier usuario con rol admin", () => {
     expect(canAccessAdminPanels(operator({ email: "admin@bot-ccs.local" }))).toBe(true);
-    expect(canAccessAdminPanels(operator({ email: "admindev@bot-ccs.local" }))).toBe(true);
-  });
-
-  test("rechaza a un admin no listado", () => {
-    expect(canAccessAdminPanels(operator({ email: "otroadmin@bot-ccs.local" }))).toBe(false);
+    expect(canAccessAdminPanels(operator({ email: "supervisora@bot-ccs.local" }))).toBe(true);
   });
 
   test("rechaza a un operador aunque tenga username de admin", () => {
-    expect(canAccessAdminPanels(operator({ role: "operator" }))).toBe(false);
+    expect(canAccessAdminPanels(operator({ role: "operator", email: "admin@bot-ccs.local" }))).toBe(false);
   });
 
-  test("respeta la lista configurada por env", () => {
+  test("no depende de BOT_CCS_ADMIN_USERS", () => {
     process.env.BOT_CCS_ADMIN_USERS = "foo,bar";
-    expect(canAccessAdminPanels(operator({ email: "foo@bot-ccs.local" }))).toBe(true);
-    expect(canAccessAdminPanels(operator({ email: "admin@bot-ccs.local" }))).toBe(false);
+    expect(canAccessAdminPanels(operator({ email: "supervisora@bot-ccs.local" }))).toBe(true);
   });
 });
 

@@ -2,6 +2,10 @@
 
 Este archivo registra cambios funcionales y operativos. A partir de la creación del repositorio, toda modificación debe agregarse aquí dentro del mismo commit.
 
+## Pedidos del cliente (Excel 11/11) — 11 de noviembre de 2026
+
+Pestaña inicial de conversaciones = Abierta. Clínica Médica publicable: si su texto queda vacío usa el mensaje de Médicos clínicos (validación, runtime y vista previa). Internación se detecta también con «internado/a», «internaron» (regla y prompt del clasificador). Todo usuario con rol admin accede a los paneles (supervisora de secretarias); BOT_CCS_ADMIN_USERS deja de restringir; restauración sigue solo para admindev. Migración 013: Internación y Medicina laboral → Admisión; los tres Informes médicos → Call Center (hoja Usuarios, celdas naranja). Banco de respuestas: renombrar profesionales y especialidades (conserva alias e intents), botón «Agregar profesional» (bloque + alias + sector de derivación vía POST /api/admin/area-rules, que copia reglas genéricas a los profesionales existentes) y estructura append-only. Datos: Segovia Marcelo, Núñez Gaspar, Ginecología (sin Obstetricia); script scripts/fix-nombres-cliente-1111.mjs para Supabase. Pendiente: aplicar 013 y el script, desplegar, nombre de la dermatóloga nueva y conexión WhatsApp (OPERATIONS). 551 pruebas, lint y build OK; matriz bot/n8n y despliegue pendientes.
+
 ## Guía de conexión de WhatsApp y revisión de pendientes — 5 de noviembre de 2026
 
 OPERATIONS incorpora alta/revisión de sender, rutas directas/ISV, números ya registrados, webhooks, variables realmente consumidas, prioridad de Messaging Service, recreación de runtime y prueba de entrega. Corregidos pendientes obsoletos: 008/009/010 y transformaciones de catálogo ya aplicadas el 28/10. Consolidada lista previa a atención real sin dar por terminados pendientes no ensayados.
