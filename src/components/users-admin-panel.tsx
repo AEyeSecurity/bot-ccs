@@ -1,5 +1,6 @@
 "use client";
 
+import { PRESENCE_WINDOW_MS } from "@/lib/presence";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ChevronDown, KeyRound, LoaderCircle, Plus, RefreshCw, Trash2, UserPlus } from "lucide-react";
 import type { OperatorPersona } from "@/lib/operator-personas";
@@ -108,7 +109,7 @@ export function UsersAdminPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBa
 
   const connected = useMemo(() => {
     return (lastSeenAt?: string | null) =>
-      Boolean(lastSeenAt && nowMs - new Date(lastSeenAt).getTime() <= 90_000);
+      Boolean(lastSeenAt && nowMs - new Date(lastSeenAt).getTime() <= PRESENCE_WINDOW_MS);
   }, [nowMs]);
 
   function openCreate() {

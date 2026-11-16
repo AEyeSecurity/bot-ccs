@@ -9,13 +9,11 @@ import {
   ClipboardList,
   Database,
   LogOut,
-  Phone,
   RefreshCw,
   Search,
   Send,
   ShieldCheck,
   Stethoscope,
-  UserCheck,
   Users,
   XCircle,
 } from "lucide-react";
@@ -26,6 +24,7 @@ import { RESOLUTION_LABELS, RESOLUTION_STATUSES, type ResolutionStatus } from "@
 import { isPasswordStrong, PASSWORD_RULES } from "@/lib/password";
 import { CatalogAdminPanel } from "@/components/catalog-admin-panel";
 import { UsersAdminPanel } from "@/components/users-admin-panel";
+import { PatientCard, type ContactFields } from "@/components/patient-card";
 import { AnalyticsPanel } from "@/components/analytics-panel";
 
 const resolutionFilters: Array<{ key: "all" | ResolutionStatus; label: string }> = [
@@ -318,6 +317,25 @@ export function DashboardApp() {
       await Promise.all([loadConversations(), loadMessages(selectedId)]);
     } catch (error) {
       setAuthError(error instanceof Error ? error.message : "Error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveContact(fields: ContactFields) {
+    if (!selectedId) return false;
+    setBusy(true);
+    try {
+      await apiFetch(`/api/conversations/${selectedId}/contact`, {
+        method: "PATCH",
+        body: JSON.stringify(fields),
+      });
+      setAuthError("");
+      await Promise.all([loadConversations(), loadMessages(selectedId)]);
+      return true;
+    } catch (error) {
+      setAuthError(error instanceof Error ? error.message : "Error");
+      return false;
     } finally {
       setBusy(false);
     }
@@ -711,22 +729,7 @@ export function DashboardApp() {
         </header>
         {selected ? (
           <div className="min-h-0 flex-1 overflow-y-auto p-5 text-sm">
-            <div className="mb-6 rounded-2xl bg-[#edf8f3] p-4">
-              <div className="mb-3 grid h-9 w-9 place-items-center rounded-xl bg-white text-[#176b5a] shadow-sm"><UserCheck size={17} /></div>
-              <p className="break-words font-bold text-zinc-800">{selected.contact?.patient_full_name || selected.contact?.display_name || "Sin nombre"}</p>
-              <p className="mt-1 flex items-center gap-1 break-words text-zinc-500"><Phone size={13} />{selected.contact?.whatsapp_number}</p>
-            </div>
-
-            <div className="mb-6 grid grid-cols-2 gap-2">
-              <div className="rounded-xl border border-zinc-200 bg-white p-3">
-                <p className="mb-1 text-xs text-zinc-500">Documento</p>
-                <p className="flex items-center gap-1 font-semibold text-zinc-800"><ShieldCheck size={14} className="text-[#176b5a]" />{selected.contact?.dni_received ? "Recibido" : "Pendiente"}</p>
-              </div>
-              <div className="rounded-xl border border-zinc-200 bg-white p-3">
-                <p className="mb-1 text-xs text-zinc-500">Cobertura</p>
-                <p className="font-semibold text-zinc-800">{selected.contact?.insurance_card_received ? "Recibida" : "Pendiente"}</p>
-              </div>
-            </div>
+            <PatientCard key={selected.contact_id} contact={selected.contact} busy={busy} onSave={saveContact} />
 
             <div className="mb-5">
               <p className="mb-2 text-xs font-bold uppercase tracking-[0.12em] text-zinc-400">Resolución</p>

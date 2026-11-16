@@ -24,6 +24,10 @@ El botón Publicar permanece bloqueado si hay cambios locales, errores o pendien
 
 Una especialidad sin texto general no muestra una caja vacía: explica que su respuesta se construye con bloques profesionales. Esos bloques se pueden editar desde la especialidad o desde Profesionales, pero ambas vistas apuntan al mismo objeto persistido.
 
+## Altas Desde El Panel (solo admin)
+
+Además de profesionales, el admin puede agregar **obras sociales** (nombre y alias), **estudios** (nombre, texto y sinónimos; intent `ESTUDIO_*`) y **especialidades** (nombre, texto general y sinónimos; intent `ATENCION_MEDICA_*`). Se agregan siempre al final, quedan pendientes de revisión y se publican con el flujo normal. Un nombre o sinónimo no puede coincidir con el de otra especialidad o estudio. Lo ya publicado (intents, ids, matchers, orden) sigue inmutable y no se puede borrar; solo desactivar. Una especialidad nueva responde con su texto general y admite profesionales con el formulario existente.
+
 ## Teléfonos
 
 Los teléfonos no tienen campos paralelos. Se escriben dentro del texto y se detectan automáticamente junto al bloque propietario. La publicación exige móviles argentinos en formato:

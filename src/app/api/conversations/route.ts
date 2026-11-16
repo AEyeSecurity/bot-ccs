@@ -97,6 +97,8 @@ export async function GET(request: NextRequest) {
           conversation.contact?.whatsapp_number,
           conversation.contact?.display_name,
           conversation.contact?.patient_full_name,
+          conversation.contact?.dni_number,
+          conversation.contact?.insurance_name,
           conversation.latest_message?.body,
         ]
           .filter(Boolean)

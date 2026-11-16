@@ -18,6 +18,9 @@ import {
   Send,
 } from "lucide-react";
 import {
+  addImagingStudyToCatalog,
+  addInsurancePlanToCatalog,
+  addMedicalServiceToCatalog,
   addProfessionalToCatalog,
   editorialState,
   joinReply,
@@ -366,6 +369,15 @@ function NameEditor({ label, value, disabled, onApply }: { label: string; value:
 type NewProfessionalForm = { name: string; specialty: string; body: string; area: string };
 const emptyProfessionalForm: NewProfessionalForm = { name: "", specialty: "", body: "", area: "" };
 
+type NewEntryForm = { name: string; body: string; extras: string };
+const emptyEntryForm: NewEntryForm = { name: "", body: "", extras: "" };
+
+const entryLabels = {
+  specialties: { noun: "especialidad", button: "Agregar especialidad", name: "Nombre de la especialidad", body: "Texto general que recibe el paciente", extras: "Sinónimos (separados por coma, opcional)", needsBody: true },
+  studies: { noun: "estudio", button: "Agregar estudio", name: "Nombre del estudio", body: "Respuesta que recibe el paciente", extras: "Sinónimos (separados por coma, opcional)", needsBody: true },
+  insurance: { noun: "obra social", button: "Agregar obra social", name: "Nombre de la obra social", body: "", extras: "Otros nombres con que la escriben los pacientes (separados por coma, opcional)", needsBody: false },
+} as const;
+
 export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: ApiFetch; onBack: () => void; canRestore: boolean }) {
   const [state, setState] = useState<AdminState | null>(null);
   const [catalog, setCatalog] = useState<ManagedCatalog | null>(null);
@@ -380,6 +392,8 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
   const [showAdd, setShowAdd] = useState(false);
   const [form, setForm] = useState<NewProfessionalForm>(emptyProfessionalForm);
   const [areaNames, setAreaNames] = useState<string[]>([]);
+  const [showAddEntry, setShowAddEntry] = useState(false);
+  const [entryForm, setEntryForm] = useState<NewEntryForm>(emptyEntryForm);
   const [pendingRules, setPendingRules] = useState<Array<{ groupId: string; area: string }>>([]);
 
   async function load() {
@@ -485,6 +499,24 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
       setForm(emptyProfessionalForm);
     } catch (addError) {
       setError(addError instanceof Error ? addError.message : "No se pudo agregar el profesional");
+    }
+  }
+
+  function addEntry() {
+    if (!catalog || (category !== "specialties" && category !== "studies" && category !== "insurance")) return;
+    try {
+      const next = cloneCatalog(catalog);
+      if (category === "specialties") addMedicalServiceToCatalog(next, { title: entryForm.name, body: entryForm.body, synonyms: entryForm.extras });
+      else if (category === "studies") addImagingStudyToCatalog(next, { title: entryForm.name, body: entryForm.body, synonyms: entryForm.extras });
+      else addInsurancePlanToCatalog(next, { name: entryForm.name, aliases: entryForm.extras });
+      setCatalog(next);
+      setDirty(true);
+      setNotice(`${entryLabels[category].noun[0].toUpperCase()}${entryLabels[category].noun.slice(1)} agregada al borrador. Guarde el borrador, revísela y publique para que el bot la use.`);
+      setError("");
+      setShowAddEntry(false);
+      setEntryForm(emptyEntryForm);
+    } catch (addError) {
+      setError(addError instanceof Error ? addError.message : "No se pudo agregar");
     }
   }
 
@@ -629,7 +661,7 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
       <div className="mx-auto grid max-w-[1500px] gap-5 px-4 py-5 lg:grid-cols-[230px_minmax(0,1fr)_280px]">
         <aside className="h-fit rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm lg:sticky lg:top-24">
           {categories.map((item) => (
-            <button key={item.id} onClick={() => { setCategory(item.id); setExpanded(null); }} className={`mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition last:mb-0 ${category === item.id ? "bg-[#e4f2eb] text-[#176b5a]" : "text-zinc-600 hover:bg-zinc-50"}`}>
+            <button key={item.id} onClick={() => { setCategory(item.id); setExpanded(null); setShowAddEntry(false); setEntryForm(emptyEntryForm); }} className={`mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm font-semibold transition last:mb-0 ${category === item.id ? "bg-[#e4f2eb] text-[#176b5a]" : "text-zinc-600 hover:bg-zinc-50"}`}>
               {item.label}<span className="text-xs opacity-60">{catalog ? editorItems(item.id, catalog).length : 0}</span>
             </button>
           ))}
@@ -680,6 +712,33 @@ export function CatalogAdminPanel({ apiFetch, onBack, canRestore }: { apiFetch: 
                 </div>
               ) : (
                 <button type="button" onClick={() => void openAddProfessional()} className="flex items-center gap-2 rounded-xl bg-[#176b5a] px-4 py-2.5 text-sm font-bold text-white"><Plus size={16} />Agregar profesional</button>
+              )}
+            </div>
+          ) : null}
+
+          {(category === "specialties" || category === "studies" || category === "insurance") && catalog ? (
+            <div className="mb-4 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
+              {showAddEntry ? (
+                <div className="space-y-3">
+                  <p className="font-bold text-zinc-800">{entryLabels[category].button}</p>
+                  <label className="block text-sm font-semibold text-zinc-700">{entryLabels[category].name}
+                    <input value={entryForm.name} onChange={(event) => setEntryForm({ ...entryForm, name: event.target.value })} className="mt-1 h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm font-normal outline-none focus:border-[#176b5a]" />
+                  </label>
+                  {entryLabels[category].needsBody ? (
+                    <label className="block text-sm font-semibold text-zinc-700">{entryLabels[category].body}
+                      <textarea value={entryForm.body} onChange={(event) => setEntryForm({ ...entryForm, body: event.target.value })} rows={5} className="mt-1 w-full resize-y rounded-xl border border-zinc-200 p-3 text-sm font-normal leading-6 outline-none focus:border-[#176b5a]" />
+                    </label>
+                  ) : null}
+                  <label className="block text-sm font-semibold text-zinc-700">{entryLabels[category].extras}
+                    <input value={entryForm.extras} onChange={(event) => setEntryForm({ ...entryForm, extras: event.target.value })} className="mt-1 h-10 w-full rounded-xl border border-zinc-200 px-3 text-sm font-normal outline-none focus:border-[#176b5a]" />
+                  </label>
+                  <div className="flex gap-2">
+                    <button type="button" disabled={!entryForm.name.trim() || (entryLabels[category].needsBody && !entryForm.body.trim())} onClick={addEntry} className="rounded-xl bg-[#176b5a] px-4 py-2 text-sm font-bold text-white disabled:opacity-40">Agregar al borrador</button>
+                    <button type="button" onClick={() => { setShowAddEntry(false); setEntryForm(emptyEntryForm); }} className="rounded-xl border border-zinc-200 px-4 py-2 text-sm font-bold text-zinc-700">Cancelar</button>
+                  </div>
+                </div>
+              ) : (
+                <button type="button" onClick={() => setShowAddEntry(true)} className="flex items-center gap-2 rounded-xl bg-[#176b5a] px-4 py-2.5 text-sm font-bold text-white"><Plus size={16} />{entryLabels[category].button}</button>
               )}
             </div>
           ) : null}

@@ -177,6 +177,25 @@ describe("processInbound integration", () => {
     expect(cases[0].case_data.dniMedia).toBe(true);
   });
 
+  test("does not overwrite contact fields edited manually from the patient card", async () => {
+    const from = "whatsapp:+5491110000001";
+    await processInbound(inbound(from, "Cardiología"));
+    const contact = supabaseHolder.client.table("contacts")[0];
+    contact.patient_full_name = "Nombre Corregido";
+    contact.manual_fields = ["patient_full_name"];
+
+    await processInbound(
+      inbound(from, "Juan Perez\nAfiliado 123456", {
+        numMedia: 2,
+        mediaContentTypes: ["image/jpeg", "image/jpeg"],
+      }),
+    );
+
+    const after = supabaseHolder.client.table("contacts")[0];
+    expect(after.patient_full_name).toBe("Nombre Corregido");
+    expect(after.insurance_member_number).toBe("123456");
+  });
+
   test("does not capture the appointment area answer as patient name", async () => {
     const from = "whatsapp:+5491110000013";
 

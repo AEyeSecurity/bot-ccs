@@ -317,10 +317,15 @@ async function createBotOutbound(
 
 async function updateContactPatch(supabase: SupabaseAdmin, contactId: string, patch: Record<string, unknown> | null) {
   if (!patch || !Object.keys(patch).length) return;
+  // Lo cargado a mano desde la ficha tiene prioridad: el bot no lo pisa.
+  const { data: current } = await supabase.from("contacts").select("manual_fields").eq("id", contactId).maybeSingle();
+  const manual = new Set<string>(Array.isArray(current?.manual_fields) ? current.manual_fields : []);
+  const effective = Object.fromEntries(Object.entries(patch).filter(([key]) => !manual.has(key)));
+  if (!Object.keys(effective).length) return;
   const { error } = await supabase
     .from("contacts")
     .update({
-      ...patch,
+      ...effective,
       updated_at: new Date().toISOString(),
     })
     .eq("id", contactId);

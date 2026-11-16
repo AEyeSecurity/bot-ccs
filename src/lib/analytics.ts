@@ -1,3 +1,5 @@
+import { PRESENCE_WINDOW_MS } from "./presence";
+
 export type AnalyticsConversation = {
   id: string;
   status: string;
@@ -28,8 +30,14 @@ export type AnalyticsEvent = {
 export type AnalyticsOperator = {
   id: string;
   role: string;
+  name?: string;
+  email?: string;
+  is_active?: boolean;
+  area_names?: string[];
   last_seen_at?: string | null;
 };
+
+export type ConnectedOperator = { id: string; name: string; usuario: string; area_names: string[] };
 
 const INTERVENTION_EVENTS = new Set([
   "human_takeover_started",
@@ -38,7 +46,6 @@ const INTERVENTION_EVENTS = new Set([
   "bot_released",
 ]);
 
-const PRESENCE_WINDOW_MS = 90_000;
 
 function timestamp(value?: string | null) {
   if (!value) return 0;
@@ -165,14 +172,20 @@ export function buildAnalyticsReport(args: {
     .sort((left, right) => right.count - left.count)
     .slice(0, 5);
 
+  const isConnected = (operator: AnalyticsOperator) =>
+    operator.role !== "admin" && operator.is_active !== false &&
+    timestamp(operator.last_seen_at) >= timestamp(now) - PRESENCE_WINDOW_MS;
+  const connectedList: ConnectedOperator[] = operators.filter(isConnected).map((operator) => ({
+    id: operator.id,
+    name: operator.name || "",
+    usuario: (operator.email || "").split("@")[0],
+    area_names: operator.area_names || [],
+  }));
+
   const presenceConnected = (() => {
-    if (!operatorId) {
-      return operators.filter(
-        (operator) => operator.role !== "admin" && timestamp(operator.last_seen_at) >= timestamp(now) - PRESENCE_WINDOW_MS,
-      ).length;
-    }
+    if (!operatorId) return connectedList.length;
     const operator = operators.find((item) => item.id === operatorId);
-    return operator ? timestamp(operator.last_seen_at) >= timestamp(now) - PRESENCE_WINDOW_MS : false;
+    return operator ? isConnected(operator) : false;
   })();
 
   return {
@@ -191,6 +204,6 @@ export function buildAnalyticsReport(args: {
     },
     topIntents,
     topAreas,
-    presence: { connected: presenceConnected },
+    presence: { connected: presenceConnected, connected_list: connectedList },
   };
 }

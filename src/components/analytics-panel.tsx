@@ -13,7 +13,7 @@ type Report = {
   times: { firstResponseMinutes: number | null; resolutionMinutes: number | null; queueMinutes: number | null };
   topIntents: Array<{ intent: string; count: number }>;
   topAreas: Array<{ area: string; count: number }>;
-  presence: { connected: number | boolean };
+  presence: { connected: number | boolean; connected_list: Array<{ id: string; name: string; usuario: string; area_names: string[] }> };
 };
 
 type OperatorOption = { id: string; name: string; email: string; last_seen_at: string | null };
@@ -90,6 +90,12 @@ export function AnalyticsPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBac
     void Promise.resolve().then(() => load());
   }, [load]);
 
+  // Mantiene viva la lista de conectados (el latido de cada operador es cada 30 s).
+  useEffect(() => {
+    const timer = setInterval(() => void load(), 30_000);
+    return () => clearInterval(timer);
+  }, [load]);
+
   const selectedOperator = operators.find((operator) => operator.id === operatorId)?.name || "Todos";
 
   return (
@@ -161,6 +167,16 @@ export function AnalyticsPanel({ apiFetch, onBack }: { apiFetch: ApiFetch; onBac
               <p className="text-2xl font-bold text-[#176b5a]">
                 {typeof report.presence.connected === "boolean" ? (report.presence.connected ? "Sí" : "No") : report.presence.connected}
               </p>
+              {report.presence.connected_list.length ? (
+                <ul className="mt-3 flex flex-wrap gap-2">
+                  {report.presence.connected_list.map((person) => (
+                    <li key={person.id} className="flex items-center gap-2 rounded-full bg-[#e4f2eb] px-3 py-1.5 text-xs font-semibold text-[#176b5a]">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      {person.name} ({person.usuario}){person.area_names.length ? ` · ${person.area_names.join(", ")}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              ) : <p className="mt-2 text-xs text-zinc-500">Nadie conectado en este momento.</p>}
             </div>
 
             <div className="grid gap-5 lg:grid-cols-2">

@@ -50,6 +50,23 @@ describe("buildAnalyticsReport", () => {
     expect(report.presence.connected).toBe(2);
   });
 
+  test("lista quiénes están conectados: vigentes, activos y no admin", () => {
+    const report = buildAnalyticsReport({
+      ...base,
+      operatorId: null,
+      operators: [
+        { id: "op1", role: "operator", name: "Carla", email: "cardiologia@bot-ccs.local", is_active: true, area_names: ["Cardiología"], last_seen_at: "2026-10-20T12:00:00.000Z" },
+        { id: "op2", role: "operator", name: "Vencida", email: "vencida@bot-ccs.local", is_active: true, last_seen_at: "2026-10-20T11:50:00.000Z" },
+        { id: "op3", role: "operator", name: "Inactiva", email: "inactiva@bot-ccs.local", is_active: false, last_seen_at: "2026-10-20T12:00:00.000Z" },
+        { id: "adm", role: "admin", name: "Admin", email: "admin@bot-ccs.local", is_active: true, last_seen_at: "2026-10-20T12:00:00.000Z" },
+      ],
+    });
+    expect(report.presence.connected).toBe(1);
+    expect(report.presence.connected_list).toEqual([
+      { id: "op1", name: "Carla", usuario: "cardiologia", area_names: ["Cardiología"] },
+    ]);
+  });
+
   test("por usuario: solo cuenta su participación", () => {
     const report = buildAnalyticsReport({ ...base, operatorId: "op1" });
     expect(report.volume).toEqual({ total: 1, open: 0, closed: 1 });

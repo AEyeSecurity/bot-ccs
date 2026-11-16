@@ -37,6 +37,9 @@ export type Contact = {
   dni_received: boolean;
   insurance_member_number: string | null;
   insurance_card_received: boolean;
+  dni_number?: string | null;
+  insurance_name?: string | null;
+  manual_fields?: string[];
 };
 
 export type Conversation = {

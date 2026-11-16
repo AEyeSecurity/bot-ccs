@@ -41,11 +41,15 @@ El login admite el nombre de usuario (sin dominio) o el email completo: si no tr
 - Eliminación de usuarios desde el panel (admin): botón "Eliminar usuario" en el modo edición, con confirmación antes de borrar. No se puede eliminar la propia cuenta.
 - Cambio de contraseña forzado en el primer acceso y tras un reset: al entrar se pide elegir una contraseña nueva antes de ver el panel.
 - Presencia: latido del panel cada 30 s; el listado de usuarios muestra "conectado" según el último latido (90 s).
-- Panel de datos (admin): análisis global o por usuario con rango de fechas — volumen, resolución, casos atendidos (participación + intervenciones + mensajes), tiempos de primera respuesta/resolución/cola, conectados y derivación por gestión y área.
+- Panel de datos (admin): lista de quiénes están conectados (nombre, usuario, sectores; ventana de 90 s, refresco cada 30 s) y análisis global o por usuario con rango de fechas — volumen, resolución, casos atendidos (participación + intervenciones + mensajes), tiempos de primera respuesta/resolución/cola, conectados y derivación por gestión y área.
 - Derivación conectado → menos casos: si una consulta cae en varias áreas, se asigna priorizando las áreas con operador conectado (último latido en 90 s) y, entre ellas, la de menor ocupación (conversaciones abiertas con resolución `abierta`); empate al azar. Sin conectados, deriva a la menos ocupada.
 - Selector de ecografía: "ecografía" genérica pregunta el tipo (abdominal, Doppler, Doppler cardíaca, renal o ginecológica/obstétrica) y deriva al estudio elegido.
 - Servicios directos con área (Medicina laboral, Hemoterapia, Flebología, Facturación, Quirófanos, Terapia intensiva y Radiología): textos editables en el banco, derivación por área.
 - Los paneles administrativos (Banco de respuestas, Usuarios, Panel de datos) están restringidos a las cuentas de `BOT_CCS_ADMIN_USERS`; el resto de las cuentas solo ve los chats.
+
+## Ficha Del Paciente (editable)
+
+Cualquier usuario que vea la conversación puede corregir el nombre del paciente y cargar DNI, obra social y N° de afiliado desde la ficha (botón Editar). Los campos editados quedan en `contacts.manual_fields` y el bot no los pisa; el DNI no se guarda en los eventos. Nombre, DNI y obra social se buscan desde la bandeja.
 
 ## Panel De Conversaciones
 

@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
       to: dayBounds(toParam || defaultDay)?.to || "",
     };
 
-    const [{ data: operators }, { data: areas }, { data: conversations }, { data: messages }, { data: events }] = await Promise.all([
+    const [{ data: operators }, { data: areas }, { data: conversations }, { data: messages }, { data: events }, { data: operatorAreas }] = await Promise.all([
       supabase.from("operators").select("id,name,email,role,is_active,last_seen_at").order("name", { ascending: true }),
       supabase.from("areas").select("id,name"),
       supabase
@@ -47,15 +47,26 @@ export async function GET(request: NextRequest) {
         .select("id,status,resolution_status,area_ids,current_intent,assigned_operator_id,created_at,updated_at,last_activity_at"),
       supabase.from("messages").select("conversation_id,direction,sender_type,operator_id,created_at"),
       supabase.from("conversation_events").select("conversation_id,event_type,actor_id,created_at"),
+      supabase.from("operator_areas").select("operator_id,area_id"),
     ]);
 
     const areaNames = new Map<string, string>((areas || []).map((area) => [String(area.id), String(area.name)]));
+
+    const areasByOperator = new Map<string, string[]>();
+    for (const row of (operatorAreas || []) as Array<{ operator_id: string; area_id: string }>) {
+      const name = areaNames.get(String(row.area_id));
+      if (!name) continue;
+      areasByOperator.set(String(row.operator_id), [...(areasByOperator.get(String(row.operator_id)) || []), name]);
+    }
 
     const report = buildAnalyticsReport({
       conversations: (conversations || []) as AnalyticsConversation[],
       messages: (messages || []) as AnalyticsMessage[],
       events: (events || []) as AnalyticsEvent[],
-      operators: (operators || []) as AnalyticsOperator[],
+      operators: ((operators || []) as AnalyticsOperator[]).map((operator) => ({
+        ...operator,
+        area_names: areasByOperator.get(operator.id) || [],
+      })),
       areaNames,
       from: bounds.from,
       to: bounds.to,

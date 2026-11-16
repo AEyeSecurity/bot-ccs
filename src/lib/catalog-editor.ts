@@ -167,6 +167,93 @@ export function addProfessionalToCatalog(catalog: ManagedCatalog, input: NewProf
   return { groupId: id, intent: service.intent };
 }
 
+// ---------------------------------------------------------------------------
+// Altas de obras sociales, estudios y especialidades (solo admin; siempre al final de la lista).
+// ---------------------------------------------------------------------------
+
+function splitExtras(extras: string | string[] | undefined) {
+  const list = Array.isArray(extras) ? extras : (extras || "").split(/[,;\n]/);
+  return list.map((item) => item.replace(/\s+/g, " ").trim()).filter(Boolean);
+}
+
+function uniqueKey(base: string, existing: Iterable<string>, separator = "_") {
+  const taken = new Set(existing);
+  let key = base;
+  for (let n = 2; taken.has(key); n += 1) key = `${base}${separator}${n}`;
+  return key;
+}
+
+// Un matcher nuevo no puede coincidir con el de otra especialidad o estudio (capturaría sus consultas).
+function assertMatchersFree(catalog: ManagedCatalog, matchers: string[]) {
+  const used = new Map<string, string>();
+  for (const item of [...catalog.medicalServices, ...catalog.imagingStudies]) {
+    for (const matcher of item.matchers) used.set(normalizeLabel(matcher), item.title);
+  }
+  for (const matcher of matchers) {
+    const owner = used.get(normalizeLabel(matcher));
+    if (owner) throw new Error(`"${matcher}" ya lo usa ${owner}. Use otro nombre o sinónimo.`);
+  }
+}
+
+export type NewInsurancePlanInput = { name: string; aliases?: string | string[] };
+
+export function addInsurancePlanToCatalog(catalog: ManagedCatalog, input: NewInsurancePlanInput) {
+  const name = input.name.replace(/\s+/g, " ").trim();
+  if (!name) throw new Error("El nombre de la obra social es obligatorio");
+  const aliases = uniqueLabels([name, ...splitExtras(input.aliases)]);
+  const taken = new Set(catalog.insurancePlans.flatMap((plan) => [plan.name, ...plan.aliases]).map(normalizeLabel));
+  const clash = aliases.find((alias) => taken.has(normalizeLabel(alias)));
+  if (clash) throw new Error(`Ya existe una obra social con el nombre o alias "${clash}"`);
+  const id = uniqueKey(slugify(name) || "obra_social", catalog.insurancePlans.map((plan) => plan.id));
+  catalog.insurancePlans.push({ id, name, aliases, available: true, reviewStatus: "pending" });
+  return { id };
+}
+
+export type NewImagingStudyInput = { title: string; body: string; synonyms?: string | string[] };
+
+export function addImagingStudyToCatalog(catalog: ManagedCatalog, input: NewImagingStudyInput) {
+  const title = input.title.replace(/\s+/g, " ").trim();
+  const body = input.body.trim();
+  if (!title) throw new Error("El nombre del estudio es obligatorio");
+  if (!body) throw new Error("El texto de respuesta es obligatorio");
+  if (catalog.imagingStudies.some((item) => normalizeLabel(item.title) === normalizeLabel(title))) {
+    throw new Error("Ya existe un estudio con ese nombre");
+  }
+  const matchers = uniqueLabels([title, ...splitExtras(input.synonyms)]);
+  assertMatchersFree(catalog, matchers);
+  const intent = uniqueKey(
+    `ESTUDIO_${slugify(title).toUpperCase()}`,
+    [...catalog.imagingStudies, ...catalog.medicalServices].map((item) => item.intent),
+  );
+  catalog.imagingStudies.push({
+    intent, title, matchers, body, phones: phonesIn(body), sourceCell: "panel", available: true, reviewStatus: "pending",
+  });
+  return { intent };
+}
+
+export type NewMedicalServiceInput = { title: string; body: string; synonyms?: string | string[] };
+
+export function addMedicalServiceToCatalog(catalog: ManagedCatalog, input: NewMedicalServiceInput) {
+  const title = input.title.replace(/\s+/g, " ").trim();
+  const body = input.body.trim();
+  if (!title) throw new Error("El nombre de la especialidad es obligatorio");
+  if (!body) throw new Error("El texto general de la especialidad es obligatorio");
+  if (catalog.medicalServices.some((item) => normalizeLabel(item.title) === normalizeLabel(title))) {
+    throw new Error("Ya existe una especialidad con ese nombre");
+  }
+  const matchers = uniqueLabels([title, ...splitExtras(input.synonyms)]);
+  assertMatchersFree(catalog, matchers);
+  const intent = uniqueKey(
+    `ATENCION_MEDICA_${slugify(title).toUpperCase()}`,
+    [...catalog.imagingStudies, ...catalog.medicalServices].map((item) => item.intent),
+  );
+  catalog.medicalServices.push({
+    intent, title, matchers, generalBody: body, customBody: "", phones: phonesIn(body),
+    sourceCell: "panel", available: true, reviewStatus: "pending",
+  });
+  return { intent };
+}
+
 export function renameProfessionalInCatalog(catalog: ManagedCatalog, index: number, rawName: string) {
   const professional = catalog.professionals[index];
   const name = rawName.replace(/\s+/g, " ").trim();

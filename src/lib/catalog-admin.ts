@@ -29,7 +29,7 @@ function httpError(message: string, status: number) {
 
 // Parte de la estructura que el panel no puede cambiar (claves, intents, relaciones, orden).
 // Sí se pueden: renombrar especialidades y profesionales, ampliar alias/matchers, y agregar
-// profesionales con su bloque de respuesta (siempre al final de las listas).
+// profesionales con su bloque de respuesta, y altas de especialidades, estudios y obras sociales (siempre al final de las listas).
 function immutableProjection(catalog: ManagedCatalog) {
   const intentByTitle = new Map(catalog.medicalServices.map((item) => [item.title, item.intent]));
   const specialtyKey = (title: string) => intentByTitle.get(title) ?? title;
@@ -59,20 +59,25 @@ function keepsAll(previous: string[], next: string[]) {
 function assertEditableStructure(candidate: ManagedCatalog, published: ManagedCatalog) {
   const next = immutableProjection(candidate);
   const base = immutableProjection(published);
-  const sameLength = candidate.medicalServices.length === published.medicalServices.length;
   const appendOnly =
+    candidate.medicalServices.length >= published.medicalServices.length &&
+    candidate.imagingStudies.length >= published.imagingStudies.length &&
+    candidate.insurancePlans.length >= published.insurancePlans.length &&
     candidate.professionals.length >= published.professionals.length &&
     candidate.professionalResponseGroups.length >= published.professionalResponseGroups.length;
   const sameBase = JSON.stringify({
     ...next,
+    medicalServices: next.medicalServices.slice(0, base.medicalServices.length),
+    imagingStudies: next.imagingStudies.slice(0, base.imagingStudies.length),
+    insurancePlans: next.insurancePlans.slice(0, base.insurancePlans.length),
     professionalResponseGroups: next.professionalResponseGroups.slice(0, base.professionalResponseGroups.length),
     professionals: next.professionals.slice(0, base.professionals.length),
   }) === JSON.stringify(base);
   const aliasesKept =
     published.medicalServices.every((item, index) => keepsAll(item.matchers, candidate.medicalServices[index]?.matchers || [])) &&
     published.professionals.every((item, index) => keepsAll(item.aliases, candidate.professionals[index]?.aliases || []));
-  if (!sameLength || !appendOnly || !sameBase || !aliasesKept) {
-    throw httpError("La estructura y las relaciones del catálogo no se pueden modificar desde el panel (solo nombres, textos y altas de profesionales)", 400);
+  if (!appendOnly || !sameBase || !aliasesKept) {
+    throw httpError("La estructura y las relaciones del catálogo no se pueden modificar desde el panel (solo nombres, textos y altas de profesionales, especialidades, estudios y obras sociales)", 400);
   }
 }
 
@@ -87,6 +92,7 @@ function markChangedEntriesPending(candidate: ManagedCatalog, base: ManagedCatal
   candidate.medicalServices.forEach((entry, index) => {
     const previous = base.medicalServices[index];
     if (
+      !previous ||
       entry.title !== previous.title ||
       entry.generalBody !== previous.generalBody ||
       entry.customBody !== previous.customBody ||
@@ -95,7 +101,7 @@ function markChangedEntriesPending(candidate: ManagedCatalog, base: ManagedCatal
   });
   candidate.imagingStudies.forEach((entry, index) => {
     const previous = base.imagingStudies[index];
-    if (entry.body !== previous.body || entry.available !== previous.available) entry.reviewStatus = "pending";
+    if (!previous || entry.body !== previous.body || entry.available !== previous.available) entry.reviewStatus = "pending";
   });
   candidate.professionalResponseGroups.forEach((entry, index) => {
     const previous = base.professionalResponseGroups[index];
@@ -107,7 +113,7 @@ function markChangedEntriesPending(candidate: ManagedCatalog, base: ManagedCatal
   });
   candidate.insurancePlans.forEach((entry, index) => {
     const previous = base.insurancePlans[index];
-    if (entry.name !== previous.name || entry.available !== previous.available) entry.reviewStatus = "pending";
+    if (!previous || entry.name !== previous.name || entry.available !== previous.available) entry.reviewStatus = "pending";
   });
   return candidate;
 }

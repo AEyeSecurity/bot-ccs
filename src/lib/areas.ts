@@ -1,5 +1,6 @@
 import { MEDICAL_SERVICES, PROFESSIONAL_RESPONSE_GROUPS, TURNOS_MEDICOS_SELECTOR_INTENT } from "./bot-catalog";
 import type { Conversation, Operator } from "./domain";
+import { PRESENCE_WINDOW_MS } from "./presence";
 import type { createAdminSupabaseClient } from "./supabase";
 
 type SupabaseAdmin = ReturnType<typeof createAdminSupabaseClient>;
@@ -72,7 +73,6 @@ export async function loadOperatorAreaIds(supabase: SupabaseAdmin, operatorId: s
   return (data || []).map((row) => String(row.area_id));
 }
 
-const PRESENCE_WINDOW_MS = 90_000;
 
 // Áreas con al menos un operador activo conectado (último latido en 90 s).
 export async function loadConnectedAreaIds(supabase: SupabaseAdmin, areaIds: string[]): Promise<Set<string>> {
